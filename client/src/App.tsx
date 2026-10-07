@@ -14,6 +14,17 @@ const labels = {
   ar: { dashboard: 'لوحة القيادة', tenders: 'طلبات العروض', contracts: 'العقود', signIn: 'تسجيل الدخول', email: 'البريد الإلكتروني', password: 'كلمة المرور', connect: 'دخول', exit: 'خروج', hello: 'متابعة الملفات', subtitle: 'لوحة المتابعة', alert: 'آجال متجاوزة', recent: 'الملفات المتأخرة', tenderRef: 'المرجع', subject: 'الموضوع', status: 'الحالة', deadline: 'آخر أجل', search: 'بحث في النتائج', filterStatus: 'كل الحالات', export: 'تصدير CSV', previous: 'السابق', next: 'التالي', tracking: 'متابعة العقد', save: 'حفظ التواريخ', close: 'إغلاق', noRows: 'لا توجد نتائج', failure: 'تعذر الاتصال بالخادم' },
 };
 
+async function readJson<T>(response: Response, fallback: string): Promise<T> {
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('json')) {
+    throw new Error(`Réponse non JSON de l’API (HTTP ${response.status}). Vérifie /api/health et le routage Vercel.`);
+  }
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) throw new Error(payload?.error || fallback);
+  if (payload === null) throw new Error('Réponse JSON invalide de l’API.');
+  return payload as T;
+}
+
 function App() {
   const [language, setLanguage] = useState<'fr' | 'ar'>('fr');
   const [token, setToken] = useState('');
@@ -28,10 +39,9 @@ function App() {
       ...init,
       headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...init.headers },
     });
-    if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error || t.failure);
     if (response.status === 204) return undefined as T;
     if (response.headers.get('content-type')?.includes('text/csv')) return await response.blob() as T;
-    return response.json() as Promise<T>;
+    return readJson<T>(response, t.failure);
   }
 
   async function login(event: FormEvent<HTMLFormElement>) {
@@ -40,8 +50,7 @@ function App() {
     const form = new FormData(event.currentTarget);
     try {
       const response = await fetch(`${API}/api/auth/login`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: form.get('email'), password: form.get('password') }) });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || t.failure);
+      const result = await readJson<{ accessToken: string; user: User }>(response, t.failure);
       setToken(result.accessToken);
       setUser(result.user);
     } catch (cause) { setError(cause instanceof Error ? cause.message : t.failure); }

@@ -22,7 +22,7 @@ Le seed est réservé au développement. Il crée le compte de test public `admi
 
 ## Vercel
 
-Importer le dépôt comme projet Vercel avec le root directory à la racine du monorepo. Définir les variables `DATABASE_URL`, `JWT_SECRET` et `CLIENT_ORIGIN` dans les environnements Vercel. Un `VITE_API_BASE` vide utilise le même domaine; le refresh token est aléatoire, opaque et stocké haché.
+Dans Vercel, ouvrir **Project Settings → Build and Deployment** et régler **Root Directory** sur `.` (racine du dépôt), pas `client/`. C’est nécessaire pour que Vercel découvre aussi la fonction `api/index.ts`. Laisser **Output Directory** géré par `vercel.json`. Définir les variables `DATABASE_URL`, `JWT_SECRET` et `CLIENT_ORIGIN` dans les environnements Vercel. Un `VITE_API_BASE` vide utilise le même domaine; le refresh token est aléatoire, opaque et stocké haché.
 
 ```sh
 npx vercel
