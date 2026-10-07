@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "db:migrate": "tsx server/scripts/sql.ts schema",
     "seed": "tsx server/scripts/sql.ts seed",
-    "prepare": "husky"
+    "prepare": "node scripts/prepare.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
