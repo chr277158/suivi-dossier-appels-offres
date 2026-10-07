@@ -41,6 +41,10 @@ Le seed local crée un admin démo. Les rôles supportés par l’API sont `admi
 - `GET /api/dashboard/stats`
 - `GET /api/dossiers`, `GET /api/dossiers/:id`, `GET /api/contracts`
 - `PATCH /api/contracts/:id/tracking`
+- `GET /api/calendar/events`, `GET/POST /api/reminders`
+- `GET /api/planning/annual`, `GET /api/planning/work-schedule`
+- `GET /api/overtime`, `GET /api/leaves`, `GET /api/audit`, `GET /api/users` (admin)
+- `GET/POST /api/clarifications`, `GET/POST /api/notes`
 - `GET /api/health`
 
 Les listes supportent `page`, `pageSize`, `q`, `status`; `export=csv` télécharge un CSV. Les routes métier requièrent un access token Bearer. Le refresh token est un cookie HttpOnly.
@@ -52,7 +56,7 @@ Les listes supportent `page`, `pageSize`, `q`, `status`; `export=csv` téléchar
 - [`docs/crawl-log.json`](docs/crawl-log.json): pages réellement observées et limites d’accès.
 - [`rapport_complet_page_par_page.md`](rapport_complet_page_par_page.md) et [`rapport_relationnel.md`](rapport_relationnel.md): rapports source fournis.
 
-L’instance URL initiale redirige vers une connexion; aucun XHR métier ni page authentifiée n’a été observé. Voir le journal avant de considérer une règle métier comme confirmée.
+Une session APEX a permis de parcourir les principaux modules de navigation. Les XHR/fetch n’ont pas été capturés et le crawl n’est pas exhaustif; voir le journal avant de considérer une règle métier comme confirmée.
 
 ## CI et qualité
 

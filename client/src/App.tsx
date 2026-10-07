@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
-import { Activity, AlertTriangle, ArrowDownToLine, ArrowLeft, BriefcaseBusiness, ChevronRight, CircleUserRound, FileText, Globe2, LayoutDashboard, LogOut, Search, ShieldCheck } from 'lucide-react';
+import { Activity, AlertTriangle, ArrowDownToLine, ArrowLeft, Bell, BriefcaseBusiness, CalendarDays, ChevronRight, CircleUserRound, ClipboardList, FileText, Globe2, History, LayoutDashboard, LogOut, Search, ShieldCheck, Users } from 'lucide-react';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import './modules.css';
 
 type User = { id: number; email: string; fullName: string; role: string };
+type AppView = 'dashboard' | 'tenders' | 'contracts' | 'calendar' | 'reminders' | 'annual' | 'workPlan' | 'overtime' | 'leaves' | 'clarifications' | 'notes' | 'changeLog' | 'users';
 type Row = Record<string, string | number | null>;
 type Stats = { charts: Record<string, { label: string; value: number }[]>; alerts: { overdueCount: number; overdueDossiers: Row[] } };
 type ListResult = { data: Row[]; pagination: { page: number; pageSize: number; total: number; pages: number } };
 const API = import.meta.env.VITE_API_BASE || '';
 const colors = ['#183e38', '#d16c4b', '#d8a83e', '#6b8474', '#8d9f91', '#afc4b2'];
 const labels = {
-  fr: { dashboard: 'Tableau de bord', tenders: 'Appels d’offres', contracts: 'Contrats', signIn: 'Se connecter', email: 'Adresse e-mail', password: 'Mot de passe', connect: 'Ouvrir une session', exit: 'Déconnexion', hello: 'Suivi des dossiers', subtitle: 'Vue de pilotage', alert: 'Échéances dépassées', recent: 'Dossiers en retard', tenderRef: 'Référence', subject: 'Objet', status: 'Statut', deadline: 'Date limite', search: 'Filtrer les résultats', filterStatus: 'Tous les statuts', export: 'Exporter CSV', previous: 'Précédent', next: 'Suivant', tracking: 'Suivi contractuel', save: 'Enregistrer les dates', close: 'Fermer', noRows: 'Aucun résultat', failure: 'Impossible de joindre le serveur' },
-  ar: { dashboard: 'لوحة القيادة', tenders: 'طلبات العروض', contracts: 'العقود', signIn: 'تسجيل الدخول', email: 'البريد الإلكتروني', password: 'كلمة المرور', connect: 'دخول', exit: 'خروج', hello: 'متابعة الملفات', subtitle: 'لوحة المتابعة', alert: 'آجال متجاوزة', recent: 'الملفات المتأخرة', tenderRef: 'المرجع', subject: 'الموضوع', status: 'الحالة', deadline: 'آخر أجل', search: 'بحث في النتائج', filterStatus: 'كل الحالات', export: 'تصدير CSV', previous: 'السابق', next: 'التالي', tracking: 'متابعة العقد', save: 'حفظ التواريخ', close: 'إغلاق', noRows: 'لا توجد نتائج', failure: 'تعذر الاتصال بالخادم' },
+  fr: { dashboard: 'Tableau de bord', tenders: 'Appels d’offres', contracts: 'Contrats', calendar: 'Calendrier', reminders: 'Rappels', annual: 'Plan annuel', workPlan: 'Tableau des travaux', overtime: 'Heures sup.', leaves: 'Congés', clarifications: 'Clarifications', notes: 'Remarques', changeLog: 'Modifications', users: 'Comptes', signIn: 'Se connecter', email: 'Adresse e-mail', password: 'Mot de passe', connect: 'Ouvrir une session', exit: 'Déconnexion', hello: 'Suivi des dossiers', subtitle: 'Vue de pilotage', alert: 'Échéances dépassées', recent: 'Dossiers en retard', tenderRef: 'Référence', subject: 'Objet', status: 'Statut', deadline: 'Date limite', search: 'Filtrer les résultats', filterStatus: 'Tous les statuts', export: 'Exporter CSV', previous: 'Précédent', next: 'Suivant', tracking: 'Suivi contractuel', save: 'Enregistrer les dates', close: 'Fermer', noRows: 'Aucun résultat', failure: 'Impossible de joindre le serveur' },
+  ar: { dashboard: 'لوحة القيادة', tenders: 'طلبات العروض', contracts: 'العقود', calendar: 'التقويم', reminders: 'التذكيرات', annual: 'الخطة السنوية', workPlan: 'جدول الأشغال', overtime: 'الساعات الإضافية', leaves: 'الإجازات', clarifications: 'طلبات التوضيح', notes: 'الملاحظات', changeLog: 'التغييرات', users: 'الحسابات', signIn: 'تسجيل الدخول', email: 'البريد الإلكتروني', password: 'كلمة المرور', connect: 'دخول', exit: 'خروج', hello: 'متابعة الملفات', subtitle: 'لوحة المتابعة', alert: 'آجال متجاوزة', recent: 'الملفات المتأخرة', tenderRef: 'المرجع', subject: 'الموضوع', status: 'الحالة', deadline: 'آخر أجل', search: 'بحث في النتائج', filterStatus: 'كل الحالات', export: 'تصدير CSV', previous: 'السابق', next: 'التالي', tracking: 'متابعة العقد', save: 'حفظ التواريخ', close: 'إغلاق', noRows: 'لا توجد نتائج', failure: 'تعذر الاتصال بالخادم' },
 };
+const viewLabels: Record<AppView, keyof typeof labels.fr> = { dashboard: 'dashboard', tenders: 'tenders', contracts: 'contracts', calendar: 'calendar', reminders: 'reminders', annual: 'annual', workPlan: 'workPlan', overtime: 'overtime', leaves: 'leaves', clarifications: 'clarifications', notes: 'notes', changeLog: 'changeLog', users: 'users' };
 
 async function readJson<T>(response: Response, fallback: string): Promise<T> {
   const contentType = response.headers.get('content-type') || '';
@@ -29,7 +32,7 @@ function App() {
   const [language, setLanguage] = useState<'fr' | 'ar'>('fr');
   const [token, setToken] = useState('');
   const [user, setUser] = useState<User | null>(null);
-  const [view, setView] = useState<'dashboard' | 'tenders' | 'contracts'>('dashboard');
+  const [view, setView] = useState<AppView>('dashboard');
   const [error, setError] = useState('');
   const t = labels[language];
   const rtl = language === 'ar';
@@ -61,6 +64,23 @@ function App() {
     setToken(''); setUser(null);
   }
 
+  const navigation: { id: AppView; icon: React.ReactNode }[] = [
+    { id: 'dashboard', icon: <LayoutDashboard size={18} /> },
+    { id: 'tenders', icon: <FileText size={18} /> },
+    { id: 'contracts', icon: <BriefcaseBusiness size={18} /> },
+    { id: 'calendar', icon: <CalendarDays size={18} /> },
+    { id: 'reminders', icon: <Bell size={18} /> },
+    { id: 'annual', icon: <ClipboardList size={18} /> },
+    { id: 'workPlan', icon: <ClipboardList size={18} /> },
+    { id: 'overtime', icon: <Activity size={18} /> },
+    { id: 'leaves', icon: <CalendarDays size={18} /> },
+    { id: 'clarifications', icon: <FileText size={18} /> },
+    { id: 'notes', icon: <ClipboardList size={18} /> },
+    { id: 'changeLog', icon: <History size={18} /> },
+    ...(user?.role === 'admin' ? [{ id: 'users' as const, icon: <Users size={18} /> }] : []),
+  ];
+  const currentTitle = t[viewLabels[view]];
+
   return <main className="app-shell" dir={rtl ? 'rtl' : 'ltr'}>
     {!user ? <section className="login-screen">
       <div className="login-art"><span className="eyebrow">GCT · PROCUREMENT</span><h1>{t.hello}</h1><p>{t.subtitle}</p><div className="art-mark"><FileText size={84} strokeWidth={1} /></div></div>
@@ -77,22 +97,20 @@ function App() {
         <div className="brand"><div className="brand-mark"><ShieldCheck size={20} /></div><div><b>GCT</b><small>Suivi des dossiers</small></div></div>
         <span className="nav-caption">PILOTAGE</span>
         <nav aria-label="Navigation principale">
-          <NavButton active={view === 'dashboard'} icon={<LayoutDashboard size={18} />} text={t.dashboard} onClick={() => setView('dashboard')} />
-          <NavButton active={view === 'tenders'} icon={<FileText size={18} />} text={t.tenders} onClick={() => setView('tenders')} />
-          <NavButton active={view === 'contracts'} icon={<BriefcaseBusiness size={18} />} text={t.contracts} onClick={() => setView('contracts')} />
+          {navigation.map(({ id, icon }) => <NavButton key={id} active={view === id} icon={icon} text={t[viewLabels[id]]} onClick={() => setView(id)} />)}
         </nav>
         <div className="sidebar-foot"><span className="online-dot" /> Système opérationnel</div>
       </aside>
       <section className="workspace">
-        <header className="topbar"><div className="crumb"><Activity size={16} /> GCT <ChevronRight size={14} /> {view === 'dashboard' ? t.dashboard : view === 'tenders' ? t.tenders : t.contracts}</div><div className="top-actions"><button className="icon-button" title="Changer de langue" aria-label="Changer de langue" onClick={() => setLanguage(rtl ? 'fr' : 'ar')}><Globe2 size={18} /><span>{rtl ? 'FR' : 'AR'}</span></button><div className="user-chip"><CircleUserRound size={18} /><span>{user.fullName}</span></div><button className="icon-button" title={t.exit} aria-label={t.exit} onClick={logout}><LogOut size={17} /></button></div></header>
-        <div className="content-area">{view === 'dashboard' ? <Dashboard api={api} t={t} onOpen={() => setView('tenders')} /> : <DataList key={view} kind={view} api={api} t={t} />}</div>
+        <header className="topbar"><div className="crumb"><Activity size={16} /> GCT <ChevronRight size={14} /> {currentTitle}</div><div className="top-actions"><button className="icon-button" title="Changer de langue" aria-label="Changer de langue" onClick={() => setLanguage(rtl ? 'fr' : 'ar')}><Globe2 size={18} /><span>{rtl ? 'FR' : 'AR'}</span></button><div className="user-chip"><CircleUserRound size={18} /><span>{user.fullName}</span></div><button className="icon-button" title={t.exit} aria-label={t.exit} onClick={logout}><LogOut size={17} /></button></div></header>
+        <div className="content-area">{view === 'dashboard' ? <Dashboard api={api} t={t} onOpen={() => setView('tenders')} /> : view === 'tenders' || view === 'contracts' ? <DataList key={view} kind={view} api={api} t={t} /> : <ModulePage key={view} view={view} title={currentTitle} api={api} t={t} />}</div>
       </section>
     </>}
   </main>;
 }
 
 function NavButton({ active, icon, text, onClick }: { active: boolean; icon: React.ReactNode; text: string; onClick: () => void }) {
-  return <button className={`nav-button ${active ? 'active' : ''}`} onClick={onClick}>{icon}<span>{text}</span>{active && <span className="nav-indicator" />}</button>;
+  return <button className={`nav-button ${active ? 'active' : ''}`} onClick={onClick} aria-label={text} title={text}>{icon}<span>{text}</span>{active && <span className="nav-indicator" />}</button>;
 }
 
 function Dashboard({ api, t, onOpen }: { api: <T>(path: string, init?: RequestInit) => Promise<T>; t: typeof labels.fr; onOpen: () => void }) {
@@ -140,6 +158,85 @@ function DataList({ kind, api, t }: { kind: 'tenders' | 'contracts'; api: <T>(pa
     <div className="table-wrap"><table><thead><tr>{columns.map(([, label]) => <th key={label}>{label}</th>)}{isContracts && <th>Action</th>}</tr></thead><tbody>{data?.data.length ? data.data.map((row) => <tr key={row.id}><>{columns.map(([key]) => <td key={key}>{String(row[key] ?? '—')}</td>)}{isContracts && <td><button className="table-action" onClick={() => setSelected(row)} aria-label={`${t.tracking}: ${row.contract_number}`}><ChevronRight size={17} /></button></td>}</></tr>) : <tr><td colSpan={columns.length + Number(isContracts)} className="empty-state">{data ? t.noRows : 'Chargement…'}</td></tr>}</tbody></table></div>
     <footer className="table-footer"><span>Page {data?.pagination.page ?? page} / {data?.pagination.pages ?? '—'}</span><div><button className="secondary-button small" disabled={page <= 1} onClick={() => setPage(page - 1)}><ArrowLeft size={15} />{t.previous}</button><button className="secondary-button small" disabled={!data || page >= data.pagination.pages} onClick={() => setPage(page + 1)}>{t.next}<ChevronRight size={15} /></button></div></footer>
     {selected && <ContractDialog row={selected} api={api} t={t} onClose={() => setSelected(null)} />}
+  </>;
+}
+
+const moduleTables: Partial<Record<AppView, { endpoint: string; columns: [string, string][] }>> = {
+  calendar: { endpoint: '/calendar/events', columns: [['event_date', 'Date'], ['title', 'Échéance'], ['kind', 'Type']] },
+  reminders: { endpoint: '/reminders', columns: [['title', 'Rappel'], ['details', 'Détail'], ['reminder_at', 'Date'], ['importance', 'Priorité']] },
+  annual: { endpoint: '/planning/annual', columns: [['reference', 'Référence'], ['subject', 'Objet'], ['request_type', 'Type'], ['procedure_type', 'Procédure'], ['estimated_cost', 'Coût estimé'], ['estimated_start_date', 'Début prévu']] },
+  workPlan: { endpoint: '/planning/work-schedule', columns: [['title', 'Intitulé'], ['details', 'Détail'], ['start_date', 'Début'], ['end_date', 'Fin'], ['status', 'État']] },
+  overtime: { endpoint: '/overtime', columns: [['employee_label', 'Utilisateur'], ['work_date', 'Date'], ['start_time', 'Début'], ['end_time', 'Fin'], ['hours', 'Heures'], ['comment', 'Remarque'], ['period', 'Période']] },
+  leaves: { endpoint: '/leaves', columns: [['employee_label', 'Utilisateur'], ['leave_type', 'Type'], ['start_date', 'Début'], ['end_date', 'Fin'], ['requested_days', 'Jours'], ['status', 'État'], ['requested_at', 'Demande']] },
+  clarifications: { endpoint: '/clarifications', columns: [['dossier_reference', 'Dossier'], ['subject', 'Objet'], ['received_at', 'Reçue le'], ['response', 'Réponse'], ['sent_at', 'Envoyée le']] },
+  notes: { endpoint: '/notes', columns: [['dossier_reference', 'Dossier'], ['body', 'Remarque'], ['author', 'Auteur'], ['created_at', 'Créée le']] },
+  changeLog: { endpoint: '/audit', columns: [['entity_name', 'Module'], ['entity_id', 'Référence'], ['action', 'Action'], ['summary', 'Résumé'], ['changed_at', 'Date']] },
+  users: { endpoint: '/users', columns: [['email', 'Compte'], ['full_name', 'Nom'], ['role', 'Rôle'], ['is_active', 'Actif'], ['created_at', 'Créé le']] },
+};
+
+function ModulePage({ view, title, api, t }: { view: AppView; title: string; api: <T>(path: string, init?: RequestInit) => Promise<T>; t: typeof labels.fr }) {
+  const [data, setData] = useState<Row[]>([]);
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [query, setQuery] = useState('');
+  const [error, setError] = useState('');
+  const [showReminderForm, setShowReminderForm] = useState(false);
+  const [showRecordForm, setShowRecordForm] = useState(false);
+  const config = moduleTables[view];
+
+  async function load() {
+    if (!config) return;
+    setError('');
+    try {
+      let suffix = '';
+      if (view === 'calendar') {
+        const start = new Date();
+        start.setDate(1);
+        const end = new Date(start.getFullYear(), start.getMonth() + 1, 0);
+        suffix = `?from=${start.toISOString().slice(0, 10)}&to=${end.toISOString().slice(0, 10)}`;
+      } else if (view === 'annual' || view === 'workPlan') {
+        suffix = `?year=${year}${view === 'annual' && query ? `&q=${encodeURIComponent(query)}` : ''}`;
+      }
+      const result = await api<{ data: Row[] }>(`${config.endpoint}${suffix}`);
+      setData(result.data);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : t.failure); }
+  }
+
+  useEffect(() => { void load(); }, [view, year, query]);
+
+  async function createReminder(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    try {
+      await api('/reminders', { method: 'POST', body: JSON.stringify({ title: form.get('title'), details: form.get('details'), reminderAt: new Date(String(form.get('reminderAt'))).toISOString(), importance: form.get('importance'), leadMinutes: 0 }) });
+      setShowReminderForm(false);
+      await load();
+    } catch (cause) { setError(cause instanceof Error ? cause.message : t.failure); }
+  }
+
+  async function createDossierRecord(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    try {
+      if (view === 'clarifications') {
+        await api('/clarifications', { method: 'POST', body: JSON.stringify({ dossierId: Number(form.get('dossierId')), subject: form.get('subject'), response: form.get('response') }) });
+      } else {
+        await api('/notes', { method: 'POST', body: JSON.stringify({ dossierId: Number(form.get('dossierId')), body: form.get('body') }) });
+      }
+      setShowRecordForm(false);
+      await load();
+    } catch (cause) { setError(cause instanceof Error ? cause.message : t.failure); }
+  }
+
+  return <>
+    <div className="page-heading"><div><span className="eyebrow">SUIVI / MODULE MÉTIER</span><h1>{title}</h1><p>{data.length} élément{data.length === 1 ? '' : 's'}</p></div>
+      {['reminders', 'clarifications', 'notes'].includes(view) && <button className="primary-button" onClick={() => view === 'reminders' ? setShowReminderForm(!showReminderForm) : setShowRecordForm(!showRecordForm)}><Bell size={16} /> {view === 'reminders' ? 'Ajouter un rappel' : view === 'notes' ? 'Ajouter une remarque' : 'Ajouter une demande'}</button>}
+    </div>
+    {(view === 'annual' || view === 'workPlan') && <div className="list-toolbar"><label className="year-filter">Année<input type="number" min="2000" max="2200" value={year} onChange={(event) => setYear(Number(event.target.value))} /></label>{view === 'annual' && <label className="search-field"><Search size={18} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.search} aria-label={t.search} /></label>}</div>}
+    {showReminderForm && <form className="reminder-form" onSubmit={createReminder}><label>Titre<input name="title" required maxLength={160} /></label><label>Détail<textarea name="details" rows={2} /></label><label>Date et heure<input name="reminderAt" type="datetime-local" required /></label><label>Priorité<select name="importance"><option value="normal">Normale</option><option value="high">Haute</option><option value="urgent">Urgente</option><option value="low">Basse</option></select></label><button className="primary-button">Créer</button></form>}
+    {showRecordForm && <form className="reminder-form" onSubmit={createDossierRecord}><label>ID du dossier<input name="dossierId" type="number" min="1" required /></label>{view === 'clarifications' ? <><label>Objet<input name="subject" required maxLength={500} /></label><label>Réponse<textarea name="response" rows={2} /></label></> : <label>Remarque<textarea name="body" rows={3} required maxLength={4000} /></label>}<button className="primary-button">Créer</button></form>}
+    {error && <p className="error-message" role="alert">{error}</p>}
+    {config ? <div className="table-wrap"><table><thead><tr>{config.columns.map(([, label]) => <th key={label}>{label}</th>)}</tr></thead><tbody>{data.length ? data.map((row, index) => <tr key={String(row.id ?? index)}>{config.columns.map(([key]) => <td key={key}>{String(row[key] ?? '—')}</td>)}</tr>) : <tr><td colSpan={config.columns.length} className="empty-state">{t.noRows}</td></tr>}</tbody></table></div> : <p className="empty-state">Cette vue n’est pas encore rattachée à une source de données.</p>}
+    {view === 'calendar' && <div className="module-footnote">Échéances du mois courant · utilisez le menu pour consulter les autres modules.</div>}
   </>;
 }
 

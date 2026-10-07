@@ -87,6 +87,89 @@ CREATE TABLE IF NOT EXISTS dossier_notes (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS user_reminders (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  details TEXT,
+  reminder_at TIMESTAMPTZ NOT NULL,
+  importance TEXT NOT NULL DEFAULT 'normal' CHECK (importance IN ('low', 'normal', 'high', 'urgent')),
+  lead_minutes INTEGER NOT NULL DEFAULT 0 CHECK (lead_minutes >= 0),
+  is_sent BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS user_reminders_due_idx ON user_reminders(user_id, reminder_at);
+
+CREATE TABLE IF NOT EXISTS overtime_entries (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT REFERENCES app_users(id) ON DELETE SET NULL,
+  employee_label TEXT NOT NULL,
+  work_date DATE NOT NULL,
+  start_time TIME,
+  end_time TIME,
+  hours NUMERIC(6, 2) NOT NULL DEFAULT 0 CHECK (hours >= 0),
+  comment TEXT,
+  period TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS overtime_entries_date_idx ON overtime_entries(work_date);
+
+CREATE TABLE IF NOT EXISTS leave_requests (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT REFERENCES app_users(id) ON DELETE SET NULL,
+  employee_label TEXT NOT NULL,
+  leave_type TEXT NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  requested_days NUMERIC(5, 2) NOT NULL CHECK (requested_days > 0),
+  holidays INTEGER NOT NULL DEFAULT 0 CHECK (holidays >= 0),
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'cancelled')),
+  requested_at DATE NOT NULL DEFAULT CURRENT_DATE,
+  CHECK (end_date >= start_date)
+);
+CREATE INDEX IF NOT EXISTS leave_requests_user_idx ON leave_requests(user_id, start_date);
+
+CREATE TABLE IF NOT EXISTS annual_programs (
+  id BIGSERIAL PRIMARY KEY,
+  fiscal_year INTEGER NOT NULL,
+  reference TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  request_type TEXT,
+  committee TEXT,
+  procedure_type TEXT,
+  estimated_cost NUMERIC(14, 3),
+  funding_source TEXT,
+  estimated_duration_days INTEGER CHECK (estimated_duration_days >= 0),
+  estimated_start_date DATE,
+  estimated_announcement_date DATE,
+  estimated_opening_date DATE,
+  UNIQUE (fiscal_year, reference)
+);
+CREATE INDEX IF NOT EXISTS annual_programs_year_idx ON annual_programs(fiscal_year, estimated_start_date);
+
+CREATE TABLE IF NOT EXISTS work_schedule (
+  id BIGSERIAL PRIMARY KEY,
+  fiscal_year INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  details TEXT,
+  start_date DATE,
+  end_date DATE,
+  status TEXT NOT NULL DEFAULT 'planned',
+  CHECK (end_date IS NULL OR start_date IS NULL OR end_date >= start_date)
+);
+CREATE INDEX IF NOT EXISTS work_schedule_year_idx ON work_schedule(fiscal_year, start_date);
+
+CREATE TABLE IF NOT EXISTS audit_events (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT REFERENCES app_users(id) ON DELETE SET NULL,
+  entity_name TEXT NOT NULL,
+  entity_id TEXT,
+  action TEXT NOT NULL,
+  summary TEXT,
+  changed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS audit_events_changed_idx ON audit_events(changed_at DESC);
+
 CREATE OR REPLACE FUNCTION set_updated_at() RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = NOW();

@@ -25,3 +25,28 @@ ON CONFLICT (contract_number) DO NOTHING;
 INSERT INTO contracts (contract_number, subject, holder, amount, currency, state, date_first_legal_document)
 VALUES ('BC-2026-002', 'Réparation du réseau électrique', 'Énergie & Réseaux', 78.900, 'TND', 'pending', '2026-09-25')
 ON CONFLICT (contract_number) DO NOTHING;
+
+INSERT INTO annual_programs (fiscal_year, reference, subject, request_type, committee, procedure_type, estimated_cost, funding_source, estimated_duration_days, estimated_start_date, estimated_announcement_date, estimated_opening_date)
+VALUES
+  (2026, 'PA-2026-001', 'Renouvellement des équipements informatiques', 'Fournitures', 'Commission régionale', 'Appel d''offres', 120.000, 'Budget investissement', 90, '2026-11-01', '2026-11-10', '2026-12-15'),
+  (2026, 'PA-2026-002', 'Maintenance des installations techniques', 'Services', 'Commission interne', 'Consultation', 45.000, 'Budget fonctionnement', 45, '2026-09-01', '2026-09-10', '2026-10-05')
+ON CONFLICT (fiscal_year, reference) DO NOTHING;
+
+INSERT INTO work_schedule (fiscal_year, title, details, start_date, end_date, status)
+SELECT 2026, 'Renouvellement des équipements informatiques', 'Étude et lancement de la procédure', '2026-11-01', '2026-12-15', 'planned'
+WHERE NOT EXISTS (SELECT 1 FROM work_schedule WHERE fiscal_year = 2026 AND title = 'Renouvellement des équipements informatiques');
+
+INSERT INTO user_reminders (user_id, title, details, reminder_at, importance, lead_minutes)
+SELECT id, 'Vérifier les pièces contractuelles', 'Rappel de démonstration', '2026-10-15 09:00:00+01', 'normal', 30
+FROM app_users WHERE email = 'admin@gct.tn'
+AND NOT EXISTS (SELECT 1 FROM user_reminders WHERE title = 'Vérifier les pièces contractuelles' AND user_id = app_users.id);
+
+INSERT INTO overtime_entries (user_id, employee_label, work_date, start_time, end_time, hours, comment, period)
+SELECT id, 'Utilisateur de démonstration', '2026-10-01', '17:00', '19:00', 2, 'Exemple de saisie', '2026-10'
+FROM app_users WHERE email = 'admin@gct.tn'
+AND NOT EXISTS (SELECT 1 FROM overtime_entries WHERE employee_label = 'Utilisateur de démonstration' AND work_date = '2026-10-01');
+
+INSERT INTO leave_requests (user_id, employee_label, leave_type, start_date, end_date, requested_days, holidays, status, requested_at)
+SELECT id, 'Utilisateur de démonstration', 'Congé annuel', '2026-12-21', '2026-12-23', 3, 0, 'pending', '2026-10-01'
+FROM app_users WHERE email = 'admin@gct.tn'
+AND NOT EXISTS (SELECT 1 FROM leave_requests WHERE user_id = app_users.id AND leave_type = 'Congé annuel' AND start_date = '2026-12-21');

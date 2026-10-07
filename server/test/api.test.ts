@@ -26,6 +26,7 @@ describe('API migration baseline', () => {
   let token = '';
 
   beforeAll(async () => {
+    process.env.DATABASE_URL = 'postgresql://unit-test:unit-test@localhost:5432/unit-test';
     process.env.JWT_SECRET = 'unit-test-secret-at-least-32-characters';
     const response = await request(app).post('/api/auth/login').send({ email: demoUser.email, password: 'Admin123!' });
     expect(response.status).toBe(200);
@@ -61,5 +62,40 @@ describe('API migration baseline', () => {
   it('rejects malformed pagination instead of trusting query input', async () => {
     const response = await request(app).get('/api/dossiers?pageSize=1000').set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(400);
+  });
+
+  it('explains when the JWT secret is missing instead of returning an internal error', async () => {
+    const secret = process.env.JWT_SECRET;
+    delete process.env.JWT_SECRET;
+    const response = await request(app).post('/api/auth/login').send({ email: demoUser.email, password: 'Admin123!' });
+    process.env.JWT_SECRET = secret;
+    expect(response.status).toBe(503);
+    expect(response.body.error).toContain('JWT_SECRET');
+  });
+
+  it('serves the annual planning view to authenticated users', async () => {
+    const response = await request(app).get('/api/planning/annual?year=2026').set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(200);
+    expect(response.body.year).toBe(2026);
+    expect(response.body.data).toEqual([]);
+  });
+
+  it('never selects password fields for the account directory', async () => {
+    const response = await request(app).get('/api/users').set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(200);
+    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('SELECT id, email, full_name, role, is_active, created_at'));
+    expect(response.text).not.toContain('password_hash');
+  });
+
+  it('creates a clarification request only through the validated API contract', async () => {
+    const response = await request(app).post('/api/clarifications').set('Authorization', `Bearer ${token}`).send({ dossierId: 1, subject: 'Précision sur le délai' });
+    expect(response.status).toBe(201);
+    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO clarification_requests'), [1, 'Précision sur le délai', null, null, null]);
+  });
+
+  it('creates a dossier remark for the authenticated user', async () => {
+    const response = await request(app).post('/api/notes').set('Authorization', `Bearer ${token}`).send({ dossierId: 1, body: 'Pièce reçue pour examen.' });
+    expect(response.status).toBe(201);
+    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO dossier_notes'), [1, 7, 'Pièce reçue pour examen.']);
   });
 });

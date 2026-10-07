@@ -5,19 +5,87 @@
     "initialPage": 44,
     "sessionParameter": "omitted"
   },
-  "access": "login_required",
+  "access": "authenticated_session_shared",
   "visited": [
     {
-      "url": "http://localhost/ords/r/gct/suivi_des_appels_d_offres177924/login",
-      "title": "Cc - Connexion",
-      "role": "Authentication",
-      "result": "Rendered login form; no credentials supplied",
-      "domSummary": ["Username input", "Password input", "Remember username checkbox", "Login button"],
-      "scriptsAndStyles": "Not exhaustively inspected; authenticated application bundle not accessible",
+      "url": "http://localhost/ords/f?p=105:44",
+      "title": "Tableau de bord des Dossiers",
+      "role": "Dashboard",
+      "regions": ["Appel d'Offres En Cours", "Contrats En Cours", "Tous Les Appel d'Offres", "Tous Les Contrats", "Notes"],
+      "scriptsAndStyles": "APEX page resources not inventoried",
+      "screenshot": null
+    },
+    {
+      "url": "/ords/r/gct/suivi_des_appels_d_offres177924/page-d-accueil",
+      "title": "Page d'accueil",
+      "role": "AO home and cards",
+      "regions": ["Etat - Appels D’Offres En Cours", "Recherche - APPEL D’OFFFRES", "Calendrier", "Créer un Nouveau Appel d'Offres", "APPELS D’OFFFRES en Cours", "Notes"],
+      "actions": ["imprimer classement", "imprimer Progr. de Lancment"],
+      "screenshot": null
+    },
+    {
+      "url": "/ords/r/gct/suivi_des_appels_d_offres177924/calendrier",
+      "title": "Calendrier",
+      "role": "Procurement calendar",
+      "controls": ["Previous", "Next", "Aujourd'hui", "Mois", "Semaine", "Jour", "Planning"],
+      "screenshot": null
+    },
+    {
+      "url": "/ords/r/gct/suivi_des_appels_d_offres177924/etat-appel-d-offfres",
+      "title": "Etat - Des Dossiers",
+      "role": "AO interactive grid",
+      "columns": ["Ref Ao", "Objet Cct", "Budget", "طريقة ابرام الصفقة", "نوعية الطلب", "اللجنة المختصة", "Nature De Depense", "Détail De Réponse", "Date Création", "Date Limite Proposée", "Date Ouverture Des Plis", "Status", "المكلف بالملف"],
+      "controls": ["Row Search", "Saved Reports"],
+      "screenshot": null
+    },
+    {
+      "url": "/ords/r/gct/suivi_des_appels_d_offres177924/gestion-des-rappels",
+      "title": "Gestion des Rappels",
+      "role": "Personal and system reminders",
+      "regions": ["Rappels Personnel", "Note Personnel", "Rappels Générer par le Système", "Notes", "Notes2"],
+      "actions": ["إضافة تذكير", "clean expired reminders"],
+      "screenshot": null
+    },
+    {
+      "url": "/ords/r/gct/suivi_des_appels_d_offres177924/heur-sup",
+      "title": "heur sup",
+      "role": "Overtime grid",
+      "columns": ["Matricule", "Nom", "Date J", "Debut", "Fin", "Nbr H", "Rem", "Periode Rh"],
+      "screenshot": null
+    },
+    {
+      "url": "/ords/r/gct/suivi_des_appels_d_offres177924/mes-cong%C3%A9s",
+      "title": "Mes Congés",
+      "role": "Leave requests grid",
+      "columns": ["Matricule", "Nom Prenom", "Service", "Fonction", "Type Conge", "Nbr Jours", "Nbr Feries", "Date Debut", "Date Fin", "Solde Avant", "Solde Apres", "Date Demande"],
+      "screenshot": null
+    },
+    {
+      "url": "/ords/r/gct/suivi_des_appels_d_offres177924/متابعة-تقدم-جميع-الملفات",
+      "title": "متابعة تقدم جميع الملفات",
+      "role": "All dossiers progress grid",
+      "columns": ["عدد", "طريقة ابرام الصفقة", "نوعية الطلب", "اللجنة المختصة", "تاريخ ورود Cpt ممضاة", "تاريخ تقديم كراسات الشروط للمصادقة", "تاريخ مصادقة اللجنة على كراسات الشروط", "التاريخ للإعلان عن المنافسة", "تاريخ تقديم الملف للجنة الشراءات", "تاريخ قرار لجنة الصفقات", "تاريخ ارجاع الضمانات الوقتية", "المكلف بالملف", "ملخص"],
+      "screenshot": null
+    },
+    {
+      "url": "/ords/r/gct/suivi_des_appels_d_offres177924/قائمة-الصفقات-المبرمجة",
+      "title": "قائمة الصفقات المبرمجة",
+      "role": "Annual procurement plan",
+      "columns": ["estimated start", "estimated result publication", "estimated committee response", "estimated committee submission", "bid opening", "announcement", "specification preparation", "funding source", "estimated cost", "request type", "committee", "procedure", "duration", "subject", "year"],
+      "filters": ["Plan Prévisionnelle pour L'Année", "Row Search"],
+      "screenshot": null
+    },
+    {
+      "url": "/ords/r/gct/suivi_des_appels_d_offres177924/suivi-des-contrats",
+      "title": "suivi des contrats",
+      "role": "Contract tracking grid",
+      "columns": ["Ref Ao", "N Contrat Bc", "Titulaire Du Marché", "Objet", "Montant", "Devise", "Date De Mise Vigueur", "Date Fin Du Marché", "Etat", "Date De La Première Pièce Légale", "Date De La Dernière Pièce Légale", "Date Livraison Juridique", "Date Avis Juridique", "signature dates", "registration dates", "Responsable Dos"],
       "screenshot": null
     }
   ],
   "networkRequests": [],
-  "networkCaptureNote": "No authenticated business page was reachable, so no application XHR/fetch payloads or example responses were observed. Empty array means unavailable, not zero requests in the full application.",
-  "redactions": ["Original session identifier omitted", "No credentials or personal data recorded"]
+  "networkCaptureNote": "Authenticated pages were visited, but XHR/fetch capture and source asset inspection were not performed. Empty array means not captured, not that the application makes no requests.",
+  "coverageNote": "This covers the primary reachable navigation branches, not all 55 business pages or APEX administration pages. The work schedule, modification history, record-detail modals and remaining leaf pages still require traversal.",
+  "screenshotsNote": "Screenshots were not exported as image files; screenshot fields remain null.",
+  "redactions": ["Session and checksum query parameters omitted", "No row values, passwords, names, phone numbers, or personal identifiers recorded"]
 }

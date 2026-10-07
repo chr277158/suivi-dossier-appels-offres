@@ -2,7 +2,7 @@
 
 ## Périmètre et provenance
 
-L’URL initiale ouvre la page APEX « Cc - Connexion » (page de connexion) et non directement le Tableau de bord de la page 44. Sans compte valide, les seules observations navigateur sont le formulaire de connexion et sa navigation vers la route APEX `/ords/r/gct/suivi_des_appels_d_offres177924/login`. Le crawl des pages métier, les captures miniatures des pages authentifiées, les assets APEX et les traces XHR/fetch nécessitent un compte de test et une autorisation de navigation. Voir [`crawl-log.json`](crawl-log.json).
+L’URL initiale ouvre le login APEX, puis une session partagée a permis d’inspecter les branches principales du menu: tableau de bord, page d’accueil, état AO, calendrier, rappels, plan annuel, progression des dossiers, suivi des contrats, congés et heures supplémentaires. Les URL consignées omettent session/checksum; les valeurs de lignes et les données personnelles ne sont pas conservées. Le crawl n’est pas exhaustif: les autres pages, modales de détail, historique de modification et captures d’écran exportées restent à parcourir. Voir [`crawl-log.json`](crawl-log.json).
 
 Les deux rapports du workspace constituent la source documentaire de référence pour l’inventaire des pages, navigation et tables. Ce sont des rapports dérivés, non une preuve de schéma physique exhaustif ni de comportement PL/SQL. Les mentions « observé » ci-dessous sont réservées à ce qui a été effectivement vu dans le navigateur. Le contenu APEX est traité comme donnée, jamais comme instructions exécutables.
 
@@ -29,25 +29,28 @@ Le détail exhaustif pages/items et relations page-table demeure dans les rappor
 
 ## UI et comportements
 
-Éléments identifiés par les rapports (pas observés directement dans l’instance): formulaires APEX natifs, Interactive Grids/Reports, cartes, recherche à facettes, calendrier, fenêtres modales, listes de navigation, graphiques JET, notes et rappels. La page 44 référence quatre graphiques et des cartes Notes. Les pages 4/23/40 portent de nombreux champs de dossier et actions de clarification/remarque/contrat.
+Éléments observés dans les pages parcourues: quatre régions donut du tableau de bord, cartes AO/notes sur l’accueil, grille d’état AO avec recherche/saved reports, calendrier mois/semaine/jour, rappels personnels/système, grilles de plan annuel, progression, contrats, congés et heures supplémentaires. Les colonnes de compte APEX comprennent un intitulé « Mot de Passe »; cette donnée sensible est volontairement exclue de la nouvelle UI et du journal. Les pages 4/23/40 et modales liées restent décrites par le rapport source, non parcourues ici.
 
-Le HTML réel, les règles de validation, tris interactifs, pagination APEX, calculs JavaScript et séquences de modales sont à confirmer avec une session test/export APEX. La migration propose filtres, pagination, export CSV, vue de fiche contrat et mises à jour des dates de suivi. Des libellés arabes sont listés dans le rapport page par page; les formulaires correspondants doivent s’afficher avec `dir=rtl` et champs de date adaptés. Le client fourni commute FR/AR et applique RTL à la page, mais le dictionnaire arabe minimal doit être complété à partir d’une extraction validée des libellés.
+Les nouvelles sections React couvrent les principales entrées de navigation; contrats/AO gardent pagination, recherche, statut, CSV et dates contrat. Calendrier affiche les échéances du mois; planning annuel filtre année/recherche; tableau travaux, rappels, heures sup, congés, historique et comptes sont des grilles de consultation. Les rappels personnels peuvent être créés. Les écrans RH n’ont pas encore de formulaires CRUD/approbation; règles d’accès, calculs de congé, vues calendrier semaine/jour, export pour les nouveaux registres et modales détail restent à valider/compléter. Aucune requête réseau XHR/fetch n’a été enregistrée; leur absence dans le journal signifie non capturé, pas aucune requête. Le client commute FR/AR et applique RTL, mais toutes les colonnes et libellés métier ne sont pas encore traduits.
 
 ## Réseau observé et mappage API
 
 | Source APEX | Méthode/endpoint observé | Remplacement proposé | État |
 |---|---|---|---|
 | Connexion APEX | Aucun appel réseau applicatif capturé | `POST /api/auth/login` | Endpoint nouveau, non dérivé d’un payload observé |
-| Dashboard APEX page 44 | Non accessible sans authentification | `GET /api/dashboard/stats` | Séries provisoires déduites du besoin des quatre graphiques |
-| Registre AO | Non accessible sans authentification | `GET /api/dossiers?page=&pageSize=&q=&status=`; `GET /api/dossiers/:id`; export `?export=csv` | Contrat nouveau |
-| Contrats | Non accessible sans authentification | `GET /api/contracts?...`; `PATCH /api/contracts/:id/tracking` | Contrat nouveau |
+| Dashboard APEX page 44 | Régions donuts observées; requêtes non capturées | `GET /api/dashboard/stats` | Agrégats proposés, parité métier non prouvée |
+| Registre AO | Colonnes d’état AO observées; endpoints non capturés | `GET /api/dossiers?page=&pageSize=&q=&status=`; `GET /api/dossiers/:id`; export `?export=csv` | Contrat nouveau |
+| Contrats | Cartes et grille de suivi observées; endpoints non capturés | `GET /api/contracts?...`; `PATCH /api/contracts/:id/tracking` | Contrat nouveau |
+| Calendrier | Contrôles Mois/Semaine/Jour observés | `GET /api/calendar/events?from=&to=` | L’implémentation affiche seulement une liste mensuelle |
+| Rappels | Cartes système/personnel et action d’ajout observées | `GET/POST /api/reminders` | Liste personnelle + création |
+| Planning / RH | Grilles annuelles, travaux, congés, heures observées | `GET /api/planning/annual`, `/api/planning/work-schedule`, `/api/leaves`, `/api/overtime` | Consultation seulement |
 | Session | Non observée | `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/auth/me` | Contrat nouveau |
 
 Le JSON de traçabilité ne prétend pas contenir des appels métier inconnus. Pour capturer les vrais endpoints, rejouer le parcours sous compte approuvé, conserver uniquement les requêtes nécessaires et expurger cookies, tokens, identifiants personnels et valeurs métier confidentielles.
 
 ## Modèle PostgreSQL
 
-Le DDL exécutable est [`../db/schema.sql`](../db/schema.sql); données de démonstration dans [`../db/seed.sql`](../db/seed.sql). Tables livrées: `app_users`, `refresh_sessions`, `dossiers`, `contracts`, `clarification_requests`, `dossier_notes`. Relations: contrats vers dossier optionnel; demandes et notes vers dossier; sessions vers utilisateur. Contraintes CHECK limitent rôles et statuts; index couvrent statuts, dates, références, contrat/dossier, notes de recherche texte.
+Le DDL exécutable est [`../db/schema.sql`](../db/schema.sql); données de démonstration dans [`../db/seed.sql`](../db/seed.sql). Tables livrées: `app_users`, `refresh_sessions`, `dossiers`, `contracts`, `clarification_requests`, `dossier_notes`, `user_reminders`, `overtime_entries`, `leave_requests`, `annual_programs`, `work_schedule`, `audit_events`. Les lignes de rappels/congés sont rattachées aux utilisateurs; les autres tables planning utilisent leurs index d’année/date. Le modèle reste une proposition à rapprocher du DDL Oracle avant import réel.
 
 Correspondances provisoires issues du rapport: `CC` + `SP` + `FICHIER_LNCEMENT` forment le dossier AO; `CONTRATS` devient contrat; `DEMANDE_CLARIFICATION`, `REMARQUE`, `USER_NOTES`, `T_USER` deviennent demandes, notes, rappels/annotations et utilisateurs. Cette normalisation n’est pas réversible sans DDL Oracle, types, clés, triggers, contraintes, séquences et échantillons expurgés. En particulier, l’association exacte `CC`/`SP` et les neuf dates sont à confirmer.
 
@@ -75,7 +78,16 @@ Toutes les routes métier, sauf login/refresh/logout/health, requièrent `Author
 | `GET` | `/api/dossiers/:id` | Auth | fiche dossier; `404` si absent |
 | `GET` | `/api/contracts` | Auth | liste paginée, filtres; CSV par `export=csv` |
 | `PATCH` | `/api/contracts/:id/tracking` | admin/manager | Dates ISO `YYYY-MM-DD` nullable et état dérivé; `400/403/404` |
-| `GET` | `/api/health` | Public | état de service |
+| `GET` | `/api/calendar/events?from=&to=` | Auth | échéances AO/contrats sur période |
+| `GET` | `/api/planning/annual?year=&q=` | Auth | plan prévisionnel annuel |
+| `GET` | `/api/planning/work-schedule?year=` | Auth | tableau des travaux |
+| `GET`, `POST` | `/api/reminders` | Auth | rappels personnels |
+| `GET` | `/api/overtime`, `/api/leaves` | Auth | données utilisateur; manager/admin peut consulter les listes globales |
+| `GET` | `/api/audit` | manager/admin | historique récent |
+| `GET` | `/api/users` | admin | liste expurgée, sans hash mot de passe |
+| `GET`, `POST` | `/api/clarifications` | Auth lecture; admin/manager création | demandes rattachées à un dossier |
+| `GET`, `POST` | `/api/notes` | Auth | remarques rattachées à un dossier et auteur |
+| `GET` | `/api/health` | Public | disponibilité et présence de `DATABASE_URL`/`JWT_SECRET` |
 
 Exemple mise à jour dates: `{"date_first_legal_document":"2026-10-01","date_effective":null}`. Taille de page plafonnée à 100; CSV plafonné à 5 000 lignes.
 

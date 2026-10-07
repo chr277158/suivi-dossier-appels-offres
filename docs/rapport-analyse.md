@@ -4,11 +4,12 @@
 
 L’application cible « Suivi Des Dossiers v2.3 » est décrite dans les rapports comme une app Oracle APEX comportant 55 pages métier et des pages d’administration, avec des modules AO/dossiers, contrats, clarifications, remarques, rappels, congés et tableaux de bord. La demande de migration ne vise toutefois que le socle moderne: connexion, tableau de bord, listes AO/contrats et mise à jour du suivi contractuel.
 
-La navigation fournie mentionne page 44 comme tableau de bord et quatre régions graphiques (« Appel d’Offres En Cours », « Contrats En Cours », « Tous Les Appel d’Offres », « Tous Les Contrats »), ainsi que des Notes. La session locale sans authentification redirige vers la page login. Aucun détail DOM métier, aucune capture authentifiée, aucun appel réseau d’API et aucune formule APEX ne sont donc comparables à ce stade.
+La session APEX partagée a permis d’observer le tableau de bord (quatre donuts et Notes), l’accueil (état AO, recherche, calendrier, création et cartes), la grille d’état AO, le calendrier mois/semaine/jour, les rappels, plusieurs grilles de planning et contrats, les heures sup et les congés. Les noms de colonnes et régions sont consignés dans `docs/crawl-log.json`; aucune ligne métier nominative n’y figure. Les requêtes réseau XHR/fetch et captures images n’ont pas été exportées, et toutes les 55 pages n’ont pas été parcourues.
 
 ## Différences de l’implémentation minimale
 
-- APEX fournit formulaires/grilles/reporting, calendriers, notes, rappels, clarification, congés et administration; la première version React ne couvre que dashboard, listes AO/contrats, login et dates contrat.
+- APEX fournit formulaires/grilles/reporting, calendriers, notes, rappels, clarification, congés et administration; React couvre désormais les principales rubriques du menu: dashboard, AO, contrats, calendrier, rappels, planning annuel/travaux, congés, heures sup, historique et annuaire expurgé.
+- Les vues planning/RH/historique sont actuellement des grilles de consultation; validation/approbation RH, CRUD avancé, détails modaux et toutes les pages secondaires restent à implémenter.
 - Les agrégats livrés sont inférés et leurs catégories doivent être comparées aux quatre séries réelles de la page 44. Le troisième graphique compte des dossiers par nature de dépense, il ne totalise pas les montants.
 - Le bandeau définit les retards par date limite antérieure à aujourd’hui et statut actif; le vrai calcul APEX reste inconnu.
 - Les statuts et la dérivation d’état contrat sont des hypothèses documentées. Une règle d’infructuosité n’a pas été codée faute de règle source vérifiée.
