@@ -1,0 +1,23 @@
+{
+  "source": {
+    "host": "localhost",
+    "path": "/ords/f",
+    "initialPage": 44,
+    "sessionParameter": "omitted"
+  },
+  "access": "login_required",
+  "visited": [
+    {
+      "url": "http://localhost/ords/r/gct/suivi_des_appels_d_offres177924/login",
+      "title": "Cc - Connexion",
+      "role": "Authentication",
+      "result": "Rendered login form; no credentials supplied",
+      "domSummary": ["Username input", "Password input", "Remember username checkbox", "Login button"],
+      "scriptsAndStyles": "Not exhaustively inspected; authenticated application bundle not accessible",
+      "screenshot": null
+    }
+  ],
+  "networkRequests": [],
+  "networkCaptureNote": "No authenticated business page was reachable, so no application XHR/fetch payloads or example responses were observed. Empty array means unavailable, not zero requests in the full application.",
+  "redactions": ["Original session identifier omitted", "No credentials or personal data recorded"]
+}
