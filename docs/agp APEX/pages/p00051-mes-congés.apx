@@ -1,0 +1,718 @@
+page 51 (
+    name: Mes Congés
+    alias: MES-CONGÉS
+    title: Mes Congés
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region chemin-de-navigation (
+        name: Chemin de navigation
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region mes-congés (
+        name: Mes Congés
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            tableName: T_CONGE
+            whereClause: matricule = :P0_MAT
+        }
+        layout {
+            sequence: 23
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+        toolbar {
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                resetButton
+                saveButton
+            ]
+        }
+        download {
+            formats: [
+                csv
+                html
+                excel
+                pdf
+            ]
+        }
+        advanced {
+            savedReportMappingIdentifier: 36547473549195625
+        }
+
+        savedReport primary (
+            visibility: primary
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+            flashback {
+                minutesAgo: 5
+            }
+
+            displayColumn (
+                column: @CONGE_ID
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @MATRICULE
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @NOM_PRENOM
+                layout {
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @SERVICE
+                layout {
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @FONCTION
+                layout {
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @TYPE_CONGE
+                layout {
+                    sequence: 7
+                }
+            )
+
+            displayColumn (
+                column: @NBR_JOURS
+                layout {
+                    sequence: 8
+                }
+            )
+
+            displayColumn (
+                column: @NBR_FERIES
+                layout {
+                    sequence: 9
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DEBUT
+                layout {
+                    sequence: 10
+                }
+            )
+
+            displayColumn (
+                column: @DATE_FIN
+                layout {
+                    sequence: 11
+                }
+            )
+
+            displayColumn (
+                column: @SOLDE_AVANT
+                layout {
+                    sequence: 12
+                }
+            )
+
+            displayColumn (
+                column: @SOLDE_APRES
+                layout {
+                    sequence: 13
+                }
+            )
+
+            displayColumn (
+                column: @ADRESSE_CONGE
+                layout {
+                    sequence: 14
+                }
+            )
+
+            displayColumn (
+                column: @TELEPHONE
+                layout {
+                    sequence: 15
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DEMANDE
+                layout {
+                    sequence: 16
+                }
+            )
+
+            displayColumn (
+                column: @STATUT
+                layout {
+                    show: false
+                    sequence: 17
+                }
+            )
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    frozen: true
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @Impression
+                layout {
+                    sequence: 18
+                }
+            )
+
+        )
+
+        column ADRESSE_CONGE (
+            type: textField
+            heading {
+                heading: Adresse Conge
+            }
+            layout {
+                sequence: 150
+            }
+            validation {
+                maxLength: 200
+            }
+            source {
+                databaseColumn: ADRESSE_CONGE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 20
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 10
+            }
+        )
+
+        column CONGE_ID (
+            type: hidden
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: CONGE_ID
+                dataType: number
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_DEBUT (
+            type: datePicker
+            heading {
+                heading: Date Debut
+            }
+            layout {
+                sequence: 110
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: DATE_DEBUT
+                dataType: date
+            }
+        )
+
+        column DATE_DEMANDE (
+            type: datePicker
+            heading {
+                heading: Date Demande
+            }
+            layout {
+                sequence: 170
+            }
+            source {
+                databaseColumn: DATE_DEMANDE
+                dataType: date
+            }
+        )
+
+        column DATE_FIN (
+            type: datePicker
+            heading {
+                heading: Date Fin
+            }
+            layout {
+                sequence: 120
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: DATE_FIN
+                dataType: date
+            }
+        )
+
+        column FONCTION (
+            type: textField
+            heading {
+                heading: Fonction
+            }
+            layout {
+                sequence: 70
+            }
+            validation {
+                maxLength: 100
+            }
+            source {
+                databaseColumn: FONCTION
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column Impression (
+            type: link
+            heading {
+                alignment: center
+            }
+            layout {
+                sequence: 190
+                columnAlignment: center
+            }
+            link {
+                target: {
+                    page: 54
+                    items: {
+                        P54_CONGE_ID: &CONGE_ID.
+                    }
+                }
+                linkText: 🖨️ طباعة
+            }
+            source {
+                type: none
+            }
+        )
+
+        column MATRICULE (
+            type: textField
+            heading {
+                heading: Matricule
+            }
+            layout {
+                sequence: 40
+            }
+            validation {
+                valueRequired: true
+                maxLength: 20
+            }
+            source {
+                databaseColumn: MATRICULE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column NBR_FERIES (
+            type: numberField
+            heading {
+                heading: Nbr Feries
+                alignment: end
+            }
+            layout {
+                sequence: 100
+                columnAlignment: end
+            }
+            source {
+                databaseColumn: NBR_FERIES
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column NBR_JOURS (
+            type: numberField
+            heading {
+                heading: Nbr Jours
+                alignment: end
+            }
+            layout {
+                sequence: 90
+                columnAlignment: end
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: NBR_JOURS
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column NOM_PRENOM (
+            type: textField
+            heading {
+                heading: Nom Prenom
+            }
+            layout {
+                sequence: 50
+            }
+            validation {
+                valueRequired: true
+                maxLength: 100
+            }
+            source {
+                databaseColumn: NOM_PRENOM
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column SERVICE (
+            type: textField
+            heading {
+                heading: Service
+            }
+            layout {
+                sequence: 60
+            }
+            validation {
+                maxLength: 100
+            }
+            source {
+                databaseColumn: SERVICE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column SOLDE_APRES (
+            type: numberField
+            heading {
+                heading: Solde Apres
+                alignment: end
+            }
+            layout {
+                sequence: 140
+                columnAlignment: end
+            }
+            source {
+                databaseColumn: SOLDE_APRES
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column SOLDE_AVANT (
+            type: numberField
+            heading {
+                heading: Solde Avant
+                alignment: end
+            }
+            layout {
+                sequence: 130
+                columnAlignment: end
+            }
+            source {
+                databaseColumn: SOLDE_AVANT
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column STATUT (
+            type: textField
+            heading {
+                heading: Statut
+            }
+            layout {
+                sequence: 180
+            }
+            validation {
+                maxLength: 20
+            }
+            source {
+                databaseColumn: STATUT
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column TELEPHONE (
+            type: textField
+            heading {
+                heading: Telephone
+            }
+            layout {
+                sequence: 160
+            }
+            validation {
+                maxLength: 20
+            }
+            source {
+                databaseColumn: TELEPHONE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column TYPE_CONGE (
+            type: textField
+            heading {
+                heading: Type Conge
+            }
+            layout {
+                sequence: 80
+            }
+            validation {
+                valueRequired: true
+                maxLength: 30
+            }
+            source {
+                databaseColumn: TYPE_CONGE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        page {
+            size: a4
+            units: millimeters
+            width: 297
+            height: 210
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+    )
+
+    region nouveau (
+        name: Nouveau
+        type: staticContent
+        layout {
+            sequence: 13
+            slot: body
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+        accessibility {
+            landmarkType: region
+        }
+    )
+
+    region nouveau-2 (
+        name: Nouveau
+        type: staticContent
+        layout {
+            sequence: 10
+            parentRegion: @nouveau
+            slot: subRegions
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    button nouveau (
+        buttonName: Nouveau
+        label: Nouveau congé
+        layout {
+            sequence: 10
+            region: @nouveau-2
+            slot: regionBody
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 47
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction nouveau (
+        name: Nouveau
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @nouveau
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @mes-congés
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process mes-congés-enregistrer-les-données-de-grille-interactive (
+        name: Mes Congés - Enregistrer les données de grille interactive
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @mes-congés
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 36549357763195644
+        }
+    )
+
+)
+

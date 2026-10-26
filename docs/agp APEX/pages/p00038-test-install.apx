@@ -1,0 +1,240 @@
+page 38 (
+    name: test install
+    alias: TEST-INSTALL
+    title: test install
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region new (
+        name: New
+        type: staticContent
+        layout {
+            sequence: 60
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region nouveau (
+        name: Nouveau
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: APEX_APPL_ACL_USERS
+        }
+        layout {
+            sequence: 70
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+
+        column APPLICATION_ID (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Application Id
+                alignment: end
+            }
+            layout {
+                sequence: 50
+                columnAlignment: end
+            }
+        )
+
+        column APPLICATION_NAME (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Application Name
+            }
+            layout {
+                sequence: 60
+            }
+        )
+
+        column ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Id
+                alignment: end
+            }
+            layout {
+                sequence: 90
+                columnAlignment: end
+            }
+        )
+
+        column ROLE_IDS (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: Role Ids
+            }
+            layout {
+                sequence: 110
+            }
+        )
+
+        column ROLE_NAMES (
+            reportColumnQueryId: 11
+            derivedColumn: N
+            heading {
+                heading: Role Names
+            }
+            layout {
+                sequence: 120
+            }
+        )
+
+        column USER_NAME (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: User Name
+            }
+            layout {
+                sequence: 80
+            }
+        )
+
+        column USER_NAME_LC (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: User Name Lc
+            }
+            layout {
+                sequence: 100
+            }
+        )
+
+        column WORKING_COPY_NAME (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Working Copy Name
+            }
+            layout {
+                sequence: 70
+            }
+        )
+
+        column WORKSPACE (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Workspace
+            }
+            layout {
+                sequence: 30
+            }
+        )
+
+        column WORKSPACE_DISPLAY_NAME (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Workspace Display Name
+            }
+            layout {
+                sequence: 40
+            }
+        )
+
+        column WORKSPACE_ID (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Workspace Id
+                alignment: end
+            }
+            layout {
+                sequence: 20
+                columnAlignment: end
+            }
+        )
+
+    )
+
+    button new (
+        buttonName: New
+        label: New
+        layout {
+            sequence: 10
+            region: @new
+            slot: regionBody
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 47
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+)
+

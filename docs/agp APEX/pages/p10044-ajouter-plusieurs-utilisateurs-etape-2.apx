@@ -1,0 +1,464 @@
+page 10044 (
+    name: Ajouter plusieurs utilisateurs - Etape 2
+    alias: AJOUTER-PLUSIEURS-UTILISATEURS-ETAPE-2
+    title: Ajouter plusieurs utilisateurs
+    pageGroup: @affecte
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    css {
+        inline:
+            ```css
+            .a-ListView-item .fa {
+              color: var(--ut-component-text-muted-color);
+            }
+            
+            .a-ListView-item .u-success-text {
+              color: var(--ut-palette-success) !important;
+            }
+            ```
+    }
+    security {
+        authorizationScheme: @droits-d-administration
+        deepLinking: false
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    config {
+        buildOption: @fonctionnalité-contrôle-d-accès
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region conteneur-d-assistant (
+        name: Conteneur d'assistant
+        type: staticContent
+        layout {
+            sequence: 40
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+        }
+    )
+
+    region eléments-masqués (
+        name: Eléments masqués
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region exceptions (
+        name: Exceptions
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select c001 username, c002 reason
+                  from apex_collections
+                 where collection_name = 'ACL_BULK_USER_INVALID'
+                order by 1
+                ```
+        }
+        layout {
+            sequence: 60
+            parentRegion: @conteneur-d-assistant
+            slot: regionBody
+        }
+        appearance {
+            template: @/collapsible
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                is-collapsed
+                t-Region--noUI
+                t-Region--scrollBody
+            ]
+        }
+        serverSideCondition {
+            type: rowsReturned
+            sqlQuery:
+                ```sql
+                select 1
+                  from apex_collections
+                 where collection_name = 'ACL_BULK_USER_INVALID'
+                ```
+        }
+        reportLayout {
+            numberOfRows: 10000
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                t-Report--stretch
+                t-Report--staticRowColors
+                t-Report--rowHighlightOff
+            ]
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: aucune donnée n'a été trouvée
+        }
+
+        column REASON (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Raison
+            }
+            layout {
+                sequence: 2
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column USERNAME (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Nom utilisateur
+            }
+            layout {
+                sequence: 1
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region il-existe-des-utilisateurs-valides-infos-sur-la-page (
+        name: Il existe des utilisateurs valides - Infos sur la page
+        type: plSqlDynamicContent
+        source {
+            plsqlCode:
+                ```plsql
+                sys.htp.prn('<p>');
+                sys.htp.prn(apex_lang.message (
+                                'APEX.FEATURE.ACL.BULK_USER.CREATE_CONFIRM',
+                                apex_escape.html(:P10044_VALID_COUNT),
+                                apex_escape.html(:P10044_ROLE)));
+                sys.htp.prn('</p>');
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                margin-bottom-sm
+            ]
+        }
+        serverSideCondition {
+            type: rowsReturned
+            sqlQuery:
+                ```sql
+                select 1
+                  from apex_collections
+                 where collection_name = 'ACL_BULK_USER_VALID'
+                ```
+        }
+    )
+
+    region il-n-existe-aucun-utilisateur-valide-infos-sur-la-page (
+        name: Il n'existe aucun utilisateur valide - Infos sur la page
+        type: staticContent
+        source {
+            htmlCode: <p>Aucun nouvel utilisateur valide trouvé</p>
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                margin-bottom-sm
+            ]
+        }
+        serverSideCondition {
+            type: noRowsReturned
+            sqlQuery:
+                ```sql
+                select 1
+                  from apex_collections
+                 where collection_name = 'ACL_BULK_USER_VALID'
+                ```
+        }
+    )
+
+    region p10044-valid-count-utilisateurs-à-ajouter (
+        name: &P10044_VALID_COUNT. utilisateurs à ajouter
+        type: listView
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select distinct c001 username
+                  from apex_collections
+                 where collection_name = 'ACL_BULK_USER_VALID'
+                order by 1
+                ```
+        }
+        layout {
+            sequence: 50
+            parentRegion: @conteneur-d-assistant
+            slot: regionBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        serverSideCondition {
+            type: rowsReturned
+            sqlQuery:
+                ```sql
+                select 1
+                  from apex_collections
+                 where collection_name = 'ACL_BULK_USER_VALID'
+                ```
+        }
+        settings {
+            features: advancedFormatting
+            textFormatting: <span class="fa fa-check-circle u-success-text" aria-hidden="true"></span> <span style="line-height:36px;text-transform:lowercase;">&USERNAME!HTML.</span>
+        }
+        reportLayout {
+            numberOfRows: 10000
+        }
+    )
+
+    pageItem P10044_INVALID_COUNT (
+        type: hidden
+        layout {
+            sequence: 30
+            region: @eléments-masqués
+            slot: regionBody
+        }
+        source {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                select count(*)
+                  from apex_collections
+                 where collection_name = 'ACL_BULK_USER_VALID'
+                ```
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    pageItem P10044_ROLE (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @eléments-masqués
+            slot: regionBody
+        }
+        source {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                select LISTAGG( role_name, ', ')
+                         WITHIN GROUP (ORDER BY role_name) role_name
+                from APEX_APPL_ACL_ROLES
+                where application_id = :APP_ID
+                and instr(:P10043_ROLE, role_id, 1) > 0
+                ```
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    pageItem P10044_VALID_COUNT (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @eléments-masqués
+            slot: regionBody
+        }
+        source {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                select count(*)
+                  from apex_collections
+                 where collection_name = 'ACL_BULK_USER_VALID'
+                ```
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: previous
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+            executeValidations: false
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button previous (
+        buttonName: PREVIOUS
+        label: Précédent
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: previous
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-chevron-left
+        }
+        behavior {
+            action: redirectUrl
+            targetUrl: javascript:history.back();
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button submit (
+        buttonName: SUBMIT
+        label: Ajouter des utilisateurs
+        layout {
+            sequence: 20
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+        serverSideCondition {
+            type: rowsReturned
+            sqlQuery:
+                ```sql
+                select 1
+                  from apex_collections
+                 where collection_name = 'ACL_BULK_USER_VALID'
+                ```
+        }
+    )
+
+    process ajouter-des-utilisateurs-à-la-liste-de-contrôle-d-accès (
+        name: Ajouter des utilisateurs à la liste de contrôle d'accès
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                declare
+                    l_user_role_ids apex_application_global.vc_arr2;
+                begin
+                    for c in (  select distinct c001 as username, c003 as user_roles
+                                from   apex_collections
+                                where  collection_name = 'ACL_BULK_USER_VALID' )
+                    loop
+                         l_user_role_ids := apex_util.string_to_table(c.user_roles);
+                         for i in 1..l_user_role_ids.count loop
+                             apex_acl.add_user_role(p_application_id => :APP_ID, p_user_name => c.username, p_role_id => l_user_role_ids(i));
+                         end loop;
+                    end loop;
+                
+                    apex_collection.delete_collection('ACL_BULK_USER_INVALID');
+                    apex_collection.delete_collection('ACL_BULK_USER_VALID');
+                    :P10043_PRELIM_USERS := null;
+                end;
+                ```
+        }
+        execution {
+            sequence: 10
+        }
+        successMessage {
+            successMessage: Utilisateurs ajoutés.
+        }
+        advanced {
+            executionMappingIdentifier: 61391681565289275497
+        }
+        serverSideCondition {
+            whenButtonPressed: @submit
+        }
+    )
+
+    process fermer-la-boîte-de-dialogue (
+        name: Fermer la boîte de dialogue
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 61391681951361275498
+        }
+    )
+
+)
+

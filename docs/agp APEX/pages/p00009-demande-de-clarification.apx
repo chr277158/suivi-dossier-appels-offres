@@ -1,0 +1,314 @@
+page 9 (
+    name: "Demande de clarification "
+    alias: DEMANDE-DE-CLARIFICATION
+    title: "Demande de clarification "
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region test (
+        name: TEST
+        type: interactiveReport
+        source {
+            location: localDatabase
+            tableName: DEMANDE_CLARIFICATION
+            whereClause: REF_AE=:P9_REF
+        }
+        layout {
+            sequence: 20
+            slot: contentBody
+            columnSpan: 12
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        performance {
+            maxRowsToProcess: 1000000
+        }
+        searchBar {
+            rowsPerPageSelector: true
+        }
+        actionsMenu {
+            rowsPerPage: false
+            savePublicReport: true
+        }
+        advanced {
+            savedReportMappingIdentifier: 20016594904776720
+        }
+
+        column EFFECTUER (
+            type: hidden
+            heading {
+                heading: Effectuer
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column EFFECTUÉ_LE (
+            type: plainText
+            heading {
+                heading: Reçu Le
+            }
+            layout {
+                sequence: 40
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column ENVOYER (
+            type: hidden
+            heading {
+                heading: Envoyer
+            }
+            layout {
+                sequence: 50
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column ENVOYÉ_LE (
+            type: plainText
+            heading {
+                heading: Rependu Le
+            }
+            layout {
+                sequence: 60
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column ID_AVIS (
+            type: hidden
+            heading {
+                heading: Id Avis
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                primaryKey: true
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column REF_AE (
+            type: plainText
+            heading {
+                heading: Ref Ae
+            }
+            layout {
+                sequence: 20
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column REMARQUES (
+            type: plainText
+            heading {
+                heading: Remarques
+            }
+            layout {
+                sequence: 70
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        page {
+            size: a4
+            units: millimeters
+            width: 297
+            height: 210
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport 201094 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn EFFECTUER (
+                sequence: 3
+            )
+
+            displayColumn EFFECTUÉ_LE (
+                sequence: 4
+            )
+
+            displayColumn ENVOYER (
+                sequence: 5
+            )
+
+            displayColumn ENVOYÉ_LE (
+                sequence: 6
+            )
+
+            displayColumn ID_AVIS (
+                sequence: 1
+            )
+
+            displayColumn REF_AE (
+                sequence: 2
+            )
+
+            displayColumn REMARQUES (
+                sequence: 7
+            )
+
+        )
+
+    )
+
+    pageItem P9_REF (
+        type: hidden
+        layout {
+            sequence: 60
+            slot: contentBody
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction new (
+        name: New
+        execution {
+            sequence: 20
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @test
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @test
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process fermer-la-boîte-de-dialogue (
+        name: Fermer la boîte de dialogue
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 16600763465772128
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+)
+

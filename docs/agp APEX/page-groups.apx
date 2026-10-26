@@ -1,0 +1,12 @@
+pageGroup administration (
+    name: Administration
+)
+
+pageGroup affecte (
+    name: affecte
+)
+
+pageGroup user-settings (
+    name: User Settings
+)
+

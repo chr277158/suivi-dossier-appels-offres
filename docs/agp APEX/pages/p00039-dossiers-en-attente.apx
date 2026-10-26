@@ -1,0 +1,156 @@
+page 39 (
+    name: Dossiers En Attente
+    alias: DOSSIERS-EN-ATTENTE
+    title: "Dossiers En Attente d'affectation de commande "
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region chemin-de-navigation (
+        name: Chemin de navigation
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region dossiers-en-attente (
+        name: Dossiers En Attente
+        type: cards
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                SELECT
+                    cc.id,
+                    cc.ref_ao,
+                    cc.objet_cct,
+                    cc.budget,
+                    cc."DÉTAIL_DE_RÉPONSE",
+                    cc.nature_de_depense,
+                    cc."DATE_LIMITE_PROPOSÉE",
+                    cc.date_de_lanc,
+                    cc.pv_cct,
+                    cc.programme_ouverture_de_plis,
+                    cc.jours_rest,
+                    cc.date_ouverture_des_plis,
+                    cc.status,
+                    cc.creer_par,
+                    cc."DATE_CRÉATION",
+                    cc.programme_de_lancement
+                FROM cc
+                WHERE cc.status = 5
+                
+                  AND NOT EXISTS (
+                        SELECT 1
+                        FROM contrats ct
+                        WHERE ct.id_cc = cc.id
+                  );
+                
+                ```
+        }
+        layout {
+            sequence: 30
+            slot: body
+        }
+        appearance {
+            template: @/cards-container
+            templateOptions: [
+                #DEFAULT#
+                t-CardsRegion--hideHeader js-addHiddenHeadingRoleDesc
+                t-CardsRegion--styleB
+            ]
+        }
+        componentAppearance {
+            layout: horizontal
+        }
+        card {
+            primaryKeyColumn1: ID
+        }
+        title {
+            column: REF_AO
+        }
+        subtitle {
+            column: BUDGET
+        }
+        body {
+            column: OBJET_CCT
+        }
+
+        action action (
+            label: Insérer les données
+            layout {
+                sequence: 10
+            }
+            behavior {
+                target: {
+                    page: 45
+                    items: {
+                        P45_ID_CC: &ID.
+                        P45_REF_AO: &REF_AO.
+                    }
+                    clearCache: 45
+                    action: clearRegions
+                }
+            }
+            appearance {
+                hot: true
+            }
+        )
+
+    )
+
+    dynamicAction dialog-close (
+        name: dialog_close
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosecanceldialog
+            selectionType: region
+            region: @dossiers-en-attente
+        }
+
+        action native-refresh (
+            action: refresh
+            settings {
+                maintainPagination: true
+            }
+            affectedElements {
+                selectionType: region
+                region: @dossiers-en-attente
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

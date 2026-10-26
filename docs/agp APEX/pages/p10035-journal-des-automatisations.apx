@@ -1,0 +1,325 @@
+page 10035 (
+    name: Journal des automatisations
+    alias: JOURNAL-DES-AUTOMATISATIONS
+    title: Journal des automatisations
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authorizationScheme: @droits-d-administration
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>Cette page fournit un état interactif du journal des automatisations.</p>
+            <p>Consultez les informations consignées à propos des exécutions d'automatisation précédentes : le journal contient les horodatages de début et de fin ainsi que les détails relatifs aux lignes traitées (sans et avec erreurs). Effectuez une analyse descendante jusqu'à Messages pour obtenir les messages individuels des lignes traitées.</p>
+            
+            ```
+    }
+    config {
+        buildOption: @fonctionnalité-génération-d-états-d-activité
+    }
+
+    region journal-des-automatisations (
+        name: Journal des automatisations
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select l.id,
+                       l.start_timestamp,
+                       a.name automation_name,
+                       l.status,
+                       l.successful_row_count,
+                       l.error_row_count,
+                       (select count(1) from apex_automation_msg_log m where m.automation_log_id = l.id) msg_count,
+                       l.is_job,
+                       l.end_timestamp
+                  from apex_appl_automations a, apex_automation_log l
+                 where a.automation_id = l.automation_id
+                 and l.application_id = :APP_ID
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: Aucune donnée n'a été trouvée.
+            whenMoreDataFound: Le nombre maximal de lignes pour cet état est de #MAX_ROW_COUNT# lignes. Appliquez un filtre pour réduire le nombre d'enregistrements dans votre requête.
+        }
+        searchBar {
+            rowsPerPageSelector: true
+        }
+        actionsMenu {
+            rowsPerPage: false
+            savePublicReport: true
+        }
+        advanced {
+            savedReportMappingIdentifier: 48201991083840053430
+        }
+
+        column AUTOMATION_NAME (
+            type: plainText
+            heading {
+                heading: Automatisation
+            }
+            layout {
+                sequence: 3
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column END_TIMESTAMP (
+            type: plainText
+            heading {
+                heading: Terminé
+            }
+            layout {
+                sequence: 9
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column ERROR_ROW_COUNT (
+            type: plainText
+            heading {
+                heading: Lignes d'erreur
+                alignment: end
+            }
+            layout {
+                sequence: 6
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 1
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column IS_JOB (
+            type: plainText
+            heading {
+                heading: Programmé
+            }
+            layout {
+                sequence: 8
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column MSG_COUNT (
+            type: link
+            heading {
+                heading: Message
+                alignment: end
+            }
+            layout {
+                sequence: 7
+                columnAlignment: end
+            }
+            link {
+                target: {
+                    page: 10036
+                    items: {
+                        P10036_LOG_ID: #ID#
+                    }
+                    clearCache: 10036
+                    action: resetPagination
+                }
+                linkText: #MSG_COUNT#
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column START_TIMESTAMP (
+            type: plainText
+            heading {
+                heading: Démarré
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column STATUS (
+            type: plainText
+            heading {
+                heading: Statut
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column SUCCESSFUL_ROW_COUNT (
+            type: plainText
+            heading {
+                heading: Lignes de réussite
+                alignment: end
+            }
+            layout {
+                sequence: 5
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Journal des automatisations
+        }
+
+        savedReport 482019981 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn AUTOMATION_NAME (
+                sequence: 2
+            )
+
+            displayColumn ERROR_ROW_COUNT (
+                sequence: 5
+            )
+
+            displayColumn MSG_COUNT (
+                sequence: 6
+            )
+
+            displayColumn START_TIMESTAMP (
+                sequence: 1
+            )
+
+            displayColumn STATUS (
+                sequence: 3
+            )
+
+            displayColumn SUCCESSFUL_ROW_COUNT (
+                sequence: 4
+            )
+
+            sort (
+                column: START_TIMESTAMP
+                sort {
+                    direction: desc
+                    sequence: 1
+                }
+            )
+
+        )
+
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Réinitialiser
+        layout {
+            sequence: 20
+            region: @journal-des-automatisations
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: t-Button--iconLeft
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+)
+

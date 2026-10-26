@@ -1,0 +1,1539 @@
+page 6 (
+    name: creer_nouveau
+    alias: CREER-NOUVEAU
+    title: إنشاء صفقة جديدة
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        fileUrls: #APP_FILES#jquery.maskedinput.min.js
+        executeWhenPageLoads:
+            ```javascript-browser
+            $("#P6_REF_AO").mask("A*.##.#.####");
+            //$("#P6_BUDGET").mask("## ### ###,###")
+            // Dans "Execute when Page Loads"
+            /*new AutoNumeric('#P6_BUDGET', {
+                digitGroupSeparator: ' ',
+                decimalCharacter: ',',
+                decimalPlaces: 3
+            });*/
+            ```
+    }
+    security {
+        authorizationScheme: @droits-de-lecteur
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region cc (
+        name: Cc
+        type: form
+        source {
+            location: localDatabase
+            tableName: CC
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: add
+        }
+        editAuthorization {
+            add: @droits-de-lecteur
+        }
+    )
+
+    region info-principales (
+        name: "Info Principales "
+        type: staticContent
+        layout {
+            sequence: 20
+            parentRegion: @cc
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        accessibility {
+            useLandmark: false
+        }
+        settings {
+            expandShortcuts: true
+        }
+    )
+
+    region n (
+        name: "N "
+        type: form
+        source {
+            location: localDatabase
+            tableName: FICHIER_LNCEMENT
+        }
+        layout {
+            sequence: 60
+            slot: contentBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--removeHeader js-removeLandmark
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    region تحيين-المعطيات (
+        name: " تحيين المعطيات"
+        title: " "
+        type: form
+        source {
+            location: localDatabase
+            tableName: SP
+        }
+        layout {
+            sequence: 20
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: add
+        }
+        editAuthorization {
+            add: @droits-de-lecteur
+        }
+    )
+
+    pageItem P6_AVIS_DE_PRESSE (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 90
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: AVIS_DE_PRESSE
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: N
+        }
+    )
+
+    pageItem P6_BUDGET (
+        type: numberField
+        label {
+            label: التكلفة التقديرية
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            formatMask: 999G999G999G999D999
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 50
+        }
+        source {
+            formRegion: @cc
+            column: BUDGET
+            dataType: varchar2
+        }
+    )
+
+    pageItem P6_CC_POUR_LANCEMENT (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 50
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: CC_POUR_LANCEMENT
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: N
+        }
+    )
+
+    pageItem P6_CREER_PAR (
+        type: hidden
+        layout {
+            sequence: 60
+            region: @cc
+            slot: regionBody
+        }
+        source {
+            formRegion: @cc
+            column: CREER_PAR
+            dataType: varchar2
+        }
+        default {
+            type: item
+            item: P0_USER
+        }
+    )
+
+    pageItem P6_CRITERES_EVALUATION (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 70
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: CRITERES_EVALUATION
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: N
+        }
+    )
+
+    pageItem P6_DATE_AVIS (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 100
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: DATE_AVIS
+            dataType: date
+        }
+    )
+
+    pageItem P6_DATE_CC (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 60
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: DATE_CC
+            dataType: date
+        }
+    )
+
+    pageItem P6_DATE_CR (
+        type: hidden
+        layout {
+            sequence: 70
+            region: @cc
+            slot: regionBody
+        }
+        appearance {
+            formatMask: DD-MON-YYYY HH24:MI
+        }
+        source {
+            formRegion: @cc
+            column: DATE_CRÉATION
+            dataType: date
+        }
+        default {
+            type: sqlQuerySingleValue
+            sqlQuerySingleValue:
+                ```sql
+                SELECT TO_CHAR
+                    (SYSDATE, 'DD-MON-YYYY HH24:MI') "NOW"
+                     FROM DUAL;
+                ```
+        }
+    )
+
+    pageItem P6_DATE_CRITERES (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 80
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: DATE_CRITERES
+            dataType: date
+        }
+    )
+
+    pageItem P6_DATE_DESIGNATION (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 120
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: DATE_DESIGNATION
+            dataType: date
+        }
+    )
+
+    pageItem P6_DATE_MAIL (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 160
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: DATE_MAIL
+            dataType: date
+        }
+    )
+
+    pageItem P6_DATE_NOTE_OP (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 200
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: DATE_NOTE_OP
+            dataType: date
+        }
+    )
+
+    pageItem P6_DATE_PROGRAM_LANC (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 140
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: DATE_PROGRAM_LANC
+            dataType: date
+        }
+    )
+
+    pageItem P6_DATE_PROGRAM_OUVERTURE (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 180
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: DATE_PROGRAM_OUVERTURE
+            dataType: date
+        }
+    )
+
+    pageItem P6_DATE_PROPOSITION (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 40
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: DATE_PROPOSITION
+            dataType: date
+        }
+    )
+
+    pageItem P6_DATE_RECEP_PV_CCT (
+        type: hidden
+        layout {
+            sequence: 110
+            region: @info-principales
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ورود_CPT_ممضاة
+            dataType: date
+        }
+        default {
+            type: sqlQuerySingleValue
+            sqlQuerySingleValue:
+                ```sql
+                SELECT TO_CHAR
+                    (SYSDATE, 'DD-MON-YYYY HH24:MI') "NOW"
+                     FROM DUAL;
+                ```
+        }
+    )
+
+    pageItem P6_DESIGNATION_DE_LA_COMMISSION (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 110
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: DESIGNATION_DE_LA_COMMISSION
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: N
+        }
+    )
+
+    pageItem P6_DÉTAIL_DE_RÉPONSE (
+        type: textField
+        label {
+            label: "	الفترة المحددة لتسليم العروض"
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 5
+        }
+        source {
+            formRegion: @cc
+            column: DÉTAIL_DE_RÉPONSE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P6_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @info-principales
+            slot: regionBody
+        }
+        source {
+            formRegion: @cc
+            column: ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P6_ID_1 (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: ID
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P6_ID_2 (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: ID
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P6_ID_CC (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 20
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: ID_CC
+            dataType: number
+        }
+    )
+
+    pageItem P6_MAIL_PRESTATAIRE (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 150
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: MAIL_PRESTATAIRE
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: N
+        }
+    )
+
+    pageItem P6_NATURE_DE_DEPENSE (
+        type: selectList
+        label {
+            label: Nature De Depense
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: "STATIC:Exploitation;Exploitation,Investissement ;Investissement "
+        }
+        layout {
+            sequence: 70
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            column: 1
+            columnSpan: 3
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @cc
+            column: NATURE_DE_DEPENSE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P6_NOTE_OUVERTURE_PLIS (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 190
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: NOTE_OUVERTURE_PLIS
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: N
+        }
+    )
+
+    pageItem P6_OBJET_CCT (
+        type: textarea
+        label {
+            label: Titre
+            alignment: left
+        }
+        settings {
+            autoHeight: true
+        }
+        layout {
+            sequence: 60
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+            height: 5
+        }
+        validation {
+            valueRequired: true
+            maxLength: 500
+        }
+        source {
+            formRegion: @cc
+            column: OBJET_CCT
+            dataType: varchar2
+        }
+    )
+
+    pageItem P6_PROGRAMME_OUVERTURE_DE_PLIS (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 170
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: PROGRAMME_OUVERTURE_DE_PLIS
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: N
+        }
+    )
+
+    pageItem P6_PROGRAM_LANC (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 130
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: PROGRAM_LANC
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: N
+        }
+    )
+
+    pageItem P6_PROPOSITION_COMMISSION (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 30
+            region: @n
+            slot: regionBody
+        }
+        source {
+            formRegion: @n
+            column: PROPOSITION_COMMISSION
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: N
+        }
+    )
+
+    pageItem P6_PV_CCT (
+        type: hidden
+        layout {
+            sequence: 110
+            region: @cc
+            slot: regionBody
+        }
+        source {
+            formRegion: @cc
+            column: PV_CCT
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: Y
+        }
+    )
+
+    pageItem P6_REF_AO (
+        type: textField
+        label {
+            label: رقم الصفقة
+            alignment: left
+        }
+        settings {
+            textCase: upper
+        }
+        layout {
+            sequence: 10
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            columnSpan: 4
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 50
+        }
+        source {
+            formRegion: @cc
+            column: REF_AO
+            dataType: varchar2
+        }
+        help {
+            helpText: format par défaut est AE.XX.x.XXXX X:est un chiffre
+        }
+    )
+
+    pageItem P6_STATUS (
+        type: hidden
+        layout {
+            sequence: 180
+            region: @info-principales
+            slot: regionBody
+        }
+        source {
+            formRegion: @cc
+            column: STATUS
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: 1
+        }
+        help {
+            inlineHelpText: "الرجاء إدخال حالة الملف "
+            helpText: المفروض أول مرحلة تكون (en cours)
+        }
+    )
+
+    pageItem P6_التاريخ__للإعلان_عن_المنافسة (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 100
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: التاريخ__للإعلان_عن_المنافسة
+            dataType: date
+        }
+    )
+
+    pageItem P6_اللجنة_المختصة (
+        type: selectList
+        label {
+            label: اللجنة المختصة
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:CRA;CRA,CAE;CAE,CME;CME,CSM;CSM
+        }
+        layout {
+            sequence: 100
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 3
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: اللجنة_المختصة
+            dataType: varchar2
+        }
+    )
+
+    pageItem P6_المكلف_بالملف (
+        type: selectOne
+        label {
+            label: المكلف بالملف
+            alignment: left
+        }
+        settings {
+            infiniteScroll: false
+        }
+        lov {
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select T_USER.NOM as NOM,
+                T_USER.NOM as N
+                 from T_USER 
+                 where T_USER.GROUPE = 'user'
+                ```
+        }
+        layout {
+            sequence: 120
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            column: 5
+            columnSpan: 4
+            columnAttributes: "background-color":"rgb37
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: المكلف_بالملف
+            dataType: varchar2
+        }
+    )
+
+    pageItem P6_تاريخ__لجنة_الصفقات (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 140
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ__لجنة_الصفقات
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_ارجاع_الضمانات_الوقتية (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 180
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ارجاع_الضمانات_الوقتية
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 80
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_ارسال_التقرير_للتقييم_الفني (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 110
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ارسال_التقرير_للتقييم_الفني
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 30
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_امضاء_تقرير_تقييم_العروض (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 120
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_امضاء_تقرير_تقييم_العروض
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_تبليغ_الصفقة (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 170
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_تبليغ_الصفقة
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_تقديم_الملف_للجنة_الشراءات (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 130
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_تقديم_الملف_للجنة_الشراءات
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_تقديم_كراسات_الشروط_للمصادقة (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 50
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_تقديم_كراسات_الشروط_للمصادقة
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_قرار__لجنة_الصفقات (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 150
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_قرار__لجنة_الصفقات
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_مصادقة_اللجنة_على_كراسات_الشروط (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 60
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_مصادقة_اللجنة_على_كراسات_الشروط
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_نشر_نتائج_المنافسة (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 160
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_نشر_نتائج_المنافسة
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 40
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 70
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط
+            dataType: date
+        }
+    )
+
+    pageItem P6_تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2 (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 90
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2
+            dataType: date
+        }
+    )
+
+    pageItem P6_طريقة_ابرام_الصفقة (
+        type: selectList
+        label {
+            label: طريقة ابرام الصفقة
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:استشارة مفتوحة;استشارة مفتوحة,استشارة مضيقة;استشارة مضيقة,طلب عروض مفتوح;طلب عروض مفتوح,استشارة بالتفاوض المباشر;استشارة بالتفاوض المباشر
+        }
+        layout {
+            sequence: 80
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 3
+            columnAttributes: 90
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: طريقة_ابرام_الصفقة
+            dataType: varchar2
+        }
+    )
+
+    pageItem P6_عدد (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 20
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: عدد
+            dataType: varchar2
+        }
+    )
+
+    pageItem P6_نوعية_الطلب (
+        type: selectList
+        label {
+            label: نوعية الطلب
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:Service;Service,Etude;Etude
+        }
+        layout {
+            sequence: 90
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 3
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: نوعية_الطلب
+            dataType: varchar2
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Créer
+        layout {
+            sequence: 40
+            region: @boutons
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+        }
+        behavior {
+            databaseAction: insert
+        }
+    )
+
+    dynamicAction date-picker (
+        name: date picker
+        execution {
+            sequence: 20
+        }
+        when {
+            selectionType: items
+            items: P6_DATE_DE_LANC
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: jsExpression
+                jsExpression: $v(P6_DATE_OUVERTURE_DES_PLIS)
+            }
+            affectedElements {
+                selectionType: items
+                items: P6_JOURS_REST
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction new (
+        name: New_2
+        execution {
+            sequence: 40
+        }
+        when {
+            event: apexbeforepagesubmit
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                value: &P6_REF_AO
+            }
+            affectedElements {
+                selectionType: items
+                items: P6_عدد
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+        action native-set-value-2 (
+            action: setValue
+            settings {
+                value: &P6_ID.
+            }
+            affectedElements {
+                selectionType: items
+                items: P6_ID_CC
+            }
+            execution {
+                sequence: 30
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process fermer-la-boîte-de-dialogue (
+        name: Fermer la boîte de dialogue
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 40
+        }
+        advanced {
+            executionMappingIdentifier: 67000794118669012177
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+    process initialiser-le-panneau-cc (
+        name: Initialiser le panneau Cc
+        type: formInitialization
+        formRegion: @cc
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 67000673187177012159
+        }
+    )
+
+    process initialize-form-creer-nouveau (
+        name: Initialize form creer_nouveau
+        type: formInitialization
+        formRegion: @n
+        execution {
+            sequence: 20
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 18611573136055408
+        }
+    )
+
+    process process-form-fichier-lncement (
+        name: Process form FICHIER_LNCEMENT
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                INSERT INTO FICHIER_LNCEMENT (
+                   
+                       ID_CC,
+                       PROPOSITION_COMMISSION,
+                       CC_POUR_LANCEMENT,
+                       CRITERES_EVALUATION,
+                       AVIS_DE_PRESSE,
+                      DESIGNATION_DE_LA_COMMISSION,
+                         MAIL_PRESTATAIRE,
+                      PROGRAMME_OUVERTURE_DE_PLIS,
+                      NOTE_OUVERTURE_PLIS,
+                      CAUTION_P
+                     )
+                VALUES (
+                    :P6_ID,
+                    'N',
+                    'N',
+                    'N',
+                    'N',
+                    'N',
+                    'N',
+                    'N',
+                    'N',
+                    'N'
+                );
+                
+                ```
+        }
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 18613742203055430
+        }
+    )
+
+    process process-form-تحيين-المعطيات (
+        name: Process form تحيين المعطيات
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                INSERT INTO SP (
+                    ID,
+                    عدد,
+                
+                    طريقة_ابرام_الصفقة,
+                    نوعية_الطلب,
+                    اللجنة_المختصة,
+                    تاريخ_ورود_CPT_ممضاة,
+                    تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم,
+                    تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم,
+                    تاريخ_تقديم_كراسات_الشروط_للمصادقة,
+                    تاريخ_مصادقة_اللجنة_على_كراسات_الشروط,
+                    تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط,
+                    تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر,
+                    تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2,
+                    تاريخ_ارسال_التقرير_للتقييم_الفني,
+                    تاريخ_امضاء_تقرير_تقييم_العروض,
+                    تاريخ_تقديم_الملف_للجنة_الشراءات,
+                    تاريخ__لجنة_الصفقات,
+                    تاريخ_قرار__لجنة_الصفقات,
+                    تاريخ_نشر_نتائج_المنافسة,
+                    تاريخ_تبليغ_الصفقة,
+                    تاريخ_ارجاع_الضمانات_الوقتية,
+                    المكلف_بالملف
+                )
+                VALUES (
+                    :P6_ID,
+                    :P6_REF_AO,
+                
+                    v('P6_طريقة_ابرام_الصفقة'),
+                 
+                    v('P6_نوعية_الطلب'),
+                    v('P6_اللجنة_المختصة'),
+                    v('P6_تاريخ_ورود_CPT_ممضاة'),
+                    v('P6_تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم'),
+                    v('P6_تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم'),
+                    v('P6_تاريخ_تقديم_كراسات_الشروط_للمصادقة'),
+                    v('P6_تاريخ_مصادقة_اللجنة_على_كراسات_الشروط'),
+                    v('P6_تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط'),
+                    v('P6_تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر'),
+                    v('P6_تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2'),
+                    v('P6_تاريخ_ارسال_التقرير_للتقييم_الفني'),
+                    v('P6_تاريخ_امضاء_تقرير_تقييم_العروض'),
+                    v('P6_تاريخ_تقديم_الملف_للجنة_الشراءات'),
+                    v('P6_تاريخ__لجنة_الصفقات'),
+                    v('P6_تاريخ_قرار__لجنة_الصفقات'),
+                    v('P6_تاريخ_نشر_نتائج_المنافسة'),
+                    v('P6_تاريخ_تبليغ_الصفقة'),
+                    v('P6_تاريخ_ارجاع_الضمانات_الوقتية'),
+                    v('P6_المكلف_بالملف')
+                );
+                
+                ```
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 13804370177892842
+        }
+    )
+
+    process traiter-le-panneau-cc (
+        name: Traiter le panneau Cc
+        type: formAutoRowProcessing
+        formRegion: @cc
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 67000673535419012159
+        }
+    )
+
+)
+

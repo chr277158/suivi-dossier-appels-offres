@@ -1,0 +1,275 @@
+page 17 (
+    name: Edit_Avis
+    alias: EDIT-AVIS
+    title: Edit_Avis
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region edit-avis (
+        name: Edit_Avis
+        type: form
+        source {
+            location: localDatabase
+            tableName: REMARQUE
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    pageItem P17_ID_CC (
+        type: numberField
+        label {
+            label: Id Cc
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @edit-avis
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @edit-avis
+            column: ID_CC
+            dataType: number
+        }
+    )
+
+    pageItem P17_ID_REM (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @edit-avis
+            slot: regionBody
+        }
+        source {
+            formRegion: @edit-avis
+            column: ID_REM
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P17_REF_DOS (
+        type: textField
+        label {
+            label: Ref Dos
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @edit-avis
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            maxLength: 50
+        }
+        source {
+            formRegion: @edit-avis
+            column: REF_DOS
+            dataType: varchar2
+        }
+    )
+
+    pageItem P17_REMARQUE (
+        type: textarea
+        label {
+            label: Remarque
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @edit-avis
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 5
+        }
+        validation {
+            maxLength: 500
+        }
+        source {
+            formRegion: @edit-avis
+            column: REMARQUE
+            dataType: varchar2
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Create
+        layout {
+            sequence: 40
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P17_ID_REM
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Apply Changes
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P17_ID_REM
+        }
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 44678885632614627505
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+    process initialize-form-edit-avis (
+        name: Initialize form Edit_Avis
+        type: formInitialization
+        formRegion: @edit-avis
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 44678884885913627504
+        }
+    )
+
+    process process-form-edit-avis (
+        name: Process form Edit_Avis
+        type: formAutoRowProcessing
+        formRegion: @edit-avis
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 44678885294930627505
+        }
+    )
+
+)
+

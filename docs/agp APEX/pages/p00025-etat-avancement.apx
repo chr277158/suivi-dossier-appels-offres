@@ -1,0 +1,1486 @@
+page 25 (
+    name: etat avancement
+    alias: ETAT-AVANCEMENT
+    title: "etat avancement "
+    appearance {
+        pageTemplate: @/left-side-column
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    css {
+        inline:
+            ```css
+            /* Scroll Results Only in Side Column */
+            .t-Body-side {
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            .search-results {
+                flex: 1;
+                overflow: auto;
+            }
+            /* Format Search Region */
+            .search-region {
+                border-bottom: 1px solid rgba(0,0,0,.1);
+                flex-shrink: 0;
+            }
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+    }
+    advanced {
+        enableDuplicatePageSubmissions: false
+        reloadOnSubmit: always
+    }
+
+    region aucun-enregistrement-sélectionné (
+        name: Aucun enregistrement sélectionné
+        type: staticContent
+        source {
+            htmlCode: Aucun enregistrement sélectionné
+        }
+        layout {
+            sequence: 60
+            slot: body
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P25_ID
+        }
+    )
+
+    region cc (
+        name: Cc
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: TABLE_TOTAL
+            whereClause: "ID" = :P25_ID
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+            cssClasses: [
+                js-master-region
+                js-detail-region
+            ]
+            renderComponents: belowContent
+        }
+        headerAndFooter {
+            headerText: &REF_AO.
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P25_ID
+        }
+        componentAppearance {
+            template: @/value-attribute-pairs-column
+            templateOptions: [
+                #DEFAULT#
+                t-AVPList--hideNulls
+                t-AVPList--leftAligned
+            ]
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: "لم يتم تحديد أي ملف لحد الآن الرجاء إختيار ملف لإضهار التفاصيل "
+        }
+        componentAdvanced {
+            stripHtml: true
+            sortNulls: first
+        }
+
+        column BUDGET (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Budget
+            }
+            layout {
+                sequence: 42
+            }
+            serverSideCondition {
+                type: rowsReturned
+                sqlQuery:
+                    ```sql
+                    select 1 from "CC"
+                    where "BUDGET" is not null
+                    and "ID" = :P25_ID
+                    ```
+            }
+        )
+
+        column DATE_DE_LANC (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Date De Lancement
+            }
+            layout {
+                sequence: 92
+            }
+            sorting {
+                sortable: false
+            }
+            serverSideCondition {
+                type: rowsReturned
+                sqlQuery:
+                    ```sql
+                    select 1 from "CC"
+                    where "DATE_DE_LANC" is not null
+                    and "ID" = :P25_ID
+                    ```
+            }
+        )
+
+        column DATE_LIMITE_PROPOSÉE (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Date Limite
+                alignment: end
+            }
+            layout {
+                sequence: 82
+            }
+            sorting {
+                sortable: false
+            }
+            serverSideCondition {
+                type: rowsReturned
+                sqlQuery:
+                    ```sql
+                    select 1 from "CC"
+                    where "DATE_LIMITE_PROPOSÉE" is not null
+                    and "ID" = :P25_ID
+                    ```
+            }
+        )
+
+        column DÉTAIL_DE_RÉPONSE (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: "آجال "
+            }
+            layout {
+                sequence: 52
+            }
+            serverSideCondition {
+                type: rowsReturned
+                sqlQuery:
+                    ```sql
+                    select 1 from "CC"
+                    where "DÉTAIL_DE_RÉPONSE" is not null
+                    and "ID" = :P25_ID
+                    ```
+            }
+        )
+
+        column ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 1
+            }
+            serverSideCondition {
+                type: rowsReturned
+                sqlQuery:
+                    ```sql
+                    select 1 from "CC"
+                    where "ID" is not null
+                    and "ID" = :P25_ID
+                    ```
+            }
+        )
+
+        column NATURE_DE_DEPENSE (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Nature De Depense
+                alignment: end
+            }
+            layout {
+                sequence: 72
+            }
+            sorting {
+                sortable: false
+            }
+            serverSideCondition {
+                type: rowsReturned
+                sqlQuery:
+                    ```sql
+                    select 1 from "CC"
+                    where "NATURE_DE_DEPENSE" is not null
+                    and "ID" = :P25_ID
+                    ```
+            }
+        )
+
+        column OBJET_CCT (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Objet Cct
+            }
+            layout {
+                sequence: 22
+            }
+            serverSideCondition {
+                type: rowsReturned
+                sqlQuery:
+                    ```sql
+                    select 1 from "CC"
+                    where "OBJET_CCT" is not null
+                    and "ID" = :P25_ID
+                    ```
+            }
+        )
+
+        column PV_CCT (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 102
+            }
+            serverSideCondition {
+                type: rowsReturned
+                sqlQuery:
+                    ```sql
+                    select 1 from "CC"
+                    where "PV_CCT" is not null
+                    and "ID" = :P25_ID
+                    ```
+            }
+        )
+
+        column REF_AO (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 2
+            }
+            serverSideCondition {
+                type: rowsReturned
+                sqlQuery:
+                    ```sql
+                    select 1 from "CC"
+                    where "REF_AO" is not null
+                    and "ID" = :P25_ID
+                    ```
+            }
+        )
+
+        column التاريخ__للإعلان_عن_المنافسة (
+            reportColumnQueryId: 22
+            derivedColumn: N
+            heading {
+                heading: التاريخ للإعلان عن المنافسة
+                alignment: end
+            }
+            layout {
+                sequence: 322
+                columnAlignment: end
+            }
+        )
+
+        column اللجنة_المختصة (
+            reportColumnQueryId: 13
+            derivedColumn: N
+            heading {
+                heading: اللجنة المختصة
+                alignment: end
+            }
+            layout {
+                sequence: 232
+                columnAlignment: end
+            }
+        )
+
+        column المكلف_بالملف (
+            reportColumnQueryId: 31
+            derivedColumn: N
+            heading {
+                heading: المكلف بالملف
+            }
+            layout {
+                sequence: 412
+            }
+        )
+
+        column تاريخ__لجنة_الصفقات (
+            reportColumnQueryId: 26
+            derivedColumn: N
+            heading {
+                heading: تاريخ لجنة الصفقات
+                alignment: end
+            }
+            layout {
+                sequence: 362
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ارجاع_الضمانات_الوقتية (
+            reportColumnQueryId: 30
+            derivedColumn: N
+            heading {
+                heading: تاريخ ارجاع الضمانات الوقتية
+                alignment: end
+            }
+            layout {
+                sequence: 402
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر (
+            reportColumnQueryId: 20
+            derivedColumn: N
+            heading {
+                heading: تاريخ ارجاع كراسات الشروط حسب المحضر
+            }
+            layout {
+                sequence: 442
+            }
+        )
+
+        column تاريخ_ارسال_التقرير_للتقييم_الفني (
+            reportColumnQueryId: 23
+            derivedColumn: N
+            heading {
+                heading: تاريخ ارسال التقرير للتقييم الفني
+                alignment: end
+            }
+            layout {
+                sequence: 332
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم (
+            reportColumnQueryId: 15
+            derivedColumn: N
+            heading {
+                heading: تاريخ ارسال مقترح تركيبة لجنة التقييم
+                alignment: end
+            }
+            layout {
+                sequence: 252
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_امضاء_تقرير_تقييم_العروض (
+            reportColumnQueryId: 24
+            derivedColumn: N
+            heading {
+                heading: تاريخ امضاء تقرير تقييم العروض
+            }
+            layout {
+                sequence: 462
+            }
+        )
+
+        column تاريخ_تبليغ_الصفقة (
+            reportColumnQueryId: 29
+            derivedColumn: N
+            heading {
+                heading: تاريخ تبليغ الصفقة
+                alignment: end
+            }
+            layout {
+                sequence: 392
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_تقديم_الملف_للجنة_الشراءات (
+            reportColumnQueryId: 25
+            derivedColumn: N
+            heading {
+                heading: تاريخ تقديم الملف للجنة الشراءات
+            }
+            layout {
+                sequence: 472
+            }
+        )
+
+        column تاريخ_تقديم_كراسات_الشروط_للمصادقة (
+            reportColumnQueryId: 17
+            derivedColumn: N
+            heading {
+                heading: تاريخ تقديم كراسات الشروط للمصادقة
+                alignment: end
+            }
+            layout {
+                sequence: 272
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_قرار__لجنة_الصفقات (
+            reportColumnQueryId: 27
+            derivedColumn: N
+            heading {
+                heading: تاريخ قرار لجنة الصفقات
+                alignment: end
+            }
+            layout {
+                sequence: 372
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_مصادقة_اللجنة_على_كراسات_الشروط (
+            reportColumnQueryId: 18
+            derivedColumn: N
+            heading {
+                heading: تاريخ مصادقة اللجنة على كراسات الشروط
+                alignment: end
+            }
+            layout {
+                sequence: 282
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_نشر_نتائج_المنافسة (
+            reportColumnQueryId: 28
+            derivedColumn: N
+            heading {
+                heading: تاريخ نشر نتائج المنافسة
+                alignment: end
+            }
+            layout {
+                sequence: 382
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ورود_CPT_ممضاة (
+            reportColumnQueryId: 14
+            derivedColumn: N
+            heading {
+                heading: تاريخ ورود Cpt ممضاة
+                alignment: end
+            }
+            layout {
+                sequence: 242
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم (
+            reportColumnQueryId: 16
+            derivedColumn: N
+            heading {
+                heading: تاريخ ورود تعيين تركيبة لجنة التقييم
+            }
+            layout {
+                sequence: 432
+            }
+        )
+
+        column تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط (
+            reportColumnQueryId: 19
+            derivedColumn: N
+            heading {
+                heading: تاريخ ورود محضر مصادقة اللجنة على كراسات الشروط
+                alignment: end
+            }
+            layout {
+                sequence: 292
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2 (
+            reportColumnQueryId: 21
+            derivedColumn: N
+            heading {
+                heading: تاريخ ورود محضر مصادقة اللجنة على كراسات الشروط2
+            }
+            layout {
+                sequence: 452
+            }
+        )
+
+        column طريقة_ابرام_الصفقة (
+            reportColumnQueryId: 11
+            derivedColumn: N
+            heading {
+                heading: طريقة ابرام الصفقة
+                alignment: end
+            }
+            layout {
+                sequence: 212
+                columnAlignment: end
+            }
+        )
+
+        column عدد (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: عدد
+            }
+            layout {
+                sequence: 422
+            }
+        )
+
+        column نوعية_الطلب (
+            reportColumnQueryId: 12
+            derivedColumn: N
+            heading {
+                heading: نوعية الطلب
+                alignment: end
+            }
+            layout {
+                sequence: 222
+                columnAlignment: end
+            }
+        )
+
+    )
+
+    region demandes-de-renseignements (
+        name: Demandes de renseignements
+        title: Demandes de renseignements
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: DEMANDE_CLARIFICATION
+            includeRowidColumn: true
+            whereClause: "REF_AE" = :P25_REF
+        }
+        layout {
+            sequence: 30
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+            cssClasses: js-detail-region
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P25_ID
+        }
+        reportLayout {
+            numberOfRows: 10
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                t-Report--stretch
+                #DEFAULT#
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+                t-Report--inline
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+            partialPageRefresh: false
+        }
+        performance {
+            maxRowsToProcess: 5000
+        }
+        messages {
+            whenNoDataFound: Aucune donnée n'a été trouvée.
+        }
+        componentAdvanced {
+            stripHtml: true
+        }
+
+        column EFFECTUER (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 4
+            }
+        )
+
+        column EFFECTUÉ_LE (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Effectué Le
+            }
+            layout {
+                sequence: 5
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ENVOYER (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 6
+            }
+        )
+
+        column ENVOYÉ_LE (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Envoyé Le
+            }
+            layout {
+                sequence: 7
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ID_AVIS (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 2
+            }
+        )
+
+        column REF_AE (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Ref Ae
+            }
+            layout {
+                sequence: 3
+            }
+        )
+
+        column REMARQUES (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Remarques
+            }
+            layout {
+                sequence: 17
+            }
+        )
+
+        column ROWID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: link
+            heading {
+                heading: <span class="u-VisuallyHidden">Modifier</span>
+            }
+            layout {
+                sequence: 1
+            }
+            link {
+                target: {
+                    page: 8
+                    items: {
+                        P8_ID_AVIS: #ID_AVIS#
+                        P8_REF_AE: #REF_AE#
+                    }
+                    action: resetPagination
+                }
+                linkText: <img src="#APEX_FILES#app_ui/img/icons/apex-edit-pencil.png" class="apex-edit-pencil" alt="">
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region enregistrements-maître (
+        name: Enregistrements maître
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select "ID",
+                    null LINK_CLASS,
+                    apex_page.get_url(p_items => 'P25_ID', p_values => "ID") LINK,
+                    null ICON_CLASS,
+                    null LINK_ATTR,
+                    null ICON_COLOR_CLASS,
+                    case when coalesce(:P25_ID,'0') = "ID"
+                      then 'is-active' 
+                      else ' '
+                    end LIST_CLASS,
+                    (substr("REF_AO", 1, 50)||( case when length("REF_AO") > 50 then '...' else '' end )) LIST_TITLE,
+                    (substr("STATUS", 1, 50)||( case when length("STATUS") > 50 then '...' else '' end )) LIST_TEXT,
+                    null LIST_BADGE
+                from "CC" x
+                where (:P25_SEARCH is null
+                        or upper(x."REF_AO") like '%'||upper(:P25_SEARCH)||'%'
+                        or upper(x."STATUS") like '%'||upper(:P25_SEARCH)||'%'
+                    )
+                order by "REF_AO"
+                
+                
+                ```
+            pageItemsToSubmit: P25_SEARCH
+        }
+        layout {
+            sequence: 20
+            slot: leftColumn
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+            cssClasses: search-results
+        }
+        reportLayout {
+            numberOfRows: 1000
+        }
+        componentAppearance {
+            template: @/media-list
+            templateOptions: [
+                t-MediaList--showDesc
+                t-MediaList--stack
+            ]
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: <div class="u-tC">Aucune donnée n'a été trouvée.</div>
+        }
+
+        column ICON_CLASS (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: ICON_CLASS
+                alignment: center
+            }
+            layout {
+                sequence: 4
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ICON_COLOR_CLASS (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: ICON_COLOR_CLASS
+                alignment: center
+            }
+            layout {
+                sequence: 6
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: ID
+                alignment: center
+            }
+            layout {
+                sequence: 1
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LINK (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: LINK
+                alignment: center
+            }
+            layout {
+                sequence: 3
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LINK_ATTR (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: LINK_ATTR
+                alignment: center
+            }
+            layout {
+                sequence: 5
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LINK_CLASS (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: LINK_CLASS
+                alignment: center
+            }
+            layout {
+                sequence: 2
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_BADGE (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: LIST_BADGE
+                alignment: center
+            }
+            layout {
+                sequence: 10
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_CLASS (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: LIST_CLASS
+                alignment: center
+            }
+            layout {
+                sequence: 7
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_TEXT (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: LIST_TEXT
+                alignment: center
+            }
+            layout {
+                sequence: 9
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_TITLE (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: LIST_TITLE
+                alignment: center
+            }
+            layout {
+                sequence: 8
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region rechercher (
+        name: Rechercher
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: leftColumn
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+            cssClasses: [
+                search-region
+                padding-md
+            ]
+        }
+    )
+
+    region remarques (
+        name: Remarques
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: REMARQUE
+            includeRowidColumn: true
+            whereClause: "ID_CC" = :P25_ID
+        }
+        layout {
+            sequence: 40
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+            cssClasses: js-detail-region
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P25_ID
+        }
+        reportLayout {
+            numberOfRows: 100
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                t-Report--stretch
+                #DEFAULT#
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+                t-Report--inline
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+        performance {
+            maxRowsToProcess: 5000
+        }
+        messages {
+            whenNoDataFound: Aucune donnée n'a été trouvée.
+        }
+        componentAdvanced {
+            stripHtml: true
+        }
+
+        column ID_CC (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 21
+            }
+        )
+
+        column ID_REM (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 11
+            }
+        )
+
+        column REF_DOS (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Ref Dos
+            }
+            layout {
+                sequence: 31
+            }
+        )
+
+        column REMARQUE (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Remarque
+            }
+            layout {
+                sequence: 41
+            }
+        )
+
+        column ROWID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: link
+            heading {
+                heading: <span class="u-VisuallyHidden">Modifier</span>
+                alignment: center
+            }
+            layout {
+                sequence: 1
+                columnAlignment: center
+            }
+            link {
+                target: {
+                    page: 31
+                    items: {
+                        P31_ID_REM: #ID_REM##ID_AFFICHAGE#
+                    }
+                    action: resetPagination
+                }
+                linkText: <img src="#APEX_FILES#app_ui/img/icons/apex-edit-pencil.png" class="apex-edit-pencil" alt="">
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region sélecteur-d-affichage-de-région (
+        name: Sélecteur d'affichage de région
+        type: regionDisplaySelector
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                margin-bottom-md
+            ]
+            cssClasses: js-detail-rds
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P25_ID
+        }
+        settings {
+            rememberSelection: false
+        }
+    )
+
+    pageItem P25_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @demandes-de-renseignements
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P25_REF (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @demandes-de-renseignements
+            slot: regionBody
+        }
+        source {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                select "REF_AO" as REF from "CC"
+                where  "ID" = :P25_ID
+                ```
+        }
+    )
+
+    pageItem P25_SEARCH (
+        type: textField
+        label {
+            label: Rechercher
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @rechercher
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--large
+                t-Form-fieldContainer--postTextBlock
+            ]
+            icon: fa-search
+            width: 30
+            valuePlaceholder: Rechercher...
+        }
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Créer
+        layout {
+            sequence: 20
+            slot: NEXT
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+            icon: fa-plus
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 10
+                clearCache: 10
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+        security {
+            authorizationScheme: @droits-d-administration
+        }
+    )
+
+    button edit (
+        buttonName: EDIT
+        label: طباعة  تلخيص معلومات الصفقة
+        layout {
+            sequence: 20
+            region: @cc
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--noUI
+                t-Button--iconLeft
+            ]
+            icon: fa-pencil-square-o
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 10
+                items: {
+                    P10_ID: &P25_ID.
+                    P10_REF: &P25_REF.
+                }
+                clearCache: 10
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+        advanced {
+            htmlDomId: edit_master_btn
+        }
+        security {
+            authorizationScheme: @droits-de-lecteur
+        }
+    )
+
+    button pop-etat-avis (
+        buttonName: POP_ETAT_AVIS
+        label: Ajout Demandes de renseignements
+        layout {
+            sequence: 10
+            region: @demandes-de-renseignements
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--noUI
+            ]
+            icon: fa-plus
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 8
+                items: {
+                    P8_REF_AE: &P25_REF.
+                }
+                clearCache: 14
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button pop-remarque (
+        buttonName: POP_Remarque
+        label: Ajouter Remarque
+        layout {
+            sequence: 10
+            region: @remarques
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--noUI
+            ]
+            icon: fa-plus
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 27
+                items: {
+                    P27_ID_CC: &P25_ID.
+                    P27_REF_DOS: &P25_REF.
+                }
+                clearCache: 15
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button reset (
+        buttonName: RESET
+        label: Réinitialiser
+        layout {
+            sequence: 10
+            slot: NEXT
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--noUI
+                t-Button--iconLeft
+                t-Button--gapRight
+            ]
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 25
+                clearCache: 9
+                action: resetPagination
+                request: RESET
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction boîte-de-dialogue-affichage-fermée (
+        name: Boîte de dialogue affichage fermée
+        execution {
+            sequence: 40
+        }
+        when {
+            event: apexafterclosecanceldialog
+            selectionType: region
+            region: @remarques
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode: apex.message.showPageSuccess('ٌRemarque mise(s) \u00E0 jour.');
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @remarques
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction boîte-de-dialogue-demande-fermée (
+        name: Boîte de dialogue demande fermée
+        execution {
+            sequence: 40
+        }
+        when {
+            event: apexafterclosecanceldialog
+            selectionType: region
+            region: @demandes-de-renseignements
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode: apex.message.showPageSuccess('ٌDemande de Clarification mise(s) \u00E0 jour.');
+            }
+            execution {
+                sequence: 30
+                fireOnInit: false
+            }
+        )
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @demandes-de-renseignements
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction boîte-de-dialogue-fermée (
+        name: Boîte de dialogue fermée
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @cc
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode: apex.message.showPageSuccess('Information (s) mise(s) \u00E0 jour.');
+            }
+            execution {
+                sequence: 30
+                fireOnInit: false
+            }
+        )
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @cc
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction effectuez-la-recherche (
+        name: Effectuez la recherche
+        execution {
+            sequence: 150
+        }
+        when {
+            event: keypress
+            selectionType: items
+            items: P25_SEARCH
+        }
+        clientSideCondition {
+            type: jsExpression
+            javaScriptExpression: this.browserEvent.which === apex.jQuery.ui.keyCode.ENTER
+        }
+
+        action native-cancel-event (
+            action: cancelEvent
+            execution {
+                sequence: 30
+                fireOnInit: false
+            }
+        )
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @enregistrements-maître
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process close-dialog (
+        name: close dialog
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 17412796834797405
+        }
+    )
+
+)
+

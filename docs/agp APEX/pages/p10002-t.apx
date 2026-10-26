@@ -1,0 +1,93 @@
+page 10002 (
+    name: chargement des données
+    alias: T
+    title: chargement des données
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    dynamicAction new (
+        name: New
+        execution {
+            sequence: 10
+            eventScope: once
+        }
+        when {
+            event: ready
+        }
+        clientSideCondition {
+            type: item=value
+            item: P0_HOME
+            value: 44
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    apex.navigation.redirect(
+                        apex.util.makeApplicationUrl({
+                            pageId: 44
+                        })
+                    );
+                    ```
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-javascript-code-2 (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    apex.navigation.redirect(
+                        apex.util.makeApplicationUrl({
+                            pageId: 1
+                        })
+                    );
+                    ```
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+)
+

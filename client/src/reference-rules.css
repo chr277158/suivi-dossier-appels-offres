@@ -1,0 +1,13 @@
+.reference-rules-settings,.annual-entry-form{display:grid;gap:13px;padding:17px;background:#fff;border:1px solid var(--line);border-radius:6px}
+.reference-rules-settings{margin-bottom:18px}
+.reference-rules-settings>header h2,.reference-rules-settings h3,.annual-entry-form h2{margin:0;font-size:16px}
+.reference-rules-settings>header p,.reference-rules-note{margin:5px 0 0;color:#788580;font-size:11px}
+.reference-mask-grid,.reference-threshold-grid,.annual-entry-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.reference-rules-settings label,.annual-entry-form label{display:grid;gap:5px;color:#586860;font-size:10px;font-weight:600}
+.reference-rules-settings input,.annual-entry-form input,.annual-entry-form select{width:100%;min-height:36px;border:1px solid #dfe5df;border-radius:4px;background:#fff;color:#35463f;padding:7px 9px;font:inherit}
+.reference-threshold-grid>strong{align-self:end;padding:9px 0;color:#35463f;font-size:12px}
+.reference-rules-settings .primary-button,.annual-entry-form footer{justify-self:start}
+.annual-entry-form footer{display:flex;gap:8px}
+.reference-rule-warning{color:#a14f3d;font-size:11px;font-weight:600}
+.reference-rule-hint{color:#365b4b;font-size:11px;font-weight:600}
+@media(max-width:620px){.reference-mask-grid,.reference-threshold-grid,.annual-entry-grid{grid-template-columns:1fr}}

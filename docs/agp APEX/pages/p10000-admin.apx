@@ -1,0 +1,1290 @@
+page 10000 (
+    name: Administration
+    alias: ADMIN
+    title: Administration
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        functionAndGlobalVariableDeclaration:
+            ```javascript-browser
+            function refreshconnected() {
+                try {
+                    var reg = apex.region('connected');
+                    if (reg) {
+                        reg.refresh();
+                        // بعد أن ينتهي الـ refresh نطبّق النسبة على البادجات
+                        setTimeout(applyProgressWidth, 500);
+                    }
+                } catch (e) {
+                    console.error('Refresh error:', e);
+                }
+            }
+            ```
+    }
+    security {
+        authorizationScheme: @droits-de-lecteur
+        deepLinking: false
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>La page d'administration permet aux propriétaires de l'application (administrateurs) de configurer l'application et de tenir à jour les données communes qu'elle utilise.
+            En sélectionnant l'un des paramètres disponibles, les administrateurs peuvent potentiellement modifier l'affichage de l'application et/ou les fonctions disponibles pour les utilisateurs finals.</p>
+            <p>L'accès à cette page doit être exclusivement limité aux administrateurs.</p>
+            ```
+    }
+
+    region actions-de-contrôle-d-accès (
+        name: Actions de contrôle d'accès
+        type: list
+        source {
+            list: @contrôle-d-accès
+        }
+        layout {
+            sequence: 30
+            parentRegion: @contrôle-d-accès
+            slot: regionBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        componentAppearance {
+            listTemplate: @/media-list
+            templateOptions: [
+                #DEFAULT#
+                u-colors
+            ]
+        }
+    )
+
+    region chemin-de-navigation (
+        name: Chemin de navigation
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region colonne (
+        name: Colonne 1
+        type: staticContent
+        layout {
+            sequence: 23
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region colonne-2 (
+        name: Colonne 2
+        type: staticContent
+        layout {
+            sequence: 33
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region configuration (
+        name: Configuration
+        type: list
+        source {
+            list: @configuration-de-l-application
+        }
+        layout {
+            sequence: 40
+            parentRegion: @colonne
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+        }
+        config {
+            buildOption: @fonctionnalité-options-de-configuration
+        }
+        componentAppearance {
+            listTemplate: @/media-list
+            templateOptions: [
+                #DEFAULT#
+                u-colors
+            ]
+        }
+    )
+
+    region connected (
+        name: connected
+        type: themeTemplateComponent/comments
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                SELECT COUNT(*) AS nb_utilisateurs
+                FROM APEX_WORKSPACE_SESSIONS s
+                WHERE s.WORKSPACE_ID = V('WORKSPACE_ID')
+                  AND s.REMOTE_ADDR <> '0:0:0:0:0:0:0:1' and s.USER_NAME <> 'nobody'
+                 
+                ```
+        }
+        layout {
+            sequence: 13
+            slot: body
+            column: 1
+            columnSpan: 1
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+        accessibility {
+            landmarkType: region
+        }
+        componentAppearance {
+            display: report
+        }
+        settings {
+            commentText: NB_UTILISATEURS
+            userName: NB_UTILISATEURS
+        }
+        plugin-avatar {
+            icon: fa-number-&NB_UTILISATEURS.
+        }
+
+        column NB_UTILISATEURS (
+            layout {
+                sequence: 10
+            }
+            source {
+                databaseColumn: NB_UTILISATEURS
+                dataType: number
+            }
+        )
+
+    )
+
+    region connected-2 (
+        name: connected
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                SELECT   *
+                FROM
+                   APEX_WORKSPACE_SESSIONS s
+                WHERE
+                  s.WORKSPACE_ID = V('WORKSPACE_ID')
+                    --CORRECTION ICI (Utilisation de LAST_ACTIVITY_TIME)
+                   ; 
+                  
+                ```
+        }
+        layout {
+            sequence: 43
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        toolbar {
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                resetButton
+                saveButton
+            ]
+        }
+        download {
+            formats: [
+                csv
+                html
+                excel
+                pdf
+            ]
+        }
+        advanced {
+            savedReportMappingIdentifier: 14669526911555045
+        }
+
+        savedReport 163031 (
+            visibility: primary
+            name: R1
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @SESSION_TIME_ZONE
+                layout {
+                    show: false
+                    sequence: 12
+                }
+            )
+
+            displayColumn (
+                column: @SESSION_LANG
+                layout {
+                    width: 91.75
+                    sequence: 13
+                }
+            )
+
+            displayColumn (
+                column: @SESSION_TERRITORY
+                layout {
+                    show: false
+                    sequence: 14
+                }
+            )
+
+            displayColumn (
+                column: @SESSION_DEBUG_LEVEL
+                layout {
+                    show: false
+                    sequence: 15
+                }
+            )
+
+            displayColumn (
+                column: @SESSION_TRACE_MODE
+                layout {
+                    show: false
+                    sequence: 16
+                }
+            )
+
+            displayColumn (
+                column: @SESSION_AUTHENTICATION_ID
+                layout {
+                    show: false
+                    sequence: 17
+                }
+            )
+
+            displayColumn (
+                column: @SESSION_TENANT_ID
+                layout {
+                    show: false
+                    sequence: 18
+                }
+            )
+
+            displayColumn (
+                column: @WORKSPACE_DISPLAY_NAME
+                layout {
+                    show: false
+                    width: 42
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @WORKSPACE_ID
+                layout {
+                    width: 167.625
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @WORKSPACE_NAME
+                layout {
+                    width: 131.625
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @APEX_SESSION_ID
+                layout {
+                    width: 120.625
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @USER_NAME
+                layout {
+                    width: 89.625
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @REMOTE_ADDR
+                layout {
+                    width: 125.3906
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @SESSION_CREATED
+                layout {
+                    width: 146.625
+                    sequence: 7
+                }
+            )
+
+            displayColumn (
+                column: @SESSION_IDLE_TIMEOUT_ON
+                layout {
+                    width: 163.75
+                    sequence: 8
+                }
+            )
+
+            displayColumn (
+                column: @SESSION_LIFE_TIMEOUT_ON
+                layout {
+                    width: 161.344
+                    sequence: 9
+                }
+            )
+
+            displayColumn (
+                column: @SESSION_MAX_IDLE_SEC
+                layout {
+                    width: 263.641
+                    sequence: 10
+                }
+            )
+
+            displayColumn (
+                column: @SESSION_AUTHENTICATION_NAME
+                layout {
+                    show: false
+                    sequence: 11
+                }
+            )
+
+        )
+
+        column APEX_SESSION_ID (
+            type: numberField
+            heading {
+                heading: Apex Session Id
+                alignment: center
+            }
+            layout {
+                sequence: 50
+                columnAlignment: center
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: APEX_SESSION_ID
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column REMOTE_ADDR (
+            type: textField
+            heading {
+                heading: Remote Addr
+                alignment: center
+            }
+            layout {
+                sequence: 70
+                columnAlignment: center
+            }
+            validation {
+                maxLength: 255
+            }
+            source {
+                databaseColumn: REMOTE_ADDR
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column SESSION_AUTHENTICATION_ID (
+            type: numberField
+            heading {
+                heading: Session Authentication Id
+                alignment: center
+            }
+            layout {
+                sequence: 190
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: SESSION_AUTHENTICATION_ID
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column SESSION_AUTHENTICATION_NAME (
+            type: textField
+            heading {
+                heading: Session Authentication Name
+                alignment: center
+            }
+            layout {
+                sequence: 130
+                columnAlignment: center
+            }
+            validation {
+                maxLength: 255
+            }
+            source {
+                databaseColumn: SESSION_AUTHENTICATION_NAME
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column SESSION_CREATED (
+            type: displayOnly
+            heading {
+                heading: Session Created
+                alignment: center
+            }
+            layout {
+                sequence: 80
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: DD-MON-YYYY HH24:MI
+            }
+            source {
+                databaseColumn: SESSION_CREATED
+                dataType: date
+            }
+        )
+
+        column SESSION_DEBUG_LEVEL (
+            type: numberField
+            heading {
+                heading: Session Debug Level
+                alignment: center
+            }
+            layout {
+                sequence: 170
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: SESSION_DEBUG_LEVEL
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column SESSION_IDLE_TIMEOUT_ON (
+            type: displayOnly
+            heading {
+                heading: Session Idle Timeout On
+                alignment: center
+            }
+            layout {
+                sequence: 90
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: DD-MON-YYYY HH24:MI
+            }
+            source {
+                databaseColumn: SESSION_IDLE_TIMEOUT_ON
+                dataType: date
+            }
+        )
+
+        column SESSION_LANG (
+            type: textField
+            heading {
+                heading: Session Lang
+                alignment: center
+            }
+            layout {
+                sequence: 150
+                columnAlignment: center
+            }
+            validation {
+                maxLength: 5
+            }
+            source {
+                databaseColumn: SESSION_LANG
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column SESSION_LIFE_TIMEOUT_ON (
+            type: displayOnly
+            heading {
+                heading: Session Life Timeout On
+                alignment: center
+            }
+            layout {
+                sequence: 100
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: DD-MON-YYYY HH24:MI
+            }
+            source {
+                databaseColumn: SESSION_LIFE_TIMEOUT_ON
+                dataType: date
+            }
+        )
+
+        column SESSION_MAX_IDLE_SEC (
+            type: numberField
+            heading {
+                heading: Session Max Idle Sec
+                alignment: center
+            }
+            layout {
+                sequence: 110
+                columnAlignment: center
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: SESSION_MAX_IDLE_SEC
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column SESSION_TENANT_ID (
+            type: textField
+            heading {
+                heading: Session Tenant Id
+                alignment: center
+            }
+            layout {
+                sequence: 200
+                columnAlignment: center
+            }
+            validation {
+                maxLength: 32
+            }
+            source {
+                databaseColumn: SESSION_TENANT_ID
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column SESSION_TERRITORY (
+            type: textField
+            heading {
+                heading: Session Territory
+                alignment: center
+            }
+            layout {
+                sequence: 160
+                columnAlignment: center
+            }
+            validation {
+                maxLength: 255
+            }
+            source {
+                databaseColumn: SESSION_TERRITORY
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column SESSION_TIME_ZONE (
+            type: textField
+            heading {
+                heading: Session Time Zone
+                alignment: center
+            }
+            layout {
+                sequence: 140
+                columnAlignment: center
+            }
+            validation {
+                maxLength: 255
+            }
+            source {
+                databaseColumn: SESSION_TIME_ZONE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column SESSION_TRACE_MODE (
+            type: textField
+            heading {
+                heading: Session Trace Mode
+                alignment: center
+            }
+            layout {
+                sequence: 180
+                columnAlignment: center
+            }
+            validation {
+                maxLength: 5
+            }
+            source {
+                databaseColumn: SESSION_TRACE_MODE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column USER_NAME (
+            type: textField
+            heading {
+                heading: User Name
+                alignment: center
+            }
+            layout {
+                sequence: 60
+                columnAlignment: center
+            }
+            validation {
+                maxLength: 255
+            }
+            source {
+                databaseColumn: USER_NAME
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column WORKSPACE_DISPLAY_NAME (
+            type: textarea
+            heading {
+                heading: Workspace Display Name
+                alignment: center
+            }
+            layout {
+                sequence: 20
+                columnAlignment: center
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: WORKSPACE_DISPLAY_NAME
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column WORKSPACE_ID (
+            type: numberField
+            heading {
+                heading: Workspace Id
+                alignment: center
+            }
+            layout {
+                sequence: 30
+                columnAlignment: center
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: WORKSPACE_ID
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column WORKSPACE_NAME (
+            type: textField
+            heading {
+                heading: Workspace Name
+                alignment: center
+            }
+            layout {
+                sequence: 40
+                columnAlignment: center
+            }
+            validation {
+                valueRequired: true
+                maxLength: 255
+            }
+            source {
+                databaseColumn: WORKSPACE_NAME
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        page {
+            size: a4
+            units: millimeters
+            width: 297
+            height: 210
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+    )
+
+    region contrôle-d-accès (
+        name: Contrôle d'accès
+        type: staticContent
+        layout {
+            sequence: 70
+            parentRegion: @colonne-2
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+        }
+        config {
+            buildOption: @fonctionnalité-contrôle-d-accès
+        }
+    )
+
+    region etat (
+        name: Etat
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select l.display_value feedback_status, 
+                (select count(*) from apex_team_feedback f where f.application_id = :APP_ID and f.feedback_status = l.return_value) feedback_count 
+                from apex_application_lov_entries l
+                where l.application_id = :APP_ID
+                and l.list_of_values_name = 'FEEDBACK_STATUS'
+                order by 2 desc, 1
+                ```
+        }
+        layout {
+            sequence: 10
+            parentRegion: @informations-en-retour
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--removeHeader js-removeLandmark
+                t-Region--stacked
+                t-Region--scrollBody
+                t-Region--noPadding
+            ]
+        }
+        componentAppearance {
+            template: @/value-attribute-pairs-row
+            templateOptions: [
+                #DEFAULT#
+                t-AVPList--rightAligned
+            ]
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: aucune donnée n'a été trouvée
+        }
+
+        column FEEDBACK_COUNT (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Feedback Count
+                alignment: end
+            }
+            layout {
+                sequence: 20
+                columnAlignment: end
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column FEEDBACK_STATUS (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Feedback Status
+            }
+            layout {
+                sequence: 10
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region etat-sur-le-nombre-d-utilisateurs (
+        name: Etat sur le nombre d'utilisateurs
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select r.role_name, (select count(*) from apex_appl_acl_user_roles ur where r.role_id = ur.role_id) user_count, r.role_id
+                from apex_appl_acl_roles r
+                where r.application_id = :APP_ID
+                group by r.role_name, r.role_id
+                order by 2 desc, 1
+                ```
+        }
+        layout {
+            sequence: 20
+            parentRegion: @contrôle-d-accès
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--removeHeader js-removeLandmark
+                t-Region--stacked
+                t-Region--scrollBody
+                t-Region--noPadding
+            ]
+        }
+        componentAppearance {
+            template: @/value-attribute-pairs-row
+            templateOptions: [
+                #DEFAULT#
+                t-AVPList--rightAligned
+            ]
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: aucune donnée n'a été trouvée
+        }
+
+        column ROLE_ID (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Role Id
+                alignment: center
+            }
+            layout {
+                sequence: 3
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ROLE_NAME (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Role Name
+                alignment: center
+            }
+            layout {
+                sequence: 1
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column USER_COUNT (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: User Count
+                alignment: center
+            }
+            layout {
+                sequence: 2
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G999G990
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region etats-d-activité (
+        name: Etats d'activité
+        type: list
+        source {
+            list: @etats-d-activité
+        }
+        layout {
+            sequence: 60
+            parentRegion: @colonne
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+        }
+        config {
+            buildOption: @fonctionnalité-génération-d-états-d-activité
+        }
+        componentAppearance {
+            listTemplate: @/media-list
+            templateOptions: [
+                #DEFAULT#
+                u-colors
+            ]
+        }
+    )
+
+    region informations-en-retour (
+        name: Informations en retour
+        type: staticContent
+        layout {
+            sequence: 80
+            parentRegion: @colonne-2
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+        }
+        config {
+            buildOption: @fonctionnalité-informations-en-retour
+        }
+    )
+
+    region informations-en-retour-2 (
+        name: Informations en retour
+        type: list
+        source {
+            list: @informations-en-retour
+        }
+        layout {
+            sequence: 20
+            parentRegion: @informations-en-retour
+            slot: regionBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        componentAppearance {
+            listTemplate: @/media-list
+            templateOptions: [
+                #DEFAULT#
+                u-colors
+            ]
+        }
+    )
+
+    region informations-sur-la-liste-de-contrôle-d-accès (
+        name: Informations sur la liste de contrôle d'accès
+        type: plSqlDynamicContent
+        source {
+            plsqlCode:
+                ```plsql
+                declare
+                    l_acl_scope varchar2(45);
+                begin
+                    l_acl_scope := apex_app_setting.get_value( p_name => 'ACCESS_CONTROL_SCOPE' );
+                
+                    if l_acl_scope = 'ALL_USERS' then
+                        sys.htp.p( apex_lang.message('APEX.FEATURE.ACL.INFO.ALL_USERS') );
+                    elsif l_acl_scope = 'ACL_ONLY' then
+                        sys.htp.p( apex_lang.message('APEX.FEATURE.ACL.INFO.ACL_ONLY') );
+                    else
+                        sys.htp.p( apex_lang.message('APEX.FEATURE.ACL.INFO.ACL_VALUE_INVALID', l_acl_scope) );
+                    end if;
+                end;
+                ```
+        }
+        layout {
+            sequence: 10
+            parentRegion: @contrôle-d-accès
+            slot: regionBody
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--colorBG
+                t-Alert--horizontal
+                t-Alert--noIcon
+                t-Alert--warning
+                t-Alert--accessibleHeading
+            ]
+            cssClasses: margin-sm
+        }
+    )
+
+    region interface-utilisateur (
+        name: Interface utilisateur
+        type: list
+        source {
+            list: @interface-utilisateur
+        }
+        layout {
+            sequence: 50
+            parentRegion: @colonne
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+        }
+        config {
+            buildOption: @fonctionnalité-sélection-du-style-de-thème
+        }
+        componentAppearance {
+            listTemplate: @/media-list
+            templateOptions: [
+                #DEFAULT#
+                u-colors
+            ]
+        }
+    )
+
+    button add-user (
+        buttonName: ADD_USER
+        label: Ajouter un utilisateur
+        layout {
+            sequence: 10
+            region: @contrôle-d-accès
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--noUI
+                t-Button--iconLeft
+            ]
+            icon: fa-user-plus
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 10042
+                clearCache: 10042
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction new (
+        name: New_1
+        execution {
+            sequence: 30
+        }
+        when {
+            event: ready
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode: refreshconnected();
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction new-2 (
+        name: New
+        execution {
+            sequence: 20
+        }
+        when {
+            event: ready
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @connected-2
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction régénérer-l-état (
+        name: Régénérer l'état
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: button
+            button: @add-user
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @etat-sur-le-nombre-d-utilisateurs
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

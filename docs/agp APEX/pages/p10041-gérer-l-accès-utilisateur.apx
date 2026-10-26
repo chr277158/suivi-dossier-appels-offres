@@ -1,0 +1,274 @@
+page 10041 (
+    name: Gérer l'accès utilisateur
+    alias: GÉRER-L-ACCÈS-UTILISATEUR
+    title: Gérer l'accès utilisateur
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authorizationScheme: @droits-de-lecteur
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>Cette page fournit un état des utilisateurs de l'application et du niveau d'accès octroyé.</p>
+            <p>Pour trier et filtrer les données, cliquez sur les en-têtes de colonne, ou cliquez sur le bouton <strong>Actions</strong> pour personnaliser l'affichage des colonnes et de nombreuses fonctionnalités avancées supplémentaires.<br>
+            Pour rétablir les paramètres par défaut de l'état interactif, cliquez sur le bouton <strong>Réinitialiser</strong>.</p>
+            <p>Cliquez sur l'icône de modification (crayon jaune) pour modifier les détails et le niveau d'accès de l'utilisateur, ou pour supprimer ce dernier.</p>
+            <p>Pour ajouter un nouvel utilisateur et son niveau d'accès, cliquez sur <strong>Ajouter un utilisateur</strong>, en haut de l'état.</p>
+            ```
+    }
+    config {
+        buildOption: @fonctionnalité-contrôle-d-accès
+    }
+
+    region gérer-l-accès-utilisateur (
+        name: Gérer l'accès utilisateur
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select id,
+                   user_name_lc USERNAME,
+                   role_names ACCESS_ROLE
+                from APEX_APPL_ACL_USERS
+                where APPLICATION_ID = :APP_ID
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                page: 10042
+                items: {
+                    P10042_ID: \#ID#\
+                }
+                action: resetPagination
+            }
+            linkIcon: <span aria-label="Modifier"><span class="fa fa-edit" aria-hidden="true" title="Modifier"></span></span>
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: Aucune donnée n'a été trouvée.
+            whenMoreDataFound: Le nombre maximal de lignes pour cet état est de #MAX_ROW_COUNT# lignes. Appliquez un filtre pour réduire le nombre d'enregistrements dans votre requête.
+        }
+        searchBar {
+            rowsPerPageSelector: true
+        }
+        actionsMenu {
+            rowsPerPage: false
+            savePublicReport: true
+        }
+        advanced {
+            savedReportMappingIdentifier: 48202010692649053506
+        }
+
+        column ACCESS_ROLE (
+            type: plainText
+            heading {
+                heading: Rôles
+            }
+            layout {
+                sequence: 3
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 0
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column USERNAME (
+            type: plainText
+            heading {
+                heading: Nom utilisateur
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Gérer l'accès utilisateur
+        }
+
+        savedReport 482020135 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn ACCESS_ROLE (
+                sequence: 2
+            )
+
+            displayColumn USERNAME (
+                sequence: 1
+            )
+
+            sort (
+                column: USERNAME
+                sort {
+                    sequence: 2
+                }
+            )
+
+        )
+
+    )
+
+    button add-multiple-users (
+        buttonName: ADD_MULTIPLE_USERS
+        label: Ajouter plusieurs utilisateurs
+        layout {
+            sequence: 30
+            region: @gérer-l-accès-utilisateur
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 10043
+                clearCache: 10043
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button add-user (
+        buttonName: ADD_USER
+        label: Ajouter un utilisateur
+        layout {
+            sequence: 40
+            region: @gérer-l-accès-utilisateur
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 10042
+                clearCache: 10042
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Réinitialiser
+        layout {
+            sequence: 20
+            region: @gérer-l-accès-utilisateur
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                t-Button--iconLeft
+                t-Button--gapRight
+            ]
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction régénérer-l-état (
+        name: Régénérer l'état
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @gérer-l-accès-utilisateur
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @gérer-l-accès-utilisateur
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

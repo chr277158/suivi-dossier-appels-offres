@@ -1,0 +1,478 @@
+page 12 (
+    name: Modification
+    alias: MODIFICATION
+    title: Modification
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    css {
+        inline:
+            ```css
+            /* Conteneur principal du modal */
+            .ui-dialog.ui-widget-content {
+                background: #c59898;             /* fond blanc */
+                border-radius: 12px;             /* coins arrondis */
+                box-shadow: 0 6px 20px rgba(0,0,0,0.25); /* ombre plus marquée */
+                padding: 20px;
+                font-family: "Segoe UI", Arial, sans-serif;
+            }
+            
+            /* En-tête du modal */
+            .ui-dialog-titlebar {
+                background: #4a90e2;             /* bleu moderne */
+                color: #fff;
+                font-weight: 600;
+                font-size: 16px;
+                border-radius: 12px 12px 0 0;    /* arrondi en haut */
+                padding: 10px 15px;
+            }
+            
+            /* Bouton de fermeture (X) */
+            .ui-dialog-titlebar-close {
+                color: #fff !important;
+                border: none;
+                background: transparent;
+            }
+            .ui-dialog-titlebar-close:hover {
+                color: #ffd700 !important;       /* effet doré au survol */
+            }
+            
+            /* Corps du modal */
+            .ui-dialog-content {
+                padding: 20px;
+                font-size: 14px;
+                color: #333;
+            }
+            
+            /* Champs du formulaire dans le modal */
+            .ui-dialog-content input[type="text"],
+            .ui-dialog-content input[type="email"],
+            .ui-dialog-content input[type="password"],
+            .ui-dialog-content select,
+            .ui-dialog-content textarea {
+                width: 100%;
+                padding: 10px 12px;
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                transition: border-color 0.3s, box-shadow 0.3s;
+            }
+            
+            /* Effet focus sur champs */
+            .ui-dialog-content input:focus,
+            .ui-dialog-content select:focus,
+            .ui-dialog-content textarea:focus {
+                border-color: #4a90e2;
+                box-shadow: 0 0 6px rgba(74,144,226,0.3);
+                outline: none;
+            }
+            
+            /* Boutons dans le modal */
+            .ui-dialog-buttonpane button {
+                background: #4a90e2;
+                color: #fff;
+                border: none;
+                padding: 10px 18px;
+                font-size: 14px;
+                font-weight: 600;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: background 0.3s;
+                margin: 5px;
+            }
+            .ui-dialog-buttonpane button:hover {
+                background: #357ab8;
+            }
+            
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+            cssClasses: u-color-2
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region modification (
+        name: Modification
+        type: form
+        source {
+            location: localDatabase
+            tableName: T_USER
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+            rowCssClasses: u-color-28,u-opacity-30
+            columnCssClasses: u-color-5,u-opacity-30
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+            cssClasses: u-color-2
+            renderComponents: belowContent
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    pageItem P12_FONCTION (
+        type: textField
+        label {
+            label: Fonction
+            alignment: left
+        }
+        layout {
+            sequence: 60
+            region: @modification
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            maxLength: 70
+        }
+        source {
+            formRegion: @modification
+            column: FONCTION
+            dataType: varchar2
+        }
+    )
+
+    pageItem P12_GROUPE (
+        type: popupLov
+        label {
+            label: Groupe
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:READER;READER,CONTRIBUTOR;CONTRIBUTOR,ADMINISTRATOR;ADMINISTRATOR
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 50
+            region: @modification
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @modification
+            column: GROUPE
+            dataType: varchar2
+        }
+        security {
+            authorizationScheme: @droits-d-administration
+        }
+    )
+
+    pageItem P12_ID_1 (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @modification
+            slot: regionBody
+        }
+        source {
+            formRegion: @modification
+            column: ID_1
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P12_MATRICULE (
+        type: numberField
+        label {
+            label: Matricule
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @modification
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @modification
+            column: MATRICULE
+            dataType: number
+        }
+    )
+
+    pageItem P12_MDP (
+        type: textField
+        label {
+            label: Mdp
+            alignment: left
+        }
+        settings {
+            trimSpaces: none
+        }
+        layout {
+            sequence: 40
+            region: @modification
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 50
+        }
+        source {
+            formRegion: @modification
+            column: MDP
+            dataType: varchar2
+        }
+    )
+
+    pageItem P12_NOM (
+        type: textField
+        label {
+            label: Nom
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @modification
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @modification
+            column: NOM
+            dataType: varchar2
+        }
+    )
+
+    pageItem P12_TEL (
+        type: textField
+        label {
+            label: Tel
+            alignment: left
+        }
+        layout {
+            sequence: 70
+            region: @modification
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            maxLength: 10
+        }
+        source {
+            formRegion: @modification
+            column: TEL
+            dataType: varchar2
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Créer
+        layout {
+            sequence: 40
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P12_ID_1
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Appliquer les modifications
+        layout {
+            sequence: 30
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P12_ID_1
+        }
+    )
+
+    button sup (
+        buttonName: SUP
+        label: Sup
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: ATTENTION
+            style: warning
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P12_ID_1
+        }
+    )
+
+    process fermer-la-boîte-de-dialogue (
+        name: Fermer la boîte de dialogue
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 62069067026858107374
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+    process initialiser-le-panneau-modification (
+        name: Initialiser le panneau Modification
+        type: formInitialization
+        formRegion: @modification
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 62069066235021107373
+        }
+    )
+
+    process traiter-le-panneau-modification (
+        name: Traiter le panneau Modification
+        type: formAutoRowProcessing
+        formRegion: @modification
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 62069066668609107373
+        }
+    )
+
+)
+

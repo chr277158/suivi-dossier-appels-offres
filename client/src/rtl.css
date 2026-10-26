@@ -1,0 +1,58 @@
+.app-shell[lang='ar'] {
+  font-family: 'Noto Sans Arabic', Tahoma, sans-serif;
+}
+
+.app-shell[dir='rtl'] .sidebar {
+  right: 0;
+  left: auto;
+}
+
+.app-shell[dir='rtl'] .workspace {
+  margin-right: 246px;
+  margin-left: 0;
+}
+
+.app-shell[dir='rtl'] .nav-button {
+  text-align: right;
+}
+
+.app-shell[dir='rtl'] .nav-indicator {
+  right: auto;
+  left: 0;
+}
+
+.app-shell[dir='rtl'] .search-field input,
+.app-shell[dir='rtl'] .dossier-card-title {
+  text-align: right;
+}
+
+.app-shell[dir='rtl'] .dossier-info-panel dd {
+  text-align: left;
+}
+
+.app-shell[dir='rtl'] th,
+.app-shell[dir='rtl'] td {
+  text-align: right;
+}
+
+.app-shell[dir='rtl'] .tracking-modal footer,
+.app-shell[dir='rtl'] .hr-modal footer {
+  flex-direction: row-reverse;
+}
+
+@media (max-width: 900px) {
+  .app-shell[dir='rtl'] .workspace {
+    margin-right: 70px;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell[dir='rtl'] .page-heading {
+    align-items: flex-start;
+  }
+
+  .app-shell[dir='rtl'] .dossier-info-panel dd {
+    text-align: right;
+  }
+}

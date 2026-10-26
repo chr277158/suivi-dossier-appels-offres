@@ -1,0 +1,819 @@
+page 55 (
+    name: Programme d’Ouverture des Offres
+    alias: PROGRAMME-D-OUVERTURE-DES-OFFRES1
+    title: Programme d’Ouverture des Offres
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        fileUrls: [
+            https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js
+            https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.min.js
+            https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js
+        ]
+    }
+    css {
+        inline:
+            ```css
+            @media print {
+                /* 1. Configuration de la page physique (Marges de confort) */
+                @page {
+                    margin: 2mm 5mm 2mm 5mm; /* Haut, Droite, Bas, Gauche */
+                    size: landscape; /* Force le mode paysage si l'utilisateur utilise l'impression native */
+                }
+            
+                /* 2. MASQUAGE ABSOLU DE TOUS LES BOUTONS ET COMPOSANTS APEX */
+                .t-Header, 
+                .t-Body-nav, 
+                .t-Footer, 
+                .t-Body-actions, 
+                .t-BreadcrumbRegion,
+                .t-ButtonRegion,
+                .t-Form-inputProcessor,
+                #apexDevToolbar,
+                .apex-dev-toolbar,
+                /* Cible tous les boutons de la page par précaution */
+                button,
+                .t-Button,
+                /* Cible vos boutons spécifiques par leur ID/Attribut APEX */
+                #P55_TYPE,
+                #P55_DATE_JOUR,
+                #Imprimer,
+                #text_form,
+                #DOWNLOAD_PDF,
+                #DOWNLOAD_DOCX,
+                button[data-action="IMPRIMER"],
+                button[data-action="DOWNLOAD_PDF"],
+                button[data-action="DOWNLOAD_DOCX"],
+                .print-btn {
+                    display: none !important;
+                    visibility: hidden !important;
+                    height: 0 !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                }
+            
+                /* 3. Forcer TOUS les conteneurs APEX parents à utiliser 100% de la largeur */
+                html, body, 
+                .t-Body, 
+                .t-Body-main, 
+                .t-Body-content,
+                .t-Body-contentInner, 
+                .t-Region, 
+                .t-Region-bodyWrap, 
+                .t-Region-body {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    min-width: 100% !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    box-shadow: none !important;
+                    border: none !important;
+                    float: none !important;
+                }
+            
+                /* 4. Cibler spécifiquement votre zone "ouverture" */
+                #ouverture {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    display: block !important;
+                }
+            
+                /* 5. Masquer le titre de la région APEX */
+                #ouverture .t-Region-header, 
+                #ouverture h2.t-Region-title {
+                    display: none !important;
+                }
+            
+                /* 6. Optimisation du tableau pour occuper 100% de l'espace */
+                #ouverture table {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    table-layout: fixed !important;
+                    font-size: 12px !important;
+                    border-collapse: collapse !important;
+                    page-break-inside: avoid !important;
+                }
+            
+                #ouverture th, #ouverture td {
+                    padding: 6px 4px !important;
+                    line-height: 1.3 !important;
+                    word-wrap: break-word !important;
+                }
+                
+                /* Ajustement des colonnes du tableau pour équilibrer la largeur */
+                #ouverture th:nth-child(1) { width: 10%; } /* Référence */
+                #ouverture th:nth-child(2) { width: 28%; } /* Désignation */
+                #ouverture th:nth-child(3) { width: 10%; } /* Budget */
+                #ouverture th:nth-child(4) { width: 7%; }  /* Délai */
+                #ouverture th:nth-child(5) { width: 9%; }  /* Date Lancement */
+                #ouverture th:nth-child(6) { width: 9%; }  /* Date Limite */
+                #ouverture th:nth-child(7) { width: 12%; } /* Date Ouverture */
+                #ouverture th:nth-child(8) { width: 6%; }  /* Approbation */
+                #ouverture th:nth-child(9) { width: 9%; }  /* Nature */
+            
+                /* 7. Gestion de la couleur de fond */
+                body {
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                    background-color: #ffffff !important;
+                }
+            }
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region nouveau (
+        name: Nouveau
+        type: cards
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select IDC,
+                       REF_AO,
+                       OBJET_CCT,
+                       BUDGET,
+                       "DÉTAIL_DE_RÉPONSE" as jours,
+                       case when "DÉTAIL_DE_RÉPONSE" is Null then 'Atention non déféni'   else ' '  end as T3,
+                       NATURE_DE_DEPENSE,
+                       DATE_DE_LANC,
+                       "DATE_LIMITE_PROPOSÉE" as DATE_LIMITE,
+                       TO_CHAR("DATE_LIMITE_PROPOSÉE", 'HH24:MI') AS heure_seule1,
+                       DATE_OUVERTURE_DES_PLIS,
+                       TO_CHAR(DATE_OUVERTURE_DES_PLIS, 'HH24:MI') AS heure_seule,
+                       "طريقة_ابرام_الصفقة",
+                       "نوعية_الطلب",
+                       "اللجنة_المختصة" as COMM,
+                       "التاريخ__للإعلان_عن_المنافسة",
+                       "تاريخ__لجنة_الصفقات",
+                       "تاريخ_قرار__لجنة_الصفقات"
+                  from NOTE_OUVERTUE_PLIS
+                 where IDC = :P55_REF
+                ```
+        }
+        layout {
+            sequence: 93
+            slot: body
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        advanced {
+            htmlDomId: zone1
+        }
+        componentAppearance {
+            layout: horizontal
+        }
+        body {
+            advancedFormatting: true
+            htmlExpression:
+                ```html
+                 
+                
+                <div id="ouverture" class="A4"
+                <div style="font-family: Times New Roman; font-size:12pt;">
+                
+                    <div style="text-align:right;">
+                        Gabès le : &P55_DATE_JOUR.
+                    </div>
+                
+                    <div>
+                        <b>GROUPE CHIMIQUE TUNISIEN</b><br>
+                        <b>DIRECTION CENTRALE DES ACHATS HMP</b><br>
+                        <b>ACHATS GROUPES DE PRESTATIONS</b>
+                    </div>
+                
+                    <br><br>
+                
+                    <div style="text-align:center;">
+                        <b><u>Proposition Programme &P55_TYPE. d’Ouverture des Offres</u></b>
+                        <br>
+                        *****************************
+                    </div>
+                
+                    <br>
+                
+                    Monsieur,
+                
+                    <br><br>
+                
+                    &P55_TEXT_INTRO. &P55_COMMI. &P55_SUITE_INTRO. et vous prions de nous fixer la Date et l’Heure d’Ouverture des Plis.
+                
+                    <br><br>
+                
+                    <div style="text-align:center;">
+                        <b>Programme d’Ouverture Publique des Plis</b>
+                    </div>
+                
+                    <br>
+                
+                    <table border="1" style="border-collapse:collapse;width:100%;font-size:11pt;">
+                        <thead>
+                            <tr>
+                                <th>Référence</th>
+                                <th>Désignation</th>
+                                <th>Budget/DT</th>
+                                <th>Délai de réponse</th>
+                                <th>Date de Lancement Proposée</th>
+                                <th>Date Limite Proposée</th>
+                                <th>Date Ouverture des Plis</th>
+                                <th>Approbation Cahier des Charges</th>
+                                <th>Nature de Dépense</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr  style="text-align:center;">
+                                <td>&REF_AO.</td>
+                                <td>&OBJET_CCT.</td>
+                                <td>&BUDGET.</td>
+                                <td>&JOURS. &T3. Jours</td>
+                                <td>&DATE_DE_LANC.</td>
+                                <td>&DATE_LIMITE.  à &HEURE_SEULE1.</td>
+                                <td>&DATE_OUVERTURE_DES_PLIS. à &HEURE_SEULE.</td>
+                                <td>&P55_NEW.</td>
+                                <td>&NATURE_DE_DEPENSE.  </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                
+                    <br><br>
+                
+                    <b>&P55_MOTIF_RE. </b> &P55_MOTIF.
+                
+                    <br><br>
+                <div style="text-align:center;">
+                    Mes Salutations
+                
+                    <br><br>
+                
+                    <b>DIRECTION CENTRALE DES ACHATS HMP</b><br>
+                    <b>ACHATS GROUPES DE PRESTATIONS</b>
+                </div>
+                </div>
+                </div>
+                
+                
+                
+                ```
+        }
+    )
+
+    region nouveau-2 (
+        name: Nouveau
+        type: staticContent
+        layout {
+            sequence: 53
+            slot: body
+        }
+        appearance {
+            template: @/hero
+            templateOptions: [
+                #DEFAULT#
+                t-HeroRegion--featured t-HeroRegion--centered
+            ]
+            icon: fa-wallet
+        }
+        advanced {
+            htmlDomId: text_form
+        }
+    )
+
+    pageItem P55_COMMI (
+        type: hidden
+        layout {
+            sequence: 133
+            slot: body
+        }
+    )
+
+    pageItem P55_DATE_JOUR (
+        type: datePicker
+        label {
+            label: Date
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @nouveau-2
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            valueRequired: true
+        }
+    )
+
+    pageItem P55_MOTIF (
+        type: textField
+        label {
+            label: Motif de Report
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @nouveau-2
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+    )
+
+    pageItem P55_MOTIF_RE (
+        type: hidden
+        layout {
+            sequence: 143
+            slot: body
+        }
+    )
+
+    pageItem P55_NEW (
+        type: textField
+        label {
+            label: "Approbation Cahier des Charges	"
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            region: @nouveau-2
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            valueRequired: true
+        }
+    )
+
+    pageItem P55_REF (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @nouveau-2
+            slot: regionBody
+        }
+    )
+
+    pageItem P55_SUITE_INTRO (
+        type: hidden
+        layout {
+            sequence: 153
+            slot: body
+        }
+    )
+
+    pageItem P55_TEXT_INTRO (
+        type: hidden
+        layout {
+            sequence: 123
+            slot: body
+        }
+        default {
+            type: static
+            staticValue: "Nous vous transmettons ci-joint le dossier( &COMM. )  pour lancement "
+        }
+    )
+
+    pageItem P55_TYPE (
+        type: selectOne
+        label {
+            label: Type du document
+            alignment: left
+        }
+        settings {
+            infiniteScroll: false
+        }
+        search {
+            caseSensitive: true
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:Programme de lancement; ,Report de délai;report de délai
+        }
+        layout {
+            sequence: 30
+            region: @nouveau-2
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+    )
+
+    button download-docx (
+        buttonName: DOWNLOAD_DOCX
+        label: Télécharger Word (DOCX)
+        layout {
+            sequence: 113
+            slot: body
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    // Récupérer le contenu HTML de la région
+                    var regionBody = document.getElementById('ouverture').querySelector('.t-Region-body') || document.getElementById('ouverture');
+                    var htmlContent = regionBody.innerHTML;
+                    
+                    // Construction d'un gabarit HTML strict "Office Open XML Landscape"
+                    var fullHtml = `
+                    <!DOCTYPE html>
+                    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+                    <head>
+                    <meta charset="utf-8">
+                    <style>
+                      @page Section1 {
+                        size: 841.9pt 595.3pt; /* Taille A4 Paysage exacte en points Word */
+                        margin: .1in .1in .1in .1in;
+                        mso-header-margin: .1in;
+                        mso-footer-margin: .1in;
+                        mso-paper-source: 0;
+                      }
+                      div.Section1 { page: Section1; }
+                      
+                      body { 
+                        font-family: "Arial", sans-serif; 
+                        font-size: 11pt; 
+                        line-height: 1; 
+                      }
+                     
+                    </style>
+                    </head>
+                    <body>
+                      <div class="Section1">
+                        ${htmlContent}
+                      </div>
+                    </body>
+                    </html>
+                    `;
+                    
+                    // Convertir et sauvegarder le fichier
+                    var converted = htmlDocx.asBlob(fullHtml);
+                    saveAs(converted, 'Programme_Ouverture_Offres.docx');
+                    ```
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button imprimer (
+        buttonName: Imprimer
+        label: 🖨️ طباعة
+        layout {
+            sequence: 103
+            slot: body
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode: window.print();
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction nouveau-3 (
+        name: Nouveau_1
+        execution {
+            sequence: 40
+        }
+        when {
+            selectionType: items
+            items: P55_DATE_JOUR
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @nouveau
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction nouveau-4 (
+        name: Nouveau_3
+        execution {
+            sequence: 50
+        }
+        when {
+            selectionType: items
+            items: P55_TYPE
+        }
+
+        action native-hide (
+            action: hide
+            affectedElements {
+                selectionType: items
+                items: P55_MOTIF
+            }
+            execution {
+                sequence: 60
+            }
+            clientSideCondition {
+                type: item!=value
+                item: P55_TYPE
+                value: report de délai
+            }
+        )
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @nouveau
+            }
+            execution {
+                sequence: 110
+                fireOnInit: false
+            }
+        )
+
+        action native-set-value (
+            action: setValue
+            settings {
+                value: "Motif de report : "
+            }
+            affectedElements {
+                selectionType: items
+                items: P55_MOTIF_RE
+            }
+            execution {
+                sequence: 20
+            }
+            clientSideCondition {
+                type: item=value
+                item: P55_TYPE
+                value: report de délai
+            }
+        )
+
+        action native-set-value-2 (
+            action: setValue
+            settings {
+                value: " "
+            }
+            affectedElements {
+                selectionType: items
+                items: [
+                    P55_MOTIF_RE
+                    P55_MOTIF
+                ]
+            }
+            execution {
+                sequence: 70
+            }
+            clientSideCondition {
+                type: item!=value
+                item: P55_TYPE
+                value: report de délai
+            }
+        )
+
+        action native-set-value-3 (
+            action: setValue
+            settings {
+                value: Nous vous transmettons ci-dessous une proposition de report
+            }
+            affectedElements {
+                selectionType: items
+                items: P55_TEXT_INTRO
+            }
+            execution {
+                sequence: 30
+            }
+            clientSideCondition {
+                type: item=value
+                item: P55_TYPE
+                value: report de délai
+            }
+        )
+
+        action native-set-value-4 (
+            action: setValue
+            settings {
+                value: " Nous vous transmettons ci-joint le dossier (  "
+            }
+            affectedElements {
+                selectionType: items
+                items: P55_TEXT_INTRO
+            }
+            execution {
+                sequence: 80
+            }
+            clientSideCondition {
+                type: item!=value
+                item: P55_TYPE
+                value: report de délai
+            }
+        )
+
+        action native-set-value-5 (
+            action: setValue
+            settings {
+                value: "  )  pour lancement "
+            }
+            affectedElements {
+                selectionType: items
+                items: P55_SUITE_INTRO
+            }
+            execution {
+                sequence: 90
+            }
+            clientSideCondition {
+                type: item!=value
+                item: P55_TYPE
+                value: report de délai
+            }
+        )
+
+        action native-set-value-6 (
+            action: setValue
+            settings {
+                value: " "
+            }
+            affectedElements {
+                selectionType: items
+                items: P55_SUITE_INTRO
+            }
+            execution {
+                sequence: 40
+            }
+            clientSideCondition {
+                type: item=value
+                item: P55_TYPE
+                value: report de délai
+            }
+        )
+
+        action native-set-value-7 (
+            action: setValue
+            affectedElements {
+                selectionType: items
+                items: P55_COMMI
+            }
+            execution {
+                sequence: 50
+            }
+            clientSideCondition {
+                type: item=value
+                item: P55_TYPE
+                value: report de délai
+            }
+        )
+
+        action native-set-value-8 (
+            action: setValue
+            settings {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    -- Syntaxe PostgreSQL / MySQL (via CAST)
+                    SELECT SP."اللجنة_المختصة" AS COM 
+                    FROM SP SP
+                    WHERE ID = :P55_REF 
+                    
+                    ```
+            }
+            affectedElements {
+                selectionType: items
+                items: P55_COMMI
+            }
+            execution {
+                sequence: 100
+            }
+            clientSideCondition {
+                type: item!=value
+                item: P55_TYPE
+                value: report de délai
+            }
+        )
+
+        action native-show (
+            action: show
+            affectedElements {
+                selectionType: items
+                items: P55_MOTIF
+            }
+            execution {
+                sequence: 10
+            }
+            clientSideCondition {
+                type: item=value
+                item: P55_TYPE
+                value: report de délai
+            }
+        )
+
+    )
+
+    dynamicAction nouveau-5 (
+        name: Nouveau_4
+        execution {
+            sequence: 70
+        }
+        when {
+            event: ready
+        }
+        clientSideCondition {
+            type: itemIsNull
+            item: P55_TYPE
+        }
+
+        action native-hide (
+            action: hide
+            affectedElements {
+                selectionType: items
+                items: P55_MOTIF
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction nouveau-6 (
+        name: Nouveau_5
+        execution {
+            sequence: 80
+        }
+        when {
+            selectionType: items
+            items: P55_MOTIF
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @nouveau
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

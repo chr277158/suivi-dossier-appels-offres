@@ -1,8 +1,8 @@
 -- Development/demo fixtures only. The supplied test credential is public by design.
 -- Never run this seed against production; use a unique administrator password there.
-INSERT INTO app_users (email, full_name, password_hash, role)
-VALUES ('admin@gct.tn', 'Administrateur de démonstration', crypt('Admin123!', gen_salt('bf')), 'admin')
-ON CONFLICT (email) DO NOTHING;
+INSERT INTO app_users (email, full_name, password_hash, role, matricule)
+VALUES ('admin@gct.tn', 'Administrateur de démonstration', crypt('Admin123!', gen_salt('bf')), 'admin', 'GCT-ADMIN')
+ON CONFLICT (email) DO UPDATE SET matricule = COALESCE(NULLIF(app_users.matricule, ''), EXCLUDED.matricule);
 
 INSERT INTO dossiers (reference, subject, estimated_cost, expense_nature, procedure_type, committee, owner_name, status,
   announcement_date, submission_deadline, bid_opening_date, committee_decision_date, specification_approval_date,

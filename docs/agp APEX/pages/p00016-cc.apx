@@ -1,0 +1,1245 @@
+page 16 (
+    name: Cc
+    alias: CC
+    title: Cc
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        fileUrls: #APP_FILES#jquery.maskedinput.min.js
+        executeWhenPageLoads:
+            ```javascript-browser
+            $("#P4_REF_AO").mask("AE.##.#.####");
+            //$("#P4_BUDGET").mask("## ###.###,###")
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region cc (
+        name: Cc
+        type: form
+        source {
+            location: localDatabase
+            tableName: CC
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    region dates (
+        name: Dates
+        type: staticContent
+        layout {
+            sequence: 40
+            parentRegion: @cc
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    region fichiers-de-lancement (
+        name: Fichiers de lancement
+        type: staticContent
+        layout {
+            sequence: 30
+            parentRegion: @cc
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    region info-principales (
+        name: "Info Principales "
+        type: staticContent
+        layout {
+            sequence: 20
+            parentRegion: @cc
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        settings {
+            expandShortcuts: true
+        }
+    )
+
+    region new (
+        name: New
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: SP
+            whereClause: عدد= v(:P16_REF_AO)
+        }
+        layout {
+            sequence: 50
+            parentRegion: @cc
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+
+        column EXP__INV (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Exp Inv
+            }
+            layout {
+                sequence: 40
+            }
+        )
+
+        column ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Id
+                alignment: end
+            }
+            layout {
+                sequence: 10
+                columnAlignment: end
+            }
+        )
+
+        column التاريخ__للإعلان_عن_المنافسة (
+            reportColumnQueryId: 17
+            derivedColumn: N
+            heading {
+                heading: التاريخ للإعلان عن المنافسة
+            }
+            layout {
+                sequence: 170
+            }
+        )
+
+        column الكلفة_التقديرية__MDT_ (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: الكلفة التقديرية Mdt
+                alignment: end
+            }
+            layout {
+                sequence: 60
+                columnAlignment: end
+            }
+        )
+
+        column اللجنة_المختصة (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: اللجنة المختصة
+            }
+            layout {
+                sequence: 80
+            }
+        )
+
+        column المكلف_بالملف (
+            reportColumnQueryId: 27
+            derivedColumn: N
+            heading {
+                heading: المكلف بالملف
+            }
+            layout {
+                sequence: 270
+            }
+        )
+
+        column تاريخ__لجنة_الصفقات (
+            reportColumnQueryId: 22
+            derivedColumn: N
+            heading {
+                heading: تاريخ لجنة الصفقات
+            }
+            layout {
+                sequence: 220
+            }
+        )
+
+        column تاريخ_ارجاع_الضمانات_الوقتية (
+            reportColumnQueryId: 26
+            derivedColumn: N
+            heading {
+                heading: تاريخ ارجاع الضمانات الوقتية
+            }
+            layout {
+                sequence: 260
+            }
+        )
+
+        column تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر (
+            reportColumnQueryId: 15
+            derivedColumn: N
+            heading {
+                heading: تاريخ ارجاع كراسات الشروط حسب المحضر
+            }
+            layout {
+                sequence: 150
+            }
+        )
+
+        column تاريخ_ارسال_التقرير_للتقييم_الفني (
+            reportColumnQueryId: 19
+            derivedColumn: N
+            heading {
+                heading: تاريخ ارسال التقرير للتقييم الفني
+            }
+            layout {
+                sequence: 190
+            }
+        )
+
+        column تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: تاريخ ارسال مقترح تركيبة لجنة التقييم
+            }
+            layout {
+                sequence: 100
+            }
+        )
+
+        column تاريخ_امضاء_تقرير_تقييم_العروض (
+            reportColumnQueryId: 20
+            derivedColumn: N
+            heading {
+                heading: تاريخ امضاء تقرير تقييم العروض
+            }
+            layout {
+                sequence: 200
+            }
+        )
+
+        column تاريخ_تبليغ_الصفقة (
+            reportColumnQueryId: 25
+            derivedColumn: N
+            heading {
+                heading: تاريخ تبليغ الصفقة
+            }
+            layout {
+                sequence: 250
+            }
+        )
+
+        column تاريخ_تقديم_الملف_للجنة_الشراءات (
+            reportColumnQueryId: 21
+            derivedColumn: N
+            heading {
+                heading: تاريخ تقديم الملف للجنة الشراءات
+            }
+            layout {
+                sequence: 210
+            }
+        )
+
+        column تاريخ_تقديم_كراسات_الشروط_للمصادقة (
+            reportColumnQueryId: 12
+            derivedColumn: N
+            heading {
+                heading: تاريخ تقديم كراسات الشروط للمصادقة
+            }
+            layout {
+                sequence: 120
+            }
+        )
+
+        column تاريخ_فتح_العروض (
+            reportColumnQueryId: 18
+            derivedColumn: N
+            heading {
+                heading: تاريخ فتح العروض
+            }
+            layout {
+                sequence: 180
+            }
+        )
+
+        column تاريخ_قرار__لجنة_الصفقات (
+            reportColumnQueryId: 23
+            derivedColumn: N
+            heading {
+                heading: تاريخ قرار لجنة الصفقات
+            }
+            layout {
+                sequence: 230
+            }
+        )
+
+        column تاريخ_مصادقة_اللجنة_على_كراسات_الشروط (
+            reportColumnQueryId: 13
+            derivedColumn: N
+            heading {
+                heading: تاريخ مصادقة اللجنة على كراسات الشروط
+            }
+            layout {
+                sequence: 130
+            }
+        )
+
+        column تاريخ_نشر_نتائج_المنافسة (
+            reportColumnQueryId: 24
+            derivedColumn: N
+            heading {
+                heading: تاريخ نشر نتائج المنافسة
+            }
+            layout {
+                sequence: 240
+            }
+        )
+
+        column تاريخ_ورود_CPT_ممضاة (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: تاريخ ورود Cpt ممضاة
+            }
+            layout {
+                sequence: 90
+            }
+        )
+
+        column تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم (
+            reportColumnQueryId: 11
+            derivedColumn: N
+            heading {
+                heading: تاريخ ورود تعيين تركيبة لجنة التقييم
+            }
+            layout {
+                sequence: 110
+            }
+        )
+
+        column تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط (
+            reportColumnQueryId: 14
+            derivedColumn: N
+            heading {
+                heading: تاريخ ورود محضر مصادقة اللجنة على كراسات الشروط
+            }
+            layout {
+                sequence: 140
+            }
+        )
+
+        column تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2 (
+            reportColumnQueryId: 16
+            derivedColumn: N
+            heading {
+                heading: تاريخ ورود محضر مصادقة اللجنة على كراسات الشروط2
+            }
+            layout {
+                sequence: 160
+            }
+        )
+
+        column طريقة_ابرام_الصفقة (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: طريقة ابرام الصفقة
+            }
+            layout {
+                sequence: 50
+            }
+        )
+
+        column عدد (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: عدد
+            }
+            layout {
+                sequence: 20
+            }
+        )
+
+        column موضوع_الصفقة (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: موضوع الصفقة
+            }
+            layout {
+                sequence: 30
+            }
+        )
+
+        column نوعية_الطلب (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: نوعية الطلب
+            }
+            layout {
+                sequence: 70
+            }
+        )
+
+    )
+
+    pageItem P16_ACCORD_DG (
+        type: switch
+        label {
+            label: Accord DG
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @cc
+            column: ACCORD_DG
+            dataType: varchar2
+        }
+    )
+
+    pageItem P16_APPROBATION (
+        type: switch
+        label {
+            label: Approbation
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @cc
+            column: APPROBATION
+            dataType: varchar2
+        }
+    )
+
+    pageItem P16_AVIS_DE_PRESSE (
+        type: switch
+        label {
+            label: Avis De Presse
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @cc
+            column: AVIS_DE_PRESSE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P16_BUDGET (
+        type: textField
+        label {
+            label: Budget
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 3
+            columnAttributes: [
+                "background-color":"rgb(37
+                90
+                185
+                /
+                68%)"
+            ]
+        }
+        appearance {
+            template: @/optional-above
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 50
+        }
+        source {
+            formRegion: @cc
+            column: BUDGET
+            dataType: varchar2
+        }
+    )
+
+    pageItem P16_CRITÈRES (
+        type: switch
+        label {
+            label: Critères
+            alignment: left
+        }
+        layout {
+            sequence: 70
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @cc
+            column: CRITÈRES
+            dataType: varchar2
+        }
+    )
+
+    pageItem P16_DATE_ACCORD (
+        type: datePicker
+        label {
+            label: Date Accord
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @dates
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @cc
+            column: DATE_ACCORD
+            dataType: date
+        }
+    )
+
+    pageItem P16_DATE_AVIS (
+        type: datePicker
+        label {
+            label: Date Avis
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @dates
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @cc
+            column: DATE_AVIS
+            dataType: date
+        }
+    )
+
+    pageItem P16_DATE_DE_LANC (
+        type: datePicker
+        label {
+            label: Date De Lancement
+            alignment: left
+        }
+        settings {
+            multipleMonths: 3
+        }
+        layout {
+            sequence: 70
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-above
+            templateOptions: #DEFAULT#
+            formatMask: DD-MON-YYYY HH24:MI
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @cc
+            column: DATE_DE_LANC
+            dataType: date
+        }
+        security {
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P16_DATE_LIMITE_PROPOSÉE (
+        type: datePicker
+        label {
+            label: Date Limite Proposée
+            alignment: left
+        }
+        settings {
+            showTime: true
+        }
+        layout {
+            sequence: 80
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-above
+            templateOptions: #DEFAULT#
+            formatMask: DD-MON-YYYY HH24:MI
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @cc
+            column: DATE_LIMITE_PROPOSÉE
+            dataType: date
+        }
+    )
+
+    pageItem P16_DATE_OUVERTURE_DES_PLIS (
+        type: datePicker
+        label {
+            label: Date Ouverture Des Plis
+            alignment: left
+        }
+        settings {
+            showTime: true
+        }
+        layout {
+            sequence: 100
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            formatMask: DD-MON-YYYY HH24:MI
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @cc
+            column: DATE_OUVERTURE_DES_PLIS
+            dataType: date
+        }
+    )
+
+    pageItem P16_DATE_PRO (
+        type: datePicker
+        label {
+            label: Date Pro
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @dates
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @cc
+            column: DATE_PRO
+            dataType: date
+        }
+    )
+
+    pageItem P16_DATE_PV (
+        type: datePicker
+        label {
+            label: Date Pv
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @dates
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @cc
+            column: DATE_PV
+            dataType: date
+        }
+    )
+
+    pageItem P16_DÉTAIL_DE_RÉPONSE (
+        type: textField
+        label {
+            label: Délais De Réponse
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 3
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 5
+        }
+        source {
+            formRegion: @cc
+            column: DÉTAIL_DE_RÉPONSE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P16_FAX_PRESTATAIRE (
+        type: switch
+        label {
+            label: Fax Prestataire
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @cc
+            column: FAX_PRESTATAIRE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P16_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @info-principales
+            slot: regionBody
+        }
+        source {
+            formRegion: @cc
+            column: ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P16_JOURS_REST (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 10
+            region: @dates
+            slot: regionBody
+        }
+        appearance {
+            formatMask: DD-MON-YYYY HH24:MI:SS
+        }
+        source {
+            formRegion: @cc
+            column: JOURS_REST
+            dataType: date
+        }
+    )
+
+    pageItem P16_NATURE_DE_DEPENSE (
+        type: selectList
+        label {
+            label: Nature De Depense
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:Exploitation;Exploitation,Display2;Return2
+        }
+        layout {
+            sequence: 60
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+            column: 1
+            columnSpan: 3
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @cc
+            column: NATURE_DE_DEPENSE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P16_NOTE_OUVERTURE_PLIS (
+        type: switch
+        label {
+            label: Note Ouverture Plis
+            alignment: left
+        }
+        layout {
+            sequence: 80
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @cc
+            column: NOTE_OUVERTURE_PLIS
+            dataType: varchar2
+        }
+    )
+
+    pageItem P16_OBJET_CCT (
+        type: textarea
+        label {
+            label: Objet  de l'Appel d'Offres
+            alignment: left
+        }
+        settings {
+            autoHeight: true
+        }
+        layout {
+            sequence: 40
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+            height: 5
+        }
+        validation {
+            maxLength: 500
+        }
+        source {
+            formRegion: @cc
+            column: OBJET_CCT
+            dataType: varchar2
+        }
+    )
+
+    pageItem P16_PROGRAMME_OUVERTURE_DE_PLIS (
+        type: switch
+        label {
+            label: Programme Ouverture De Plis
+            alignment: left
+        }
+        layout {
+            sequence: 60
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @cc
+            column: PROGRAMME_OUVERTURE_DE_PLIS
+            dataType: varchar2
+        }
+    )
+
+    pageItem P16_PROPOSITION_DC_ET_DÉSIGNATION (
+        type: switch
+        label {
+            label: Proposition Dc Et Désignation
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @cc
+            column: PROPOSITION_DC_ET_DÉSIGNATION
+            dataType: varchar2
+        }
+    )
+
+    pageItem P16_PV_CCT (
+        type: switch
+        label {
+            label: Pv Cct
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @cc
+            column: PV_CCT
+            dataType: varchar2
+        }
+    )
+
+    pageItem P16_REF_AO (
+        type: textField
+        label {
+            label: Ref Ao
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @info-principales
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 50
+        }
+        source {
+            formRegion: @cc
+            column: REF_AO
+            dataType: varchar2
+        }
+        help {
+            helpText: format par défaut est AE.XX.x.XXXX X:est un chiffre
+        }
+    )
+
+    pageItem P16_STATUS (
+        type: radioGroup
+        label {
+            label: Status
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:En cours;1,Approuvé;2,Infructueuse;3
+            displayNullValue: false
+        }
+        layout {
+            sequence: 10
+            region: @dates
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @cc
+            column: STATUS
+            dataType: varchar2
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Appliquer les modifications
+        layout {
+            sequence: 30
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P16_ID
+        }
+    )
+
+    dynamicAction date-picker (
+        name: date picker
+        execution {
+            sequence: 20
+        }
+        when {
+            selectionType: items
+            items: P16_DATE_DE_LANC
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: jsExpression
+                jsExpression: $v(P16_DATE_DE_LANC)
+            }
+            affectedElements {
+                selectionType: items
+                items: P16_JOURS_REST
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    process enregistrement-des-création (
+        name: enregistrement des création
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                
+                    INSERT INTO SUIVI_MODIF (MODIFIER_PAR, DATE_MODIF, ID_OBJET) VALUES (:P0_USER, sysdate, :P16_ID);
+                
+                ```
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 21766770333763856972
+        }
+    )
+
+    process fermer-la-boîte-de-dialogue (
+        name: Fermer la boîte de dialogue
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 21766769983631856972
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: SAVE,DELETE
+        }
+    )
+
+    process initialiser-le-panneau-cc (
+        name: Initialiser le panneau Cc
+        type: formInitialization
+        formRegion: @cc
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 21766748401265856951
+        }
+    )
+
+    process traiter-le-panneau-cc (
+        name: Traiter le panneau Cc
+        type: formAutoRowProcessing
+        formRegion: @cc
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 21766748771232856952
+        }
+    )
+
+)
+

@@ -1,0 +1,1136 @@
+page 47 (
+    name: Congé
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+        ]
+    }
+    navigationMenu {
+        overrideUserInterfaceLevel: true
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        functionAndGlobalVariableDeclaration:
+            ```javascript-browser
+            function saveAndPrint() {
+            
+                apex.server.process(
+                    "SAVE_CONGE",
+                    {
+                        pageItems:
+                            "#P47_MATRICULE," +
+                            "#P47_NOM_PRENOM," +
+                            "#P47_SERVICE," +
+                            "#P47_FONCTION," +
+                            "#P47_TYPE_CONGE," +
+                            "#P47_NBR_JOURS," +
+                            "#P47_NBR_FERIES," +
+                            "#P47_DATE_DEBUT," +
+                            "#P47_DATE_FIN," +
+                            "#P47_SOLDE_AVANT," +
+                            "#P47_SOLDE_APRES," +
+                            "#P47_ADRESSE_CONGE," +
+                            "#P47_TELEPHONE"
+                    },
+                    {
+            
+                        dataType: "text",
+            
+                        success: function(pData) {
+            
+                            if (pData.trim() === "success") {
+            
+                                printRegion('formulaire-a4');
+            
+                            } else {
+            
+                                alert(pData);
+            
+                            }
+                        },
+            
+                        error: function(xhr, status, error) {
+            
+                            console.log(xhr.responseText);
+            
+                            alert("Erreur : " + error);
+            
+                        }
+                    }
+                );
+            }
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region nouveau (
+        name: Form
+        type: form
+        source {
+            location: localDatabase
+            tableName: T_CONGE
+        }
+        layout {
+            sequence: 43
+            slot: contentBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    region solde (
+        name: SOLDE
+        type: staticContent
+        source {
+            htmlCode:
+                ```html
+                 <div style="background-color:#D9EEE1;  text-align: center;  font-size: 22pt;  font-style: italic;  text-decoration: underline; font-weight: bold;  margin-bottom: 6mm;">
+                    Votre solde est de <span data-field="solde_avant"> &P47_SOLDE_AVANT. Jours si celà est incorrecte veillez le corrigé en cliquant sur le bouton Solde</span> 
+                    </DIV>
+                ```
+        }
+        layout {
+            sequence: 23
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+        accessibility {
+            landmarkType: region
+        }
+    )
+
+    region titre (
+        name: TITRE
+        type: staticContent
+        source {
+            htmlCode:
+                ```html
+                <style>
+                  * { box-sizing: border-box; margin: 0; padding: 0; }
+                  body { font-family: "Times New Roman", serif; background: #f0f0f0; }
+                  .a4 {
+                
+                            width: 210mm;
+                            min-height: 297mm;
+                            background: white;
+                            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                            margin-bottom: 20px;
+                            padding: 15mm;
+                            position: relative;
+                       
+                
+                
+                 
+                    
+                    border: 3px double #000;
+                    direction: rtl;
+                  }
+                  .header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    margin-bottom: 8mm;
+                  }
+                  .header-date { text-align: right; font-size: 13pt; font-weight: bold; min-width: 120px; }
+                  .header-org  { text-align: left; font-size: 13pt; font-weight: bold; line-height: 1.5; }
+                  .titre {
+                    text-align: center;
+                    font-size: 22pt;
+                    font-style: italic;
+                    text-decoration: underline;
+                    font-weight: bold;
+                    margin-bottom: 6mm;
+                  }
+                  .checkboxes {
+                    display: flex;
+                    justify-content: space-around;
+                    direction: rtl;
+                    font-size: 12pt;
+                    font-weight: bold;
+                    /*border: 1px solid #000;*/
+                    padding: 4pt 6pt;
+                    margin-bottom: 5mm;
+                  }
+                  .checkboxes span { white-space: nowrap; }
+                  .main-table {
+                    width: 800px;
+                    align:center;
+                    border-collapse: collapse;
+                    font-size: 13pt;
+                    font-weight: bold;
+                    direction: rtl;
+                  }
+                  .main-table td { padding: 12pt 14pt; vertical-align: middle; }
+                  .lbl { text-align: right; white-space: nowrap; width: 25%; }
+                  .val { text-align: right;  min-width: 120px; }
+                   .val2 { text-align: right;  min-width: 120px;  direction: ltr; }
+                  .sep { width: 30mm; }
+                  .footer-sign {
+                    margin-top: 20mm;
+                    display: flex;
+                    justify-content: space-between;
+                    direction: rtl;
+                    font-size: 13pt;
+                    font-weight: bold;
+                  }
+                  .print-btn {
+                    margin: 15px auto;
+                    display: block;
+                    padding: 10px 25px;
+                    background: #007BFF;
+                    color: #fff;
+                    border: none;
+                    cursor: pointer;
+                    font-size: 15px;
+                    border-radius: 5px;
+                  }
+                  @media print {
+                    body { background: #fff; }
+                    .print-btn { display: none; }
+                    .a4 { margin: 0; border: 3px double #000; }
+                  }
+                </style>
+                
+                <script>
+                function printRegion(regionId) {
+                  var content = document.getElementById(regionId).innerHTML;
+                  var printWindow = window.open('', '', 'height=900,width=700');
+                  printWindow.document.write(
+                    '<html><head><title>طباعة</title>' +
+                    '<style>' +
+                    '* { box-sizing:border-box; margin:0; padding:0; }' +
+                    'body { font-family:"Times New Roman",serif; direction:rtl; }' +
+                    '.a4 { width:190mm; min-height:270mm; padding:15mm; border:3px double #000;  margin-bottom: 15px; position: relative; }' +
+                    '.header { display:flex; justify-content:space-between; margin-bottom:8mm; }' +
+                    '.header-org { text-align:right; font-size:13pt; font-weight:bold; line-height:1.5; }' +
+                    '.header-date { text-align:right; font-size:13pt; font-weight:bold; }' +
+                    '.titre { text-align:center; font-size:22pt; font-style:italic; text-decoration:underline; font-weight:bold; margin-bottom:6mm; }' +
+                    '.checkboxes { display:flex; justify-content:space-around; direction:rtl; font-size:12pt; font-weight:bold;  padding:4pt 6pt; margin-bottom:5mm; }' +
+                    '.main-table { width:170mm; align:center; border-collapse:collapse; font-size:13pt; font-weight:bold; direction:rtl; }' +
+                    '.main-table td { padding:12pt 14pt; vertical-align:middle; }' +
+                    '.lbl { text-align:right; white-space:nowrap; width:20%; }' +
+                    '.val { text-align:right;  min-width:120px; }' +
+                    '.val2 { text-align:right;  min-width:120px; direction: ltr; }' +
+                    '.sep { width:20mm; }' +
+                    '.footer-sign { margin-top:20mm; display:flex; justify-content:space-between; direction:rtl; font-size:13pt; font-weight:bold; }' +
+                    '</style>' +
+                    '</head><body><div class="a4">' + content + '</div></body></html>'
+                  );
+                  printWindow.document.close();
+                  printWindow.print();
+                }
+                
+                </script>
+                
+                <div id="formulaire-a4" class="a4">
+                
+                  <!-- EN-TÊT -->
+                  <div class="header">
+                    <div class="header-org">
+                      <div>المجمع الكيميائي التونسي</div>
+                      <div>الإدارة الجهوية للمعامل بقابس</div>
+                    </div>
+                    <div class="header-date">
+                      <div style="font-size:13pt; font-weight:bold;">
+                        قابس في : <span data-field="date">...</span>
+                      </div>
+                    </div>
+                  </div>
+                
+                  <div class="checkboxes"></div>
+                  <div class="checkboxes"></div>
+                
+                  <!-- TITRE -->
+                  <div class="titre">مطلب إجازة</div>
+                
+                  <div class="checkboxes"></div>
+                  <div class="checkboxes"></div>
+                
+                  <!-- CASES À COCHER -->
+                  <div class="checkboxes">
+                    <span><span data-field="type1">☐</span> &nbsp; خالصة الأجر</span>
+                    <span><span data-field="type2">☐</span> &nbsp; غير خالصة الأجر</span>
+                    <span><span data-field="type3">☐</span> &nbsp; لأسباب عائلية</span>
+                    <span><span data-field="type4">☐</span> &nbsp; مرخص فيها</span>
+                    <span><span data-field="type5">☐</span> &nbsp; تعويض</span>
+                    </div>
+                
+                  <div class="checkboxes"></div>
+                  <div class="checkboxes"></div>
+                
+                  <!-- TABLEAU PRINCIPAL -->
+                  <table class="main-table">
+                    <tr>
+                      <td class="lbl">الاسم و اللقب :</td>
+                      <td class="val"><span data-field="user">...</span></td>
+                      <td class="sep"></td>
+                      <td class="lbl">الرقم الآلي :</td>
+                      <td class="val"><span data-field="mat">...</span></td>
+                    </tr>
+                    <tr>
+                      <td class="lbl">المصلحة :</td>
+                      <td class="val" colspan="2"><span data-field="service">...</span></td>
+                      <td class="lbl">المهنة :</td>
+                      <td class="val"><span data-field="fonction">...</span></td>
+                    </tr>
+                    <tr>
+                      <td class="lbl">عدد الأيام المطلوبة :</td>
+                      <td class="val"><span data-field="nbr_jours">...</span></td>
+                      <td class="sep"></td>
+                      <td class="lbl" colspan="2">من ضمنها : ( <span data-field="nbr_feries">0</span> يوم) أعياد رسمية</td>
+                    </tr>
+                    <tr>
+                      <td class="lbl">تاريخ بداية الإجازة :</td>
+                      <td class="val2"><span data-field="date_debut">...</span></td>
+                      <td class="sep"></td>
+                      <td class="lbl">تاريخ الرجوع :</td>
+                      <td class="val2"><span data-field="date_fin">...</span></td>
+                    </tr>
+                    <tr>
+                      <td class="lbl">الرصيد السابق :</td>
+                      <td class="val"><span data-field="solde_avant">...</span></td>
+                      <td class="sep"></td>
+                      <td class="lbl">الرصيد الحالى :</td>
+                      <td class="val"><span data-field="solde_apres">...</span></td>
+                    </tr>
+                    <tr>
+                      <td class="lbl"colspan="2">العنوان أثناء الإجازة :<span data-field="adresse">...</span> قابس</td>
+                      
+                      <td class="sep"></td>
+                      <td class="lbl">رقم الهاتف :</td>
+                      <td class="val2" ><span data-field="tel">...</span></td>
+                    </tr>
+                  </table>
+                
+                  <!-- SIGNATURES -->
+                  <div class="footer-sign">
+                    <span>إمضاء المعني بالأمر</span>
+                    <span>إمضاء رئيس المصلحة</span>
+                  </div>
+                
+                </div>
+                
+                <button type="button"
+                        class="print-btn"
+                        onclick="saveAndPrint()">
+                    🖨️ طباعة
+                </button>
+                ```
+        }
+        layout {
+            sequence: 53
+            slot: contentBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        advanced {
+            htmlDomId: formulairea4
+            regionDisplaySelector: true
+        }
+    )
+
+    pageItem P47_ADRESSE_CONGE (
+        type: textField
+        label {
+            label: Adresse Conge
+            alignment: left
+        }
+        layout {
+            sequence: 170
+            region: @nouveau
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            maxLength: 200
+        }
+        source {
+            formRegion: @nouveau
+            column: ADRESSE_CONGE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P47_CONGE_ID (
+        type: hidden
+        layout {
+            sequence: 40
+            region: @nouveau
+            slot: regionBody
+        }
+        source {
+            formRegion: @nouveau
+            column: CONGE_ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P47_DATE_DEBUT (
+        type: datePicker
+        label {
+            label: Date Debut
+            alignment: left
+        }
+        layout {
+            sequence: 120
+            region: @nouveau
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            formatMask: DD/MM/YYYY
+            width: 30
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @nouveau
+            column: DATE_DEBUT
+            dataType: date
+        }
+    )
+
+    pageItem P47_DATE_DEMANDE (
+        type: datePicker
+        label {
+            label: Date Demande
+            alignment: left
+        }
+        layout {
+            sequence: 70
+            region: @nouveau
+            slot: regionBody
+            alignment: left
+            columnSpan: 3
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            formatMask: DD/MM/YYYY
+            width: 30
+        }
+        source {
+            formRegion: @nouveau
+            column: DATE_DEMANDE
+            dataType: date
+        }
+    )
+
+    pageItem P47_DATE_FIN (
+        type: datePicker
+        label {
+            label: Date Fin
+            alignment: left
+        }
+        layout {
+            sequence: 140
+            region: @nouveau
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            formatMask: DD/MM/YYYY
+            width: 30
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @nouveau
+            column: DATE_FIN
+            dataType: date
+        }
+    )
+
+    pageItem P47_FONCTION (
+        type: textField
+        label {
+            label: Fonction
+            alignment: left
+        }
+        layout {
+            sequence: 90
+            region: @nouveau
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            maxLength: 100
+        }
+        source {
+            formRegion: @nouveau
+            column: FONCTION
+            dataType: varchar2
+        }
+        default {
+            type: sqlQuerySingleValue
+            sqlQuerySingleValue:
+                ```sql
+                select T_USER.FONCTION as FONC 
+                 from T_USER T_USER
+                 where MATRICULE = :P0_MAT
+                ```
+        }
+    )
+
+    pageItem P47_ID_SOL (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @solde
+            slot: regionBody
+        }
+        default {
+            type: sqlQuerySingleValue
+            sqlQuerySingleValue:
+                ```sql
+                select SOLDE_CONGE.ID_SOLDE as ID_SOLDE 
+                 from SOLDE_CONGE SOLDE_CONGE
+                 where MATRICULE = :P0_MAT
+                ```
+        }
+    )
+
+    pageItem P47_MATRICULE (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @nouveau
+            slot: regionBody
+        }
+        source {
+            formRegion: @nouveau
+            column: MATRICULE
+            dataType: varchar2
+        }
+        default {
+            type: item
+            item: P0_MAT
+        }
+    )
+
+    pageItem P47_NBR_FERIES (
+        type: numberField
+        label {
+            label: Nbr Feries
+            alignment: left
+        }
+        layout {
+            sequence: 110
+            region: @nouveau
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @nouveau
+            column: NBR_FERIES
+            dataType: number
+        }
+    )
+
+    pageItem P47_NBR_JOURS (
+        type: hidden
+        layout {
+            sequence: 130
+            region: @nouveau
+            slot: regionBody
+        }
+        source {
+            formRegion: @nouveau
+            column: NBR_JOURS
+            dataType: number
+            queryOnly: true
+        }
+    )
+
+    pageItem P47_NOM_PRENOM (
+        type: hidden
+        layout {
+            sequence: 50
+            region: @nouveau
+            slot: regionBody
+        }
+        source {
+            formRegion: @nouveau
+            column: NOM_PRENOM
+            dataType: varchar2
+        }
+        default {
+            type: item
+            item: P0_USER
+        }
+    )
+
+    pageItem P47_SERVICE (
+        type: hidden
+        layout {
+            sequence: 60
+            region: @nouveau
+            slot: regionBody
+        }
+        source {
+            formRegion: @nouveau
+            column: SERVICE
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: الإقتناء المجمع للخدمات
+        }
+    )
+
+    pageItem P47_SOLDE_APRES (
+        type: hidden
+        layout {
+            sequence: 160
+            region: @nouveau
+            slot: regionBody
+        }
+        source {
+            formRegion: @nouveau
+            column: SOLDE_APRES
+            dataType: number
+        }
+    )
+
+    pageItem P47_SOLDE_AVANT (
+        type: hidden
+        layout {
+            sequence: 150
+            region: @nouveau
+            slot: regionBody
+        }
+        source {
+            formRegion: @nouveau
+            column: SOLDE_AVANT
+            dataType: number
+        }
+        default {
+            type: sqlQuerySingleValue
+            sqlQuerySingleValue:
+                ```sql
+                select SOLDE_CONGE.SOLDE as SOLDE 
+                 from SOLDE_CONGE SOLDE_CONGE
+                 where MATRICULE = :P0_MAT
+                ```
+        }
+    )
+
+    pageItem P47_STATUT (
+        type: hidden
+        layout {
+            sequence: 190
+            region: @nouveau
+            slot: regionBody
+        }
+        source {
+            formRegion: @nouveau
+            column: STATUT
+            dataType: varchar2
+        }
+    )
+
+    pageItem P47_TELEPHONE (
+        type: displayOnly
+        label {
+            label: Telephone
+            alignment: left
+        }
+        layout {
+            sequence: 180
+            region: @nouveau
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @nouveau
+            column: TELEPHONE
+            dataType: varchar2
+        }
+        default {
+            type: sqlQuerySingleValue
+            sqlQuerySingleValue:
+                ```sql
+                select T_USER.TEL as TEL 
+                 from T_USER T_USER
+                 where MATRICULE = :P0_MAT
+                ```
+        }
+    )
+
+    pageItem P47_TYPE_CONGE (
+        type: radioGroup
+        label {
+            label: Type Conge
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC2:خالصة الأجر;SOLDE,غیر خالصة الأجر;NON_SOLDE,لأسباب عائلیة;FAMILIAL,مرخص فیھا;AUTORISE,تعویض;COMPENSATION
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 80
+            region: @nouveau
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-above
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--radioButtonGroup
+                t-Form-fieldContainer--boldDisplay
+            ]
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @nouveau
+            column: TYPE_CONGE
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: SOLDE
+        }
+    )
+
+    button nouveau (
+        buttonName: Nouveau
+        label: Solde
+        layout {
+            sequence: 10
+            region: @solde
+            slot: belowBox
+            horizontalAlignment: left
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 50
+                items: {
+                    P50_MATRICULE: &P0_MAT.
+                    P50_ID_SOLDE: &P47_ID_SOL.
+                }
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction nouveau (
+        name: Nouveau
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: P47_DATE_J
+        }
+
+        action native-refresh (
+            action: refresh
+            settings {
+                maintainPagination: true
+            }
+            affectedElements {
+                selectionType: region
+                region: @titre
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction nouveau-2 (
+        name: Nouveau
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: [
+                P47_DATE_FIN
+                P47_DATE_DEBUT
+                P47_SOLDE_AVANT
+                P47_NBR_FERIES
+            ]
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    function calculer() {
+                        var debut = apex.item('P47_DATE_DEBUT').getValue();
+                        var fin   = apex.item('P47_DATE_FIN').getValue();
+                        
+                        if (debut && fin) {
+                            // Conversion des dates DD/MM/YYYY en objets Date pour le calcul
+                            var d1 = new Date(debut.split('/').reverse().join('-'));
+                            var d2 = new Date(fin.split('/').reverse().join('-'));
+                            
+                            // Différence brute : DATE_FIN (reprise) n'est pas comptée
+                            var diff = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+                            
+                            if (diff >= 0) {
+                                var avant  = parseFloat(apex.item('P47_SOLDE_AVANT').getValue()) || 0;
+                                var feries = parseInt(apex.item('P47_NBR_FERIES').getValue(), 10) || 0;
+                                
+                                // Jours réels à déduire (jours ouvrables de congé)
+                                var joursADeduire = diff - feries;
+                                if (joursADeduire < 0) joursADeduire = 0;
+                    
+                                // Mise à jour du champ Nombre de Jours sur la page
+                                apex.item('P47_NBR_JOURS').setValue(diff);
+                                
+                                // Gestion propre du type de congé (Checkbox APEX)
+                                var rawType = apex.item('P47_TYPE_CONGE').getValue();
+                                var isSolde = false;
+                                
+                                if (Array.isArray(rawType)) {
+                                    isSolde = rawType.includes('SOLDE');
+                                } else if (typeof rawType === 'string') {
+                                    isSolde = rawType.split(':').includes('SOLDE');
+                                }
+                                
+                                if (isSolde) {
+                                    var soldeApres = avant - joursADeduire;
+                                    apex.item('P47_SOLDE_APRES').setValue(soldeApres.toFixed(1));
+                                } else {
+                                    apex.item('P47_SOLDE_APRES').setValue(avant.toFixed(1));
+                                }
+                            } else {
+                                // Si la date de reprise est antérieure à la date de début
+                                apex.item('P47_NBR_JOURS').setValue(0);
+                                apex.item('P47_SOLDE_APRES').setValue(apex.item('P47_SOLDE_AVANT').getValue());
+                            }
+                        }
+                    }
+                    calculer();
+                    ```
+            }
+            affectedElements {
+                selectionType: items
+                items: P47_NBR_JOURS
+            }
+            execution {
+                sequence: 10
+            }
+            clientSideCondition {
+                type: itemIsNotNull
+                item: P47_DATE_FIN
+            }
+        )
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @nouveau
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction nouveau-3 (
+        name: Nouveau_1
+        execution {
+            sequence: 20
+        }
+        when {
+            selectionType: items
+            items: P47_DATE_DEMANDE
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @titre
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction nouveau-4 (
+        name: Nouveau_3
+        execution {
+            sequence: 21
+        }
+        when {
+            selectionType: region
+            region: @nouveau
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    function majTitre() {
+                        var t = $('#formulaire-a4');
+                        
+                        // Récupération sécurisée des valeurs simples
+                        t.find('[data-field="date"]').text(apex.item('P47_DATE_DEMANDE').getValue() || '...');
+                        t.find('[data-field="user"]').text(apex.item('P0_USER').getValue() || '...');
+                        t.find('[data-field="mat"]').text(apex.item('P0_MAT').getValue() || '...');
+                        t.find('[data-field="service"]').text(apex.item('P47_SERVICE').getValue() || '...');
+                        t.find('[data-field="fonction"]').text(apex.item('P47_FONCTION').getValue() || '...');
+                        t.find('[data-field="nbr_jours"]').text(apex.item('P47_NBR_JOURS').getValue() || '...');
+                        t.find('[data-field="nbr_feries"]').text(apex.item('P47_NBR_FERIES').getValue() || '0');
+                        t.find('[data-field="date_debut"]').text(apex.item('P47_DATE_DEBUT').getValue() || '...');
+                        t.find('[data-field="date_fin"]').text(apex.item('P47_DATE_FIN').getValue() || '...');
+                        t.find('[data-field="solde_avant"]').text(apex.item('P47_SOLDE_AVANT').getValue() || '...');
+                        t.find('[data-field="solde_apres"]').text(apex.item('P47_SOLDE_APRES').getValue() || '...');
+                        t.find('[data-field="adresse"]').text(apex.item('P47_ADRESSE_CONGE').getValue() || '...');
+                        t.find('[data-field="tel"]').text(apex.item('P47_TELEPHONE').getValue() || '...');
+                    
+                        // RÉPARATION DU PROBLÈME DE TYPE_CONGE
+                        var rawType = apex.item('P47_TYPE_CONGE').getValue();
+                        var values = [];
+                    
+                        // On s'assure que values soit toujours un tableau, peu importe ce qu'APEX renvoie
+                        if (Array.isArray(rawType)) {
+                            values = rawType;
+                        } else if (typeof rawType === 'string' && rawType !== "") {
+                            values = rawType.split(':'); // Séparateur défini dans Mon APPlication
+                        }
+                    
+                        if (t.length > 0) {
+                            // Utilisation de .indexOf pour la compatibilité ou .includes
+                            t.find('[data-field="type1"]').html(values.indexOf('SOLDE')        !== -1 ? '☑' : '☐');
+                            t.find('[data-field="type2"]').html(values.indexOf('NON_SOLDE')    !== -1 ? '☑' : '☐');
+                            t.find('[data-field="type3"]').html(values.indexOf('FAMILIAL')     !== -1 ? '☑' : '☐');
+                            t.find('[data-field="type4"]').html(values.indexOf('AUTORISE')     !== -1 ? '☑' : '☐');
+                            t.find('[data-field="type5"]').html(values.indexOf('COMPENSATION') !== -1 ? '☑' : '☐');
+                        }
+                    }
+                    
+                    majTitre();
+                    ```
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction nouveau-5 (
+        name: Nouveau_2
+        execution {
+            sequence: 31
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @solde
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode: location.reload();
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select SOLDE_CONGE.SOLDE as SOLDE 
+                     from SOLDE_CONGE SOLDE_CONGE
+                    
+                     where MATRICULE = :P0_MAT
+                    ```
+            }
+            affectedElements {
+                selectionType: items
+                items: P47_SOLDE_AVANT
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    process close (
+        name: close
+        type: closeDialog
+        execution {
+            sequence: 10
+            point: afterSubmit
+        }
+        advanced {
+            executionMappingIdentifier: 35653214949869442
+        }
+    )
+
+    process initialiser-le-panneau-heur (
+        name: Initialiser le panneau heur
+        type: formInitialization
+        formRegion: @nouveau
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 34839332732230515
+        }
+    )
+
+    process save-conge (
+        name: SAVE_CONGE
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                DECLARE
+                    v_solde_avant   NUMBER;
+                    v_nbr_jours     NUMBER;
+                    v_nbr_feries    NUMBER;
+                    v_solde_apres   NUMBER;
+                BEGIN
+                    -- Récupération directe des valeurs calculées par le JavaScript de la page
+                    v_solde_avant := NVL(TO_NUMBER(:P47_SOLDE_AVANT), 0);
+                    v_nbr_jours   := NVL(TO_NUMBER(:P47_NBR_JOURS), 0);
+                    v_nbr_feries  := NVL(TO_NUMBER(:P47_NBR_FERIES), 0);
+                    
+                    -- Vérification de la Checkbox (gère le format APEX à délimiteur)
+                    IF :P47_TYPE_CONGE LIKE '%SOLDE%' THEN
+                        v_solde_apres := v_solde_avant - (v_nbr_jours - v_nbr_feries);
+                    ELSE
+                        v_solde_apres := v_solde_avant;
+                    END IF;
+                
+                    -- Insertion dans l'historique
+                    INSERT INTO T_CONGE (
+                        MATRICULE, NOM_PRENOM, SERVICE, FONCTION, TYPE_CONGE,
+                        NBR_JOURS, NBR_FERIES, DATE_DEBUT, DATE_FIN,
+                        SOLDE_AVANT, SOLDE_APRES, ADRESSE_CONGE, TELEPHONE
+                    ) VALUES (
+                        :P47_MATRICULE, 
+                        :P47_NOM_PRENOM, 
+                        :P47_SERVICE, 
+                        :P47_FONCTION, 
+                        :P47_TYPE_CONGE,
+                        v_nbr_jours, 
+                        v_nbr_feries, 
+                        TO_DATE(:P47_DATE_DEBUT, 'DD/MM/YYYY'), 
+                        TO_DATE(:P47_DATE_FIN, 'DD/MM/YYYY'), -- Date de reprise stockée
+                        v_solde_avant, 
+                        v_solde_apres,
+                        :P47_ADRESSE_CONGE, 
+                        :P47_TELEPHONE
+                    );
+                
+                    -- Mise à jour du solde de l'employé
+                    UPDATE SOLDE_CONGE 
+                    SET SOLDE = v_solde_apres
+                    WHERE MATRICULE = :P47_MATRICULE;
+                
+                    COMMIT;
+                    HTP.P('success');
+                
+                EXCEPTION
+                    WHEN OTHERS THEN
+                        ROLLBACK;
+                        HTP.P('Erreur lors de la sauvegarde : ' || SQLERRM);
+                END;
+                ```
+        }
+        execution {
+            sequence: 20
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 35650807628869418
+        }
+    )
+
+)
+

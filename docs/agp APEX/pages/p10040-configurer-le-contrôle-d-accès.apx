@@ -1,0 +1,192 @@
+page 10040 (
+    name: Configurer le contrôle d'accès
+    alias: CONFIGURER-LE-CONTRÔLE-D-ACCÈS
+    title: Configurer le contrôle d'accès
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        authorizationScheme: @droits-de-lecteur
+        pageAccessProtection: noArgumentsSupported
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>Sélectionnez l'option appropriée pour tous les utilisateurs authentifiés.<br>
+            Si vous sélectionnez <strong>Non</strong>, l'application sera plus sécurisée, car seuls les utilisateurs spécifiés peuvent y accéder.
+            Toutefois, si votre application compte de nombreux utilisateurs, tenir à jour les utilisateurs peut s'avérer complexe, et vous préférerez peut-être choisir <strong>Oui</strong> et entrer uniquement des administrateurs d'application, et éventuellement des contributeurs.<br>
+            Si vous sélectionnez <strong>Oui</strong>, vous devez également indiquer le mode de traitement des utilisateurs qui ne figurent pas sur la liste des utilisateurs.</p>
+            <p>Indiquez si une adresse électronique ou une valeur alphanumérique est requise pour les noms utilisateur.<br>
+            Généralement, vous devrez définir ce paramètre sur <strong>Adresse électronique</strong> si votre application utilise (ou sera configurée pour utiliser) un modèle d'authentification centralisé tel qu'Oracle Access Manager ou l'accès avec connexion unique.</p>
+            <p><em><strong>Remarque :</strong> cette application prend en charge les 3 niveaux d'accès suivants : Lecteur, Contributeur et Administrateur.
+            <ul>
+              <li>Les <strong>lecteurs</strong> disposent d'un accès en lecture seule à toutes les informations et peuvent également consulter les états.</li>
+              <li>Les <strong>contributeurs</strong> peuvent créer, modifier et supprimer des informations et consulter les états.</li>
+              <li>Les <strong>administrateurs</strong>, outre les capacités des contributeurs, peuvent également exécuter la configuration de l'application en accédant à sa section Administration.</li>
+            </ul>
+            </em></p>
+            ```
+    }
+    config {
+        buildOption: @fonctionnalité-contrôle-d-accès
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region configuration-du-contrôle-d-accès (
+        name: Configuration du contrôle d'accès
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P10040_ALLOW_OTHER_USERS (
+        type: switch
+        label {
+            label: Tous les utilisateurs authentifiés peuvent accéder à cette application
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @configuration-du-contrôle-d-accès
+            slot: regionBody
+            alignment: left
+            labelColumnSpan: 3
+        }
+        appearance {
+            template: @/optional
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            type: functionBody
+            plsqlFunctionBody:
+                ```plsql
+                if apex_app_setting.get_value( p_name => 'ACCESS_CONTROL_SCOPE' ) = 'ACL_ONLY' then
+                    return 'N';
+                else
+                    return 'Y';
+                end if;
+                ```
+        }
+        help {
+            inlineHelpText: Sélectionnez <strong>Non</strong> si tous les utilisateurs sont définis dans la liste de contrôle d'accès. Sélectionnez <strong>Oui</strong> si les utilisateurs authentifiés ne figurant pas dans la liste de contrôle d'accès peuvent également utiliser cette application.
+        }
+    )
+
+    button apply-changes (
+        buttonName: APPLY_CHANGES
+        label: Appliquer les modifications
+        layout {
+            sequence: 20
+            region: @boutons
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: previous
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+            executeValidations: false
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    process définir-le-contrôle-d-accès (
+        name: Définir le contrôle d'accès
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                begin
+                    if :P10040_ALLOW_OTHER_USERS = 'Y' then
+                        apex_app_setting.set_value (
+                            p_name  => 'ACCESS_CONTROL_SCOPE',
+                            p_value => 'ALL_USERS');
+                    else
+                        apex_app_setting.set_value (
+                            p_name  => 'ACCESS_CONTROL_SCOPE',
+                            p_value => 'ACL_ONLY');
+                    end if;
+                end;
+                ```
+        }
+        execution {
+            sequence: 10
+        }
+        successMessage {
+            successMessage: Paramètres de contrôle d'accès enregistrés.
+        }
+        advanced {
+            executionMappingIdentifier: 61391651539627275465
+        }
+    )
+
+    branch (
+        name: Branchement sur la page d'administration
+        execution {
+            sequence: 10
+        }
+        behavior {
+            target: {
+                page: 10000
+            }
+        }
+    )
+
+)
+

@@ -1,0 +1,62 @@
+authorization administrator (
+    name: ADMINISTRATOR
+    type: isInRoleOrGroup
+    settings {
+        names: Administrateur
+    }
+)
+
+authorization droits-d-administration (
+    name: Droits d'administration
+    type: isInRoleOrGroup
+    settings {
+        names: [
+            Administrateur
+            ADMINISTRATOR
+        ]
+    }
+    error {
+        errorMessage: Privilèges insuffisants, l'utilisateur n'est pas un administrateur
+    }
+)
+
+authorization droits-de-contribution (
+    name: Droits de contribution
+    type: isInRoleOrGroup
+    settings {
+        names: [
+            Administrateur
+            Contributeur
+        ]
+    }
+    error {
+        errorMessage: Privilèges insuffisants, l'utilisateur n'est pas un contributeur
+    }
+)
+
+authorization droits-de-lecteur (
+    name: Droits de lecteur
+    type: plSqlFunctionBody
+    settings {
+        plsqlFunctionBody:
+            ```plsql
+            if nvl(apex_app_setting.get_value(
+               p_name => 'ACCESS_CONTROL_SCOPE'),'x') = 'ALL_USERS' then
+                -- allow user not in the ACL to access the application
+                return true;
+            else
+                -- require user to have at least one role
+                return apex_acl.has_user_any_roles (
+                    p_application_id => :APP_ID, 
+                    p_user_name      => :APP_USER);
+            end if;
+            ```
+    }
+    error {
+        errorMessage: Vous n'êtes pas autorisé à afficher cette application, car vous ne disposez pas des droits d'accès ou votre compte a été verrouillé. Contactez l'administrateur de l'application.
+    }
+    advanced {
+        evaluationType: perSession
+    }
+)
+

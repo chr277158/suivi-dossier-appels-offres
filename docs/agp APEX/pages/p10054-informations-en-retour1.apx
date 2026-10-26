@@ -1,0 +1,418 @@
+page 10054 (
+    name: Informations en retour
+    alias: INFORMATIONS-EN-RETOUR1
+    title: Informations en retour
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    css {
+        inline:
+            ```css
+            /* Color feedback rating icons */
+            .feedback-positive { color: var(--ut-feedback-positive-text-color, var(--ut-palette-success)); }
+            .feedback-neutral { color: var(--ut-feedback-neutral-text-color, var(--ut-palette-warning)); }
+            .feedback-negative { color: var(--ut-feedback-negative-text-color, var(--ut-palette-danger)); }
+            ```
+    }
+    security {
+        authorizationScheme: @droits-d-administration
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    config {
+        buildOption: @fonctionnalité-informations-en-retour
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region région-d-élément-de-panneau (
+        name: Région d'élément de panneau
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+        }
+    )
+
+    pageItem P10054_FEEDBACK (
+        type: displayOnly
+        label {
+            label: Informations en retour
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            region: @région-d-élément-de-panneau
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P10054_FEEDBACK_STATUS (
+        type: selectList
+        label {
+            label: Statut
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @feedback-status
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 70
+            region: @région-d-élément-de-panneau
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P10054_FILED (
+        type: displayOnly
+        label {
+            label: Enregistré
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @région-d-élément-de-panneau
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P10054_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @région-d-élément-de-panneau
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P10054_PAGE_ID (
+        type: displayOnly
+        label {
+            label: Page
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @région-d-élément-de-panneau
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P10054_RATING_ICON (
+        type: displayOnly
+        label {
+            label: Evaluation
+            alignment: left
+        }
+        settings {
+            format: htmlUnsafe
+        }
+        layout {
+            sequence: 40
+            region: @région-d-élément-de-panneau
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P10054_RESPONSE (
+        type: textarea
+        label {
+            label: Réponse
+            alignment: left
+        }
+        layout {
+            sequence: 60
+            region: @région-d-élément-de-panneau
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 64
+            height: 4
+        }
+        validation {
+            maxLength: 4000
+        }
+    )
+
+    pageItem P10054_USER_AGENT (
+        type: displayOnly
+        label {
+            label: Agent utilisateur
+            alignment: left
+        }
+        layout {
+            sequence: 100
+            region: @région-d-élément-de-panneau
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+            executeValidations: false
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Supprimer
+        layout {
+            sequence: 20
+            region: @boutons
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P10054_ID
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Appliquer les modifications
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--gapLeft
+            ]
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    process charger-les-données (
+        name: Charger les données
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                for l_feedback in (
+                   select page_id,
+                          page_name,
+                          case feedback_rating
+                                when 1 then '<span class="fa fa-frown-o feedback-negative" aria-hidden="true" title="N&#xE9;gatif"></span>' 
+                                when 2 then '<span class="fa fa-emoji-neutral feedback-neutral" aria-hidden="true" title="Neutre"></span>'  
+                                when 3 then '<span class="fa fa-smile-o feedback-positive" aria-hidden="true" title="Positif"></span>' 
+                                end rating_icon,
+                          lower(created_by) || ' - ' || apex_util.get_since(created_on) filed,
+                          feedback,
+                          public_response,
+                          feedback_status,
+                          http_user_agent
+                     from apex_team_feedback
+                    where feedback_id = :P10054_ID )
+                loop
+                   :P10054_PAGE_ID         := l_feedback.page_id||'. '||l_feedback.page_name;
+                   :P10054_FILED           := l_feedback.filed;
+                   :P10054_RATING_ICON     := l_feedback.rating_icon;
+                   :P10054_FEEDBACK        := l_feedback.feedback;
+                   :P10054_RESPONSE        := l_feedback.public_response;
+                   :P10054_FEEDBACK_STATUS := l_feedback.feedback_status;
+                   :P10054_USER_AGENT      := l_feedback.http_user_agent;
+                end loop;
+                ```
+        }
+        execution {
+            sequence: 10
+            point: afterHeader
+        }
+        advanced {
+            executionMappingIdentifier: 61391701277854275509
+        }
+    )
+
+    process effacer-le-cache-des-pages (
+        name: Effacer le cache des pages
+        type: clearSessionState
+        execution {
+            sequence: 40
+        }
+        advanced {
+            executionMappingIdentifier: 61391702452517275510
+        }
+        serverSideCondition {
+            whenButtonPressed: @delete
+        }
+    )
+
+    process fermer-la-boîte-de-dialogue (
+        name: Fermer la boîte de dialogue
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 61391702843158275510
+        }
+    )
+
+    process répondre-aux-informations-en-retour (
+        name: Répondre aux informations en retour
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                apex_util.reply_to_feedback (
+                    p_feedback_id     => :P10054_ID,
+                    p_status          => :P10054_FEEDBACK_STATUS,
+                    p_public_response => :P10054_RESPONSE );
+                ```
+        }
+        execution {
+            sequence: 10
+        }
+        successMessage {
+            successMessage: Action traitée.
+        }
+        advanced {
+            executionMappingIdentifier: 61391701619880275509
+        }
+        serverSideCondition {
+            whenButtonPressed: @save
+        }
+    )
+
+    process supprimer-les-informations-en-retour (
+        name: Supprimer les informations en retour
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                apex_util.delete_feedback (
+                    p_feedback_id => :P10054_ID );
+                ```
+        }
+        execution {
+            sequence: 20
+        }
+        successMessage {
+            successMessage: Informations en retour supprimées
+        }
+        advanced {
+            executionMappingIdentifier: 61391702065646275509
+        }
+        serverSideCondition {
+            whenButtonPressed: @delete
+        }
+    )
+
+)
+

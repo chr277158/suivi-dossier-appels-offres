@@ -1,0 +1,241 @@
+page 10036 (
+    name: Messages de journalisation
+    alias: MESSAGES-DE-JOURNALISATION
+    title: Messages de journalisation
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authorizationScheme: @droits-d-administration
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    config {
+        buildOption: @fonctionnalité-génération-d-états-d-activité
+    }
+
+    region exécution-d-automatisation (
+        name: Exécution d'automatisation
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region messages (
+        name: Messages
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select message_timestamp,
+                       message,
+                       message_type,
+                       pk_value
+                  from apex_automation_msg_log
+                 where automation_log_id = :P10036_LOG_ID
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        reportLayout {
+            numberOfRows: 50
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+                t-Report--inline
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+        performance {
+            maxRowsToProcess: 50
+        }
+        messages {
+            whenNoDataFound: aucune donnée n'a été trouvée
+        }
+
+        column MESSAGE (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Message
+            }
+            layout {
+                sequence: 2
+            }
+        )
+
+        column MESSAGE_TIMESTAMP (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Horodatage
+                alignment: center
+            }
+            layout {
+                sequence: 1
+                columnAlignment: center
+            }
+            sorting {
+                defaultSequence: 1
+                direction: desc
+            }
+        )
+
+        column MESSAGE_TYPE (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Type de message
+            }
+            layout {
+                sequence: 3
+            }
+        )
+
+        column PK_VALUE (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: "Valeur de la clé primaire "
+            }
+            layout {
+                sequence: 4
+            }
+        )
+
+    )
+
+    pageItem P10036_AUTOMATION_NAME (
+        type: displayOnly
+        label {
+            label: Automatisation
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @exécution-d-automatisation
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P10036_LOG_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @exécution-d-automatisation
+            slot: regionBody
+        }
+        source {
+            used: always
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P10036_START_TIMESTAMP (
+        type: displayOnly
+        label {
+            label: Démarré
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @exécution-d-automatisation
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P10036_STATUS (
+        type: displayOnly
+        label {
+            label: Statut
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @exécution-d-automatisation
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    process obtenir-les-détails-du-journal (
+        name: Obtenir les détails du journal
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                select automation_name,
+                       start_timestamp,
+                       status
+                  into :P10036_AUTOMATION_NAME,
+                       :P10036_START_TIMESTAMP,
+                       :P10036_STATUS
+                  from apex_automation_log
+                 where id = :P10036_LOG_ID;
+                ```
+        }
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 61391643616702275455
+        }
+    )
+
+)
+

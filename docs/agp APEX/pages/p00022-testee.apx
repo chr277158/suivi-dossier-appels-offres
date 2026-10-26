@@ -1,0 +1,1512 @@
+page 22 (
+    name: testee
+    alias: TESTEE
+    title: testee
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 63
+            parentRegion: @nouveau-2
+            slot: REGION_POSITION_01
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+                t-ButtonRegion--noUI
+                t-Form--large
+            ]
+        }
+    )
+
+    region chemin-de-navigation (
+        name: Chemin de navigation
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region etat-sur-le-nombre-d-utilisateurs (
+        name: Etat sur le nombre d'utilisateurs
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select r.role_name, (select count(*) from apex_appl_acl_user_roles ur where r.role_id = ur.role_id) user_count, r.role_id
+                from apex_appl_acl_roles r
+                where r.application_id = :APP_ID
+                group by r.role_name, r.role_id
+                order by 2 desc, 1
+                ```
+        }
+        layout {
+            sequence: 33
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--removeHeader js-removeLandmark
+                t-Region--stacked
+                t-Region--scrollBody
+                t-Region--noPadding
+            ]
+        }
+        componentAppearance {
+            template: @/value-attribute-pairs-row
+            templateOptions: [
+                #DEFAULT#
+                t-AVPList--rightAligned
+            ]
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: aucune donnée n'a été trouvée
+        }
+
+        column ROLE_ID (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Role Id
+                alignment: center
+            }
+            layout {
+                sequence: 3
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ROLE_NAME (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Role Name
+                alignment: center
+            }
+            layout {
+                sequence: 1
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column USER_COUNT (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: User Count
+                alignment: center
+            }
+            layout {
+                sequence: 2
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G999G990
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region graphique-des-principaux-utilisateurs (
+        name: Graphique des principaux utilisateurs
+        type: chart
+        layout {
+            sequence: 83
+            parentRegion: @nouveau-2
+            slot: regionBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Region--hiddenOverflow
+            ]
+        }
+        serverSideCondition {
+            type: item=value
+            item: P22_VIEW_AS
+            value: CHART
+        }
+        chart {
+            type: donut
+        }
+        chartLayout {
+            height: 600
+        }
+        value {
+            pieChartOtherThreshold: 0.02
+            format: decimal
+            decimalPlaces: 0
+        }
+        animation {
+            onDisplay: none
+        }
+        legend {
+            show: false
+        }
+        componentAdvanced {
+            initJavaScriptFunction:
+                ```javascript-browser
+                function( options ){ 
+                
+                    this.pieSliceLabel = function(dataContext) {
+                        var series_name,
+                            percent = Math.round(dataContext.value/dataContext.totalValue*100);
+                        
+                        if ( dataContext.seriesData ) {
+                            series_name = dataContext.seriesData.name;
+                        } else {
+                            series_name = 'Other';
+                        }
+                        return series_name + " " + percent + "% ( " + dataContext.value + " )";
+                    }
+                    
+                    // Set chart initialization options 
+                    options.dataLabel = pieSliceLabel; 
+                    return options; 
+                }
+                ```
+        }
+
+        series série (
+            name: Série 1
+            execution {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select userid_lc as userid,
+                           count(*) as page_views
+                      from apex_activity_log
+                     where flow_id     = :app_id
+                       and time_stamp >= sysdate - ( 1/24/60/60 * :P22_TIMEFRAME )
+                       and userid     is not null
+                     group by userid_lc
+                     order by 2
+                    ```
+                pageItemsToSubmit: P22_TIMEFRAME
+            }
+            columnMapping {
+                label: USERID
+                value: PAGE_VIEWS
+            }
+            label {
+                show: true
+                position: outsideSlice
+            }
+        )
+
+    )
+
+    region informations-sur-la-liste-de-contrôle-d-accès (
+        name: Informations sur la liste de contrôle d'accès
+        type: plSqlDynamicContent
+        source {
+            plsqlCode:
+                ```plsql
+                declare
+                    l_acl_scope varchar2(45);
+                begin
+                    l_acl_scope := apex_app_setting.get_value( p_name => 'ACCESS_CONTROL_SCOPE' );
+                
+                    if l_acl_scope = 'ALL_USERS' then
+                        sys.htp.p( apex_lang.message('APEX.FEATURE.ACL.INFO.ALL_USERS') );
+                    elsif l_acl_scope = 'ACL_ONLY' then
+                        sys.htp.p( apex_lang.message('APEX.FEATURE.ACL.INFO.ACL_ONLY') );
+                    else
+                        sys.htp.p( apex_lang.message('APEX.FEATURE.ACL.INFO.ACL_VALUE_INVALID', l_acl_scope) );
+                    end if;
+                end;
+                ```
+        }
+        layout {
+            sequence: 23
+            slot: body
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--colorBG
+                t-Alert--horizontal
+                t-Alert--noIcon
+                t-Alert--warning
+                t-Alert--accessibleHeading
+            ]
+            cssClasses: margin-sm
+        }
+    )
+
+    region nouveau (
+        name: Nouveau
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery: select * from APEX_APPL_ACL_USERS
+        }
+        layout {
+            sequence: 13
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        performance {
+            maxRowsToProcess: 1000000
+        }
+        searchBar {
+            rowsPerPageSelector: true
+        }
+        actionsMenu {
+            rowsPerPage: false
+            savePublicReport: true
+        }
+        advanced {
+            savedReportMappingIdentifier: 24333391674495348
+        }
+
+        column APPLICATION_ID (
+            type: plainText
+            heading {
+                heading: Application Id
+                alignment: center
+            }
+            layout {
+                sequence: 50
+                columnAlignment: center
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column APPLICATION_NAME (
+            type: plainText
+            heading {
+                heading: Application Name
+                alignment: center
+            }
+            layout {
+                sequence: 60
+                columnAlignment: center
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column ID (
+            type: plainText
+            heading {
+                heading: Id
+                alignment: center
+            }
+            layout {
+                sequence: 10
+                columnAlignment: center
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column ROLE_IDS (
+            type: plainText
+            heading {
+                heading: Role Ids
+                alignment: center
+            }
+            layout {
+                sequence: 100
+                columnAlignment: center
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: J
+            }
+        )
+
+        column ROLE_NAMES (
+            type: plainText
+            heading {
+                heading: Role Names
+                alignment: center
+            }
+            layout {
+                sequence: 110
+                columnAlignment: center
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: K
+            }
+        )
+
+        column USER_NAME (
+            type: plainText
+            heading {
+                heading: User Name
+                alignment: center
+            }
+            layout {
+                sequence: 80
+                columnAlignment: center
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column USER_NAME_LC (
+            type: plainText
+            heading {
+                heading: User Name Lc
+                alignment: center
+            }
+            layout {
+                sequence: 90
+                columnAlignment: center
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column WORKING_COPY_NAME (
+            type: plainText
+            heading {
+                heading: Working Copy Name
+                alignment: center
+            }
+            layout {
+                sequence: 70
+                columnAlignment: center
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column WORKSPACE (
+            type: plainText
+            heading {
+                heading: Workspace
+                alignment: center
+            }
+            layout {
+                sequence: 30
+                columnAlignment: center
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column WORKSPACE_DISPLAY_NAME (
+            type: plainText
+            heading {
+                heading: Workspace Display Name
+                alignment: center
+            }
+            layout {
+                sequence: 40
+                columnAlignment: center
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column WORKSPACE_ID (
+            type: plainText
+            heading {
+                heading: Workspace Id
+                alignment: center
+            }
+            layout {
+                sequence: 20
+                columnAlignment: center
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        page {
+            size: a4
+            units: millimeters
+            width: 297
+            height: 210
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport 244522 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn APPLICATION_ID (
+                sequence: 5
+            )
+
+            displayColumn APPLICATION_NAME (
+                sequence: 6
+            )
+
+            displayColumn ID (
+                sequence: 1
+            )
+
+            displayColumn ROLE_IDS (
+                sequence: 10
+            )
+
+            displayColumn ROLE_NAMES (
+                sequence: 11
+            )
+
+            displayColumn USER_NAME (
+                sequence: 8
+            )
+
+            displayColumn USER_NAME_LC (
+                sequence: 9
+            )
+
+            displayColumn WORKING_COPY_NAME (
+                sequence: 7
+            )
+
+            displayColumn WORKSPACE (
+                sequence: 3
+            )
+
+            displayColumn WORKSPACE_DISPLAY_NAME (
+                sequence: 4
+            )
+
+            displayColumn WORKSPACE_ID (
+                sequence: 2
+            )
+
+        )
+
+    )
+
+    region nouveau-2 (
+        name: Nouveau
+        type: staticContent
+        layout {
+            sequence: 53
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    region nouveau-3 (
+        name: Nouveau
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select *
+                   
+                    from apex_activity_log l
+                    where flow_id = :APP_ID
+                        and time_stamp >= sysdate - ( 1/24/60/60 * :P10031_TIMEFRAME )
+                        and userid is not null
+                 
+                ```
+        }
+        layout {
+            sequence: 63
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        performance {
+            maxRowsToProcess: 1000000
+        }
+        searchBar {
+            rowsPerPageSelector: true
+        }
+        actionsMenu {
+            rowsPerPage: false
+            savePublicReport: true
+        }
+        advanced {
+            savedReportMappingIdentifier: 24558508045422237
+        }
+
+        column APPLICATION_INFO (
+            type: plainText
+            heading {
+                heading: Application Info
+            }
+            layout {
+                sequence: 190
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AA
+            }
+        )
+
+        column COMPONENT_ATTRIBUTE (
+            type: plainText
+            heading {
+                heading: Component Attribute
+            }
+            layout {
+                sequence: 40
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: L
+            }
+        )
+
+        column COMPONENT_NAME (
+            type: plainText
+            heading {
+                heading: Component Name
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: K
+            }
+        )
+
+        column COMPONENT_TYPE (
+            type: plainText
+            heading {
+                heading: Component Type
+            }
+            layout {
+                sequence: 20
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: J
+            }
+        )
+
+        column CONTENT_LENGTH (
+            type: plainText
+            heading {
+                heading: Content Length
+                alignment: end
+            }
+            layout {
+                sequence: 230
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AE
+            }
+        )
+
+        column ELAP (
+            type: plainText
+            heading {
+                heading: Elap
+                alignment: end
+            }
+            layout {
+                sequence: 60
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: N
+            }
+        )
+
+        column FLOW_ID (
+            type: plainText
+            heading {
+                heading: Flow Id
+                alignment: end
+            }
+            layout {
+                sequence: 120
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: T
+            }
+        )
+
+        column INFORMATION (
+            type: plainText
+            heading {
+                heading: Information
+            }
+            layout {
+                sequence: 50
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: M
+            }
+        )
+
+        column IP_ADDRESS (
+            type: plainText
+            heading {
+                heading: Ip Address
+            }
+            layout {
+                sequence: 100
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: R
+            }
+        )
+
+        column IR_REPORT_ID (
+            type: plainText
+            heading {
+                heading: Ir Report Id
+                alignment: end
+            }
+            layout {
+                sequence: 220
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AD
+            }
+        )
+
+        column IR_SEARCH (
+            type: plainText
+            heading {
+                heading: Ir Search
+            }
+            layout {
+                sequence: 210
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AC
+            }
+        )
+
+        column NUM_ROWS (
+            type: plainText
+            heading {
+                heading: Num Rows
+                alignment: end
+            }
+            layout {
+                sequence: 70
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: O
+            }
+        )
+
+        column PAGE_MODE (
+            type: plainText
+            heading {
+                heading: Page Mode
+            }
+            layout {
+                sequence: 180
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: Z
+            }
+        )
+
+        column SESSION_ID (
+            type: plainText
+            heading {
+                heading: Session Id
+                alignment: end
+            }
+            layout {
+                sequence: 140
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: V
+            }
+        )
+
+        column SQLERRM (
+            type: plainText
+            heading {
+                heading: Sqlerrm
+            }
+            layout {
+                sequence: 150
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: W
+            }
+        )
+
+        column SQLERRM_COMPONENT_NAME (
+            type: plainText
+            heading {
+                heading: Sqlerrm Component Name
+            }
+            layout {
+                sequence: 170
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: Y
+            }
+        )
+
+        column SQLERRM_COMPONENT_TYPE (
+            type: plainText
+            heading {
+                heading: Sqlerrm Component Type
+            }
+            layout {
+                sequence: 160
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: X
+            }
+        )
+
+        column STEP_ID (
+            type: plainText
+            heading {
+                heading: Step Id
+                alignment: end
+            }
+            layout {
+                sequence: 130
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: U
+            }
+        )
+
+        column TIME_STAMP (
+            type: richText
+            heading {
+                heading: Time Stamp
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column USERID (
+            type: plainText
+            heading {
+                heading: Userid
+            }
+            layout {
+                sequence: 80
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: P
+            }
+        )
+
+        column USERID_LC (
+            type: plainText
+            heading {
+                heading: Userid Lc
+            }
+            layout {
+                sequence: 90
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: Q
+            }
+        )
+
+        column USER_AGENT (
+            type: plainText
+            heading {
+                heading: User Agent
+            }
+            layout {
+                sequence: 110
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: S
+            }
+        )
+
+        column WORKSHEET_ID (
+            type: plainText
+            heading {
+                heading: Worksheet Id
+                alignment: end
+            }
+            layout {
+                sequence: 200
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AB
+            }
+        )
+
+        page {
+            size: a4
+            units: millimeters
+            width: 297
+            height: 210
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport 254138 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+        )
+
+    )
+
+    region principaux-utilisateurs (
+        name: Principaux utilisateurs
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select the_user,
+                    '<div class="hour-graph">'||
+                        '<span class="hour'|| case when h00 = 0 then ' is-null' when h00 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 0</span> <span class="hour-value">'|| 
+                        case when h00 > 999 then to_char((h00/1000),'99999999D0') ||'k' else to_char(h00) end ||'</span></span>'||
+                        '<span class="hour'|| case when h01 = 0 then ' is-null' when h01 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 1</span> <span class="hour-value">'|| 
+                        case when h01 > 999 then to_char((h01/1000),'99999999D0') ||'k' else to_char(h01) end ||'</span></span>'||
+                        '<span class="hour'|| case when h02 = 0 then ' is-null' when h02 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 2</span> <span class="hour-value">'|| 
+                        case when h02 > 999 then to_char((h02/1000),'99999999D0') ||'k' else to_char(h02) end ||'</span></span>'||
+                        '<span class="hour'|| case when h03 = 0 then ' is-null' when h03 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 3</span> <span class="hour-value">'|| 
+                        case when h03 > 999 then to_char((h03/1000),'99999999D0') ||'k' else to_char(h03) end ||'</span></span>'||
+                        '<span class="hour'|| case when h04 = 0 then ' is-null' when h04 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 4</span> <span class="hour-value">'|| 
+                        case when h04 > 999 then to_char((h04/1000),'99999999D0') ||'k' else to_char(h04) end ||'</span></span>'||
+                        '<span class="hour'|| case when h05 = 0 then ' is-null' when h05 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 5</span> <span class="hour-value">'|| 
+                        case when h05 > 999 then to_char((h05/1000),'99999999D0') ||'k' else to_char(h05) end ||'</span></span>'||
+                        '<span class="hour'|| case when h06 = 0 then ' is-null' when h06 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 6</span> <span class="hour-value">'|| 
+                        case when h06 > 999 then to_char((h06/1000),'99999999D0') ||'k' else to_char(h06) end ||'</span></span>'||
+                        '<span class="hour'|| case when h07 = 0 then ' is-null' when h07 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 7</span> <span class="hour-value">'|| 
+                        case when h07 > 999 then to_char((h07/1000),'99999999D0') ||'k' else to_char(h07) end ||'</span></span>'||
+                        '<span class="hour'|| case when h08 = 0 then ' is-null' when h08 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 8</span> <span class="hour-value">'|| 
+                        case when h08 > 999 then to_char((h08/1000),'99999999D0') ||'k' else to_char(h08) end ||'</span></span>'||
+                        '<span class="hour'|| case when h09 = 0 then ' is-null' when h09 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 9</span> <span class="hour-value">'|| 
+                        case when h09 > 999 then to_char((h09/1000),'99999999D0') ||'k' else to_char(h09) end ||'</span></span>'||
+                        '<span class="hour'|| case when h10 = 0 then ' is-null' when h10 > 999 then ' is-over1k' end ||'"><span class="hour-label">10</span> <span class="hour-value">'|| 
+                        case when h10 > 999 then to_char((h10/1000),'99999999D0') ||'k' else to_char(h10) end ||'</span></span>'||
+                        '<span class="hour'|| case when h11 = 0 then ' is-null' when h11 > 999 then ' is-over1k' end ||'"><span class="hour-label">11</span> <span class="hour-value">'|| 
+                        case when h11 > 999 then to_char((h11/1000),'99999999D0') ||'k' else to_char(h11) end ||'</span></span>'||
+                        '<span class="hour'|| case when h12 = 0 then ' is-null' when h12 > 999 then ' is-over1k' end ||'"><span class="hour-label">12</span> <span class="hour-value">'|| 
+                        case when h12 > 999 then to_char((h12/1000),'99999999D0') ||'k' else to_char(h12) end ||'</span></span>'||
+                        '<span class="hour'|| case when h13 = 0 then ' is-null' when h13 > 999 then ' is-over1k' end ||'"><span class="hour-label">13</span> <span class="hour-value">'|| 
+                        case when h13 > 999 then to_char((h13/1000),'99999999D0') ||'k' else to_char(h13) end ||'</span></span>'||
+                        '<span class="hour'|| case when h14 = 0 then ' is-null' when h14 > 999 then ' is-over1k' end ||'"><span class="hour-label">14</span> <span class="hour-value">'|| 
+                        case when h14 > 999 then to_char((h14/1000),'99999999D0') ||'k' else to_char(h14) end ||'</span></span>'||
+                        '<span class="hour'|| case when h15 = 0 then ' is-null' when h15 > 999 then ' is-over1k' end ||'"><span class="hour-label">15</span> <span class="hour-value">'|| 
+                        case when h15 > 999 then to_char((h15/1000),'99999999D0') ||'k' else to_char(h15) end ||'</span></span>'||
+                        '<span class="hour'|| case when h16 = 0 then ' is-null' when h16 > 999 then ' is-over1k' end ||'"><span class="hour-label">16</span> <span class="hour-value">'|| 
+                        case when h16 > 999 then to_char((h16/1000),'99999999D0') ||'k' else to_char(h16) end ||'</span></span>'||
+                        '<span class="hour'|| case when h17 = 0 then ' is-null' when h17 > 999 then ' is-over1k' end ||'"><span class="hour-label">17</span> <span class="hour-value">'|| 
+                        case when h17 > 999 then to_char((h17/1000),'99999999D0') ||'k' else to_char(h17) end ||'</span></span>'||
+                        '<span class="hour'|| case when h18 = 0 then ' is-null' when h18 > 999 then ' is-over1k' end ||'"><span class="hour-label">18</span> <span class="hour-value">'|| 
+                        case when h18 > 999 then to_char((h18/1000),'99999999D0') ||'k' else to_char(h18) end ||'</span></span>'||
+                        '<span class="hour'|| case when h19 = 0 then ' is-null' when h19 > 999 then ' is-over1k' end ||'"><span class="hour-label">19</span> <span class="hour-value">'|| 
+                        case when h19 > 999 then to_char((h19/1000),'99999999D0') ||'k' else to_char(h19) end ||'</span></span>'||
+                        '<span class="hour'|| case when h20 = 0 then ' is-null' when h20 > 999 then ' is-over1k' end ||'"><span class="hour-label">20</span> <span class="hour-value">'|| 
+                        case when h20 > 999 then to_char((h20/1000),'99999999D0') ||'k' else to_char(h20) end ||'</span></span>'||
+                        '<span class="hour'|| case when h21 = 0 then ' is-null' when h21 > 999 then ' is-over1k' end ||'"><span class="hour-label">21</span> <span class="hour-value">'|| 
+                        case when h21 > 999 then to_char((h21/1000),'99999999D0') ||'k' else to_char(h21) end ||'</span></span>'||
+                        '<span class="hour'|| case when h22 = 0 then ' is-null' when h22 > 999 then ' is-over1k' end ||'"><span class="hour-label">22</span> <span class="hour-value">'|| 
+                        case when h22 > 999 then to_char((h22/1000),'99999999D0') ||'k' else to_char(h22) end ||'</span></span>'||
+                        '<span class="hour'|| case when h23 = 0 then ' is-null' when h23 > 999 then ' is-over1k' end ||'"><span class="hour-label">23</span> <span class="hour-value">'|| 
+                        case when h23 > 999 then to_char((h23/1000),'99999999D0') ||'k' else to_char(h23) end ||'</span></span>'||
+                        '</div>' hours,
+                        page_events,
+                    median_elapsed,
+                    rows_fetched,
+                    ir_searches,
+                    errors,
+                    most_recent
+                    from (  
+                    select userid_lc                    as the_user,
+                        count(*)                        as page_events,
+                        median(elap)                    as median_elapsed,
+                        sum(num_rows)                   as rows_fetched,
+                        sum(decode(ir_search,null,0,1)) as ir_searches,
+                        sum(decode(sqlerrm,null,0,1))   as errors,
+                        max(time_stamp)                 as most_recent,
+                        sum(decode(to_char(time_stamp,'HH24'),0,1,0)) h00,
+                        sum(decode(to_char(time_stamp,'HH24'),1,1,0)) h01,
+                        sum(decode(to_char(time_stamp,'HH24'),2,1,0)) h02,
+                        sum(decode(to_char(time_stamp,'HH24'),3,1,0)) h03,
+                        sum(decode(to_char(time_stamp,'HH24'),4,1,0)) h04,
+                        sum(decode(to_char(time_stamp,'HH24'),5,1,0)) h05,
+                        sum(decode(to_char(time_stamp,'HH24'),6,1,0)) h06,
+                        sum(decode(to_char(time_stamp,'HH24'),7,1,0)) h07,
+                        sum(decode(to_char(time_stamp,'HH24'),8,1,0)) h08,
+                        sum(decode(to_char(time_stamp,'HH24'),9,1,0)) h09,
+                        sum(decode(to_char(time_stamp,'HH24'),10,1,0)) h10,
+                        sum(decode(to_char(time_stamp,'HH24'),11,1,0)) h11,
+                        sum(decode(to_char(time_stamp,'HH24'),12,1,0)) h12,
+                        sum(decode(to_char(time_stamp,'HH24'),13,1,0)) h13,
+                        sum(decode(to_char(time_stamp,'HH24'),14,1,0)) h14,
+                        sum(decode(to_char(time_stamp,'HH24'),15,1,0)) h15,
+                        sum(decode(to_char(time_stamp,'HH24'),16,1,0)) h16,
+                        sum(decode(to_char(time_stamp,'HH24'),17,1,0)) h17,
+                        sum(decode(to_char(time_stamp,'HH24'),18,1,0)) h18,
+                        sum(decode(to_char(time_stamp,'HH24'),19,1,0)) h19,
+                        sum(decode(to_char(time_stamp,'HH24'),20,1,0)) h20,
+                        sum(decode(to_char(time_stamp,'HH24'),21,1,0)) h21,
+                        sum(decode(to_char(time_stamp,'HH24'),22,1,0)) h22,
+                        sum(decode(to_char(time_stamp,'HH24'),23,1,0)) h23
+                    from apex_activity_log l
+                    where flow_id = :APP_ID
+                        and time_stamp >= sysdate - ( 1/24/60/60 * :P22_TIMEFRAME )
+                        and userid is not null
+                    group by userid_lc) x
+                ```
+            pageItemsToSubmit: P22_TIMEFRAME
+        }
+        layout {
+            sequence: 73
+            parentRegion: @nouveau-2
+            slot: regionBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        serverSideCondition {
+            type: item=value
+            item: P22_VIEW_AS
+            value: REPORT
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: Aucune donnée n'a été trouvée.
+            whenMoreDataFound: Le nombre maximal de lignes pour cet état est de #MAX_ROW_COUNT# lignes. Appliquez un filtre pour réduire le nombre d'enregistrements dans votre requête.
+        }
+        searchBar {
+            rowsPerPageSelector: true
+        }
+        actionsMenu {
+            rowsPerPage: false
+            savePublicReport: true
+        }
+        advanced {
+            savedReportMappingIdentifier: 74626512467317521478
+        }
+
+        column ERRORS (
+            type: plainText
+            heading {
+                heading: Erreurs
+                alignment: end
+            }
+            layout {
+                sequence: 7
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G999G990
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column HOURS (
+            type: plainText
+            heading {
+                heading: Activité par heure
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+            security {
+                escapeSpecialChars: false
+            }
+        )
+
+        column IR_SEARCHES (
+            type: plainText
+            heading {
+                heading: Recherche d'état interactif
+                alignment: end
+            }
+            layout {
+                sequence: 6
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G999G990
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column MEDIAN_ELAPSED (
+            type: plainText
+            heading {
+                heading: Temps médian écoulé
+                alignment: end
+            }
+            layout {
+                sequence: 4
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G990D0000
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column MOST_RECENT (
+            type: plainText
+            heading {
+                heading: Most_Recent
+            }
+            layout {
+                sequence: 8
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column PAGE_EVENTS (
+            type: plainText
+            heading {
+                heading: Evénements de page
+                alignment: end
+            }
+            layout {
+                sequence: 3
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G990
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column ROWS_FETCHED (
+            type: plainText
+            heading {
+                heading: Lignes extraites
+                alignment: end
+            }
+            layout {
+                sequence: 5
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G990
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column THE_USER (
+            type: plainText
+            heading {
+                heading: Utilisateur
+            }
+            layout {
+                sequence: 1
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Principaux utilisateurs
+        }
+
+        savedReport 482019844 (
+            visibility: primaryDefault
+            view {
+                chart: true
+                default: chart
+                rowsPerPage: 50
+            }
+
+            displayColumn HOURS (
+                sequence: 2
+            )
+
+            displayColumn PAGE_EVENTS (
+                sequence: 3
+            )
+
+            displayColumn THE_USER (
+                sequence: 1
+            )
+
+            sort (
+                column: PAGE_EVENTS
+                sort {
+                    direction: desc
+                    sequence: 1
+                }
+            )
+
+            sort (
+                column: MOST_RECENT
+                sort {
+                    direction: desc
+                    sequence: 2
+                }
+            )
+
+            chart {
+                type: pie
+                label: THE_USER
+                value: MEDIAN_ELAPSED
+                valueAggregation: sum
+            }
+            sort {
+                by: labelAsc
+            }
+        )
+
+    )
+
+    pageItem P22_TIMEFRAME (
+        type: selectList
+        label {
+            label: Tranche de temps
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @timeframe-4-weeks
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            type: staticValue
+            staticValue: 900
+        }
+        default {
+            type: static
+            staticValue: 900
+        }
+    )
+
+    pageItem P22_VIEW_AS (
+        type: radioGroup
+        label {
+            label: Visualiser comme
+            alignment: left
+        }
+        settings {
+            noOfCols: 2
+            pageActionOnSelection: submitPage
+        }
+        lov {
+            type: sharedComponent
+            lov: @view-as-report-chart
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 20
+            region: @boutons
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--radioButtonGroup
+            ]
+        }
+        source {
+            type: staticValue
+            staticValue: REPORT
+        }
+        default {
+            type: static
+            staticValue: REPORT
+        }
+        security {
+            escapeSpecialChars: false
+        }
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Réinitialiser
+        layout {
+            sequence: 20
+            region: @principaux-utilisateurs
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: t-Button--iconLeft
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction régénérer-l-état (
+        name: Régénérer l'état
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: P22_TIMEFRAME
+        }
+    )
+
+)
+

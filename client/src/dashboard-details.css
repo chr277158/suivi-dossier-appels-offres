@@ -1,0 +1,207 @@
+.chart-panel > header small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.chart-legend button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  padding: 3px 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.chart-legend button:hover {
+  color: var(--green);
+}
+
+.dossier-card-reference,
+.chart-detail-table a,
+.table-wrap td a {
+  color: #365b4b;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.dossier-card-reference:hover,
+.chart-detail-table a:hover,
+.table-wrap td a:hover {
+  text-decoration: underline;
+}
+
+.chart-legend button i {
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.chart-legend button b {
+  margin-left: auto;
+}
+
+.chart-drilldown-modal {
+  display: flex;
+  width: min(1040px, 100%);
+  max-height: min(86vh, 760px);
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 18px 50px #10201840;
+}
+
+.chart-drilldown-modal > header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.chart-drilldown-modal h2 {
+  margin: 4px 0;
+  font-size: 20px;
+}
+
+.chart-drilldown-modal p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.chart-detail-table {
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.chart-detail-table table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+.chart-detail-table th,
+.chart-detail-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #edf0ed;
+  text-align: left;
+  font-size: 11px;
+  vertical-align: top;
+}
+
+.chart-detail-table th {
+  position: sticky;
+  top: 0;
+  background: #f5f7f4;
+  color: #586860;
+  font-weight: 700;
+}
+
+.chart-detail-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.chart-detail-loading {
+  display: grid;
+  min-height: 150px;
+  place-items: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.contract-edit-form {
+  width: min(920px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.contract-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.contract-fields label {
+  display: grid;
+  gap: 6px;
+  color: #586860;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.contract-fields input,
+.contract-fields select,
+.contract-fields textarea {
+  width: 100%;
+  min-height: 39px;
+  border: 1px solid #dfe5df;
+  border-radius: 4px;
+  background: #fff;
+  color: #35463f;
+  padding: 8px 10px;
+  font: inherit;
+}
+
+.contract-fields textarea {
+  resize: vertical;
+}
+
+.contract-field-wide {
+  grid-column: 1 / -1;
+}
+
+.contract-date-heading {
+  margin: 0;
+  font-size: 13px;
+}
+
+.contract-edit-form .date-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 760px) {
+  .contract-edit-form .date-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .contract-edit-form .date-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.app-shell[dir='rtl'] .chart-detail-table th,
+.app-shell[dir='rtl'] .chart-detail-table td {
+  text-align: right;
+}
+
+.app-shell[dir='rtl'] .chart-legend button {
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .chart-drilldown-modal {
+    max-height: 90vh;
+    padding: 14px;
+  }
+
+  .contract-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .contract-field-wide {
+    grid-column: auto;
+  }
+}

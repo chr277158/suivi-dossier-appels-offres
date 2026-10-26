@@ -1,0 +1,423 @@
+page 10034 (
+    name: Vues de page
+    alias: VUES-DE-PAGE
+    title: Vues de page
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authorizationScheme: @droits-d-administration
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>Cette page fournit un état interactif des vues de page les plus récentes.</p>
+            <p>Sélectionnez la tranche de temps de génération d'état (par défaut = 1 jour) en haut de la page si nécessaire.<br>
+            Pour trier et filtrer les données, cliquez sur les en-têtes de colonne, ou cliquez sur le bouton <strong>Actions</strong> pour personnaliser l'affichage des colonnes et de nombreuses fonctionnalités avancées supplémentaires. Pour rétablir les paramètres par défaut de l'état interactif, cliquez sur le bouton <strong>Réinitialiser</strong>.</p>
+            ```
+    }
+    config {
+        buildOption: @fonctionnalité-génération-d-états-d-activité
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogHeader
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+                t-ButtonRegion--noUI
+                t-Form--large
+            ]
+        }
+    )
+
+    region vues-de-page (
+        name: Vues de page
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select 
+                    step_id||'. '||(select page_name
+                                    from apex_application_pages p
+                                    where p.page_id = l.step_id
+                                        and p.application_id = :APP_ID) page_name,
+                    userid_lc     user_id,
+                    time_stamp    timestamp,
+                    elap          elapsed,
+                    step_id       page,
+                    decode(page_mode,'P','Partial','D','Full',page_mode) page_mode,
+                    component_name,
+                    num_rows,
+                    ir_search,
+                    sqlerrm  error
+                from apex_activity_log l
+                where flow_id = :app_id
+                    and time_stamp >= sysdate - ( 1/24/60/60 * :P10034_TIMEFRAME )
+                    and userid is not null
+                    and step_id is not null
+                order by time_stamp desc
+                ```
+            pageItemsToSubmit: P10034_TIMEFRAME
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: Aucune donnée n'a été trouvée.
+            whenMoreDataFound: Le nombre maximal de lignes pour cet état est de #MAX_ROW_COUNT# lignes. Appliquez un filtre pour réduire le nombre d'enregistrements dans votre requête.
+        }
+        searchBar {
+            rowsPerPageSelector: true
+        }
+        actionsMenu {
+            rowsPerPage: false
+            savePublicReport: true
+        }
+        advanced {
+            savedReportMappingIdentifier: 48201946195913053363
+        }
+
+        column COMPONENT_NAME (
+            type: plainText
+            heading {
+                heading: Nom de composant
+            }
+            layout {
+                sequence: 7
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column ELAPSED (
+            type: plainText
+            heading {
+                heading: Ecoulé
+                alignment: end
+            }
+            layout {
+                sequence: 4
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G990D0000
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column ERROR (
+            type: plainText
+            heading {
+                heading: Erreur
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: J
+            }
+        )
+
+        column IR_SEARCH (
+            type: plainText
+            heading {
+                heading: Recherche d'état interactif
+            }
+            layout {
+                sequence: 9
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G990
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column NUM_ROWS (
+            type: plainText
+            heading {
+                heading: Nombre de lignes
+                alignment: end
+            }
+            layout {
+                sequence: 8
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G990
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column PAGE (
+            type: plainText
+            heading {
+                heading: Page
+                alignment: end
+            }
+            layout {
+                sequence: 5
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column PAGE_MODE (
+            type: plainText
+            heading {
+                heading: Mode
+            }
+            layout {
+                sequence: 6
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column PAGE_NAME (
+            type: plainText
+            heading {
+                heading: Nom de page
+            }
+            layout {
+                sequence: 1
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column TIMESTAMP (
+            type: plainText
+            heading {
+                heading: Horodatage
+            }
+            layout {
+                sequence: 3
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column USER_ID (
+            type: plainText
+            heading {
+                heading: Utilisateur
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Vues de page
+        }
+
+        savedReport 482019539 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn ELAPSED (
+                sequence: 4
+            )
+
+            displayColumn PAGE_MODE (
+                sequence: 5
+            )
+
+            displayColumn PAGE_NAME (
+                sequence: 1
+            )
+
+            displayColumn TIMESTAMP (
+                sequence: 3
+            )
+
+            displayColumn USER_ID (
+                sequence: 2
+            )
+
+            sort (
+                column: TIMESTAMP
+                sort {
+                    direction: desc
+                    sequence: 1
+                }
+            )
+
+        )
+
+    )
+
+    pageItem P10034_TIMEFRAME (
+        type: selectList
+        label {
+            label: Tranche de temps
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @timeframe-4-weeks
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            type: staticValue
+            staticValue: 900
+        }
+        default {
+            type: static
+            staticValue: 900
+        }
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Réinitialiser
+        layout {
+            sequence: 20
+            region: @vues-de-page
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: t-Button--iconLeft
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction régénérer-l-état (
+        name: Régénérer l'état
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: P10034_TIMEFRAME
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @vues-de-page
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

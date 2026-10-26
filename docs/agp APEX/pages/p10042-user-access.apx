@@ -1,0 +1,393 @@
+page 10042 (
+    name: Gérer l'accès utilisateur
+    alias: USER_ACCESS
+    title: Gérer l'accès utilisateur
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    security {
+        authorizationScheme: @droits-de-lecteur
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>Utilisez ce formulaire pour entrer des utilisateurs et leur adresse électronique, et définir leur niveau d'accès. 
+            Les paramètres définis dans <em>Configurer le contrôle d'accès</em> détermineront si le nom utilisateur doit être leur adresse électronique ou s'il peut s'agir de n'importe quelle entrée alphanumérique.</p>
+            <p>Cette application prend en charge les 3 niveaux d'accès suivants : Lecteur, Contributeur et Administrateur.</p>
+            <ul>
+              <li>Les <strong>lecteurs</strong> disposent d'un accès en lecture seule à toutes les informations et peuvent également consulter les états.</li>
+              <li>Les <strong>contributeurs</strong> peuvent créer, modifier et supprimer des informations, et consulter les états.</li>
+              <li>Les <strong>administrateurs</strong>, outre les capacités des contributeurs, peuvent également exécuter la configuration de l'application en accédant à sa section Administration.</li>
+            </ul>
+            <p>Lorsque vous modifiez un utilisateur existant, vous pouvez verrouiller son compte, ce qui l'empêchera d'accéder à l'application.</p>
+            <p><em><strong>Remarque :</strong> si vous utilisez des comptes Oracle APEX, les utilisateurs entrés ici doivent également être définis en tant qu'utilisateurs finals par un administrateur d'espace de travail, qui peut aussi définir leur mot de passe.</em></p>
+            ```
+    }
+    config {
+        buildOption: @fonctionnalité-contrôle-d-accès
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region panneau-sur-gérer-l-accès-utilisateur (
+        name: Panneau sur Gérer l'accès utilisateur
+        type: form
+        source {
+            location: localDatabase
+            tableName: APEX_APPL_ACL_USERS
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    pageItem P10042_APPLICATION_ID (
+        type: displayOnly
+        label {
+            label: New
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @panneau-sur-gérer-l-accès-utilisateur
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @panneau-sur-gérer-l-accès-utilisateur
+            column: APPLICATION_ID
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: &APP_ID.
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P10042_ID (
+        type: displayOnly
+        label {
+            label: New
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @panneau-sur-gérer-l-accès-utilisateur
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @panneau-sur-gérer-l-accès-utilisateur
+            column: ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P10042_ROLE_IDS (
+        type: checkboxGroup
+        label {
+            label: Rôles
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @access-roles
+            displayExtraValues: false
+        }
+        layout {
+            sequence: 40
+            region: @panneau-sur-gérer-l-accès-utilisateur
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @panneau-sur-gérer-l-accès-utilisateur
+            column: ROLE_IDS
+            dataType: varchar2
+        }
+        help {
+            helpText:
+                ```html
+                <p>Lorsque le contrôle d'accès est activé, les administrateurs ont la possibilité de restreindre l'accès à certaines fonctionnalités d'application pour les utilisateurs authentifiés. Cette application prend en charge les 3 rôles suivants : Lecteur, Contributeur et Administrateur.<p>
+                <ul>
+                  <li>Les <strong>lecteurs</strong> disposent d'un accès en lecture seule à toutes les informations et peuvent également consulter les états.</li>
+                  <li>Les <strong>contributeurs</strong> peuvent créer, modifier et supprimer des informations et consulter les états.</li>
+                  <li>Les <strong>administrateurs</strong>, outre les capacités des contributeurs, peuvent également exécuter la configuration de l'application.</li>
+                </ul>
+                ```
+        }
+    )
+
+    pageItem P10042_USER_NAME (
+        type: textField
+        label {
+            label: Nom utilisateur
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @panneau-sur-gérer-l-accès-utilisateur
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            valueRequired: true
+            maxLength: 255
+        }
+        source {
+            formRegion: @panneau-sur-gérer-l-accès-utilisateur
+            column: USER_NAME
+            dataType: varchar2
+        }
+        readOnly {
+            type: itemIsNotNull
+            item: P10042_ID
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: previous
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+            executeValidations: false
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Ajouter un utilisateur
+        layout {
+            sequence: 40
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P10042_ID
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Supprimer
+        layout {
+            sequence: 20
+            region: @boutons
+            slot: previous
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P10042_ID
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Appliquer les modifications
+        layout {
+            sequence: 30
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P10042_ID
+        }
+    )
+
+    validation impossible-de-vous-enlever-vous-même-en-tant-qu-administrateur (
+        name: Impossible de vous enlever vous-même en tant qu'administrateur
+        execution {
+            sequence: 10
+        }
+        validation {
+            type: functionBodyReturningBoolean
+            plsqlFunctionBody:
+                ```plsql
+                if :P10042_USER_NAME = :APP_USER and
+                    apex_acl.is_role_removed_from_user (
+                        p_application_id => :APP_ID,
+                        p_user_name      => :APP_USER,
+                        p_role_static_id => 'ADMINISTRATOR',
+                        p_role_ids       => apex_string.split_numbers(
+                                                p_str => case when :REQUEST = 'DELETE' then
+                                                             null
+                                                         else
+                                                             :P10042_ROLE_IDS
+                                                         end,
+                                                p_sep => ':') ) then
+                    return false;
+                else
+                    return true;
+                end if;
+                ```
+        }
+        error {
+            errorMessage: Vous ne pouvez pas enlever votre propre rôle d'administrateur.
+            displayLocation: inlineInNotification
+        }
+    )
+
+    process fermer-la-boîte-de-dialogue (
+        name: Fermer la boîte de dialogue
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 40
+        }
+        advanced {
+            executionMappingIdentifier: 61391665595756275482
+        }
+    )
+
+    process initialiser-le-panneau-gérer-l-accès-utilisateur (
+        name: Initialiser le panneau Gérer l'accès utilisateur
+        type: formInitialization
+        formRegion: @panneau-sur-gérer-l-accès-utilisateur
+        execution {
+            sequence: 10
+            point: afterHeader
+        }
+        advanced {
+            executionMappingIdentifier: 61391664761779275482
+        }
+    )
+
+    process traiter-le-panneau-gérer-l-accès-utilisateur (
+        name: Traiter le panneau Gérer l'accès utilisateur
+        type: formAutoRowProcessing
+        formRegion: @panneau-sur-gérer-l-accès-utilisateur
+        target {
+            returnPksAfterInsert: false
+        }
+        lockRow {
+            lockRow: false
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 61391665164917275482
+        }
+    )
+
+)
+

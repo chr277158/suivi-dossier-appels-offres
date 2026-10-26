@@ -1,0 +1,42 @@
+:root[data-theme='dark']{color-scheme:dark;--ink:#e6eee8;--muted:#a2b0a7;--green:#183e38;--line:#34423b;--paper:#1c2823;--coral:#d77a5d;--gold:#e0b54c;background:#111a16;color:var(--ink)}
+:root[data-theme='dark'] body,:root[data-theme='dark'] .app-shell,:root[data-theme='dark'] .workspace,:root[data-theme='dark'] .content-area{background:#111a16;color:var(--ink)}
+:root[data-theme='dark'] .topbar,:root[data-theme='dark'] .chart-panel,:root[data-theme='dark'] .dossier-card,:root[data-theme='dark'] .dossier-info-panel,:root[data-theme='dark'] .dossier-records-panel,:root[data-theme='dark'] .calendar-notifications,:root[data-theme='dark'] .reminder-form,:root[data-theme='dark'] .hr-form,:root[data-theme='dark'] .hr-modal,:root[data-theme='dark'] .tracking-modal,:root[data-theme='dark'] .chart-drilldown-modal,:root[data-theme='dark'] .decision-dialog,:root[data-theme='dark'] .dossier-editor,:root[data-theme='dark'] .settings-option-list,:root[data-theme='dark'] .settings-option-form{background:#1c2823;color:var(--ink);border-color:var(--line)}
+:root[data-theme='dark'] .topbar{border-bottom-color:var(--line)}
+:root[data-theme='dark'] .crumb,:root[data-theme='dark'] .page-heading p,:root[data-theme='dark'] .dossier-card-meta,:root[data-theme='dark'] .dossier-info-panel dt,:root[data-theme='dark'] .module-footnote,:root[data-theme='dark'] .settings-option-list header span{color:#a2b0a7}
+:root[data-theme='dark'] .user-chip,:root[data-theme='dark'] .dossier-info-panel dd,:root[data-theme='dark'] .dossier-detail-title h1,:root[data-theme='dark'] .dossier-card-title,:root[data-theme='dark'] .chart-panel h2,:root[data-theme='dark'] .calendar-notifications h2,:root[data-theme='dark'] .settings-option-list h2,:root[data-theme='dark'] .settings-option-value strong{color:var(--ink)}
+:root[data-theme='dark'] input,:root[data-theme='dark'] select,:root[data-theme='dark'] textarea,:root[data-theme='dark'] .search-field,:root[data-theme='dark'] .status-filter select,:root[data-theme='dark'] .year-filter input,:root[data-theme='dark'] .dossier-record-form input,:root[data-theme='dark'] .dossier-record-form textarea,:root[data-theme='dark'] .decision-date-label input,:root[data-theme='dark'] .settings-option-list input,:root[data-theme='dark'] .settings-option-form input,:root[data-theme='dark'] .settings-toolbar select{background:#121b17!important;color:var(--ink)!important;border-color:#425249!important}
+:root[data-theme='dark'] input::placeholder,:root[data-theme='dark'] textarea::placeholder{color:#91a097}
+:root[data-theme='dark'] .table-wrap,:root[data-theme='dark'] .chart-detail-table{background:#1c2823;border-color:var(--line)}
+:root[data-theme='dark'] table,:root[data-theme='dark'] th,:root[data-theme='dark'] td{color:var(--ink);border-color:var(--line)}
+:root[data-theme='dark'] th{background:#24332c}
+:root[data-theme='dark'] tr:nth-child(even){background:#202d27}
+:root[data-theme='dark'] .secondary-button,:root[data-theme='dark'] .icon-button,:root[data-theme='dark'] .nav-button{color:#e0e8e2}
+:root[data-theme='dark'] .secondary-button,:root[data-theme='dark'] .icon-button{border-color:#425249;background:#1c2823}
+:root[data-theme='dark'] .icon-button:hover,:root[data-theme='dark'] .secondary-button:hover{background:#2a3a32}
+:root[data-theme='dark'] .dossier-record-list li,:root[data-theme='dark'] .calendar-notifications article,:root[data-theme='dark'] .settings-option-list article{border-color:var(--line)}
+:root[data-theme='dark'] .dossier-record-list p,:root[data-theme='dark'] .calendar-notifications article p,:root[data-theme='dark'] .decision-dialog>p{color:#c1ccc4}
+:root[data-theme='dark'] .empty-state{color:#a2b0a7}
+:root[data-theme='dark'] .status-draft{background:#344149;color:#d5e0e5}
+:root[data-theme='dark'] .status-published{background:#2b4350;color:#d6e9f3}
+:root[data-theme='dark'] .status-evaluation{background:#4d442e;color:#f2dfad}
+:root[data-theme='dark'] .status-awarded{background:#294638;color:#c9efd6}
+:root[data-theme='dark'] .status-unsuccessful,:root[data-theme='dark'] .status-cancelled{background:#50342f;color:#f1c7bc}
+:root[data-theme='dark'] .decision-actions .decision-awarded{background:#20382a;color:#c9efd6}
+:root[data-theme='dark'] .decision-actions .decision-unsuccessful{background:#433a25;color:#f2dfad}
+:root[data-theme='dark'] .decision-actions .decision-cancelled{background:#4b302c;color:#f1c7bc}
+:root[data-theme='dark'] .modal-backdrop,:root[data-theme='dark'] .decision-backdrop,:root[data-theme='dark'] .hr-modal-backdrop{background:#070c09dd}
+:root[data-theme='dark'] a{color:#91c9a1}
+:root[data-theme='dark'] .login-form{background:#1c2823;color:var(--ink)}
+:root[data-theme='dark'] .login-form label{color:#c1ccc4}
+:root[data-theme='dark'] .login-form input{background:#121b17;color:var(--ink);border-color:#425249}
+:root[data-theme='dark'] .alert-banner,:root[data-theme='dark'] .alert-banner.has-alert,:root[data-theme='dark'] .dossier-status-filters button,:root[data-theme='dark'] .dossier-empty,:root[data-theme='dark'] .empty-state{background:#1c2823;color:var(--ink);border-color:var(--line)}
+:root[data-theme='dark'] .alert-banner small,:root[data-theme='dark'] .dossier-empty span{color:#a2b0a7}
+:root[data-theme='dark'] .status-filter,:root[data-theme='dark'] .year-filter,:root[data-theme='dark'] .dossier-toolbar{color:#c1ccc4}
+:root[data-theme='dark'] .dossier-status-filters button.selected{background:#28554b;color:#fff}
+:root[data-theme='dark'] .search-field{background:#121b17;border-color:#425249}
+:root[data-theme='dark'] .chart-legend button{color:#d3ddd5}
+:root[data-theme='dark'] .module-footnote,:root[data-theme='dark'] .settings-option-list article label{color:#a2b0a7}
+:root[data-theme='dark'] .settings-option-actions .icon-button{background:#18231e}
+:root[data-theme='dark'] .login-art{background:#13231c;color:#e6eee8}
+:root[data-theme='dark'] .dossier-form-grid label.date-order-invalid{border-color:#d77a5d!important;background:#432d2a!important;color:#ffc0ad!important}
+:root[data-theme='dark'] .dossier-form-grid label.date-order-invalid input{border-color:#d77a5d!important;background:#211b19!important;color:#ffe9e2!important;box-shadow:0 0 0 2px #d77a5d35}

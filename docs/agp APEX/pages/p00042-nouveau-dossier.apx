@@ -1,0 +1,736 @@
+page 42 (
+    name: nouveau Dossier
+    alias: NOUVEAU_DOSSIER
+    title: nouveau Dossier
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        fileUrls: #APP_FILES#jquery.maskedinput.min.js
+        executeWhenPageLoads:
+            ```javascript-browser
+            $("#P42_DR").mask("A*.##.#.####");
+            //$("#P6_BUDGET").mask("## ### ###,###")
+            // Dans "Execute when Page Loads"
+            /*new AutoNumeric('#P6_BUDGET', {
+                digitGroupSeparator: ' ',
+                decimalCharacter: ',',
+                decimalPlaces: 3
+            });*/
+            ```
+    }
+    security {
+        authorizationScheme: @droits-de-lecteur
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region new (
+        name: New
+        title: Nouveau Dossier
+        type: form
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select ID,
+                       "الكلفة_التقديرية",
+                       "نوعية_الطلب",
+                       "اللجنة_المختصة",
+                       "الاجراءات",
+                       "طريقة_ابرام_الصفقة",
+                       "آجال_الانجاز",
+                       "المكلف_بالملف",
+                       "رقم_الاستشارة",
+                       "تاريخ_بداية_معالجة_الملف_الجديد",
+                       "التاريخ_نهاية_العقد_الجاري",
+                       "موضوع_الصفقة"
+                  from SUIVI
+                WHERE ID = :P42_T
+                ```
+        }
+        layout {
+            sequence: 40
+            slot: contentBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                update
+                delete
+            ]
+        }
+    )
+
+    pageItem P42_CREER_PAR (
+        type: hidden
+        layout {
+            sequence: 140
+            region: @new
+            slot: regionBody
+        }
+        default {
+            type: item
+            item: P0_USER
+        }
+    )
+
+    pageItem P42_DR (
+        type: textField
+        label {
+            label: رقم الملف
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @new
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            valueRequired: true
+            maxLength: 50
+        }
+        source {
+            formRegion: @new
+            column: رقم_الاستشارة
+            dataType: varchar2
+        }
+    )
+
+    pageItem P42_ETAT (
+        type: hidden
+        layout {
+            sequence: 20
+            slot: contentBody
+        }
+    )
+
+    pageItem P42_ID_3 (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @new
+            slot: regionBody
+        }
+        source {
+            formRegion: @new
+            column: ID
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        default {
+            type: item
+            item: P42_T
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P42_MESSAGE (
+        type: displayOnly
+        label {
+            alignment: left
+        }
+        settings {
+            format: html
+        }
+        layout {
+            sequence: 30
+            slot: contentBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--stretchInputs
+                t-Form-fieldContainer--xlarge
+                margin-top-lg
+                margin-left-sm
+                margin-right-sm
+            ]
+        }
+        default {
+            type: static
+            staticValue:
+                ```
+                <span style="color:blue;font-weight:bold"> هذا الملف موجود في قائمة الملفات الجارية
+                 </span>
+                ```
+        }
+    )
+
+    pageItem P42_T (
+        type: hidden
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+    )
+
+    pageItem P42_آجال_الانجاز (
+        type: numberField
+        label {
+            label: آجال الانجاز
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            region: @new
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @new
+            column: آجال_الانجاز
+            dataType: number
+        }
+    )
+
+    pageItem P42_الاجراءات (
+        type: hidden
+        layout {
+            sequence: 90
+            region: @new
+            slot: regionBody
+        }
+        source {
+            formRegion: @new
+            column: الاجراءات
+            dataType: varchar2
+        }
+    )
+
+    pageItem P42_التاريخ_نهاية_العقد_الجاري (
+        type: hidden
+        layout {
+            sequence: 120
+            region: @new
+            slot: regionBody
+        }
+        source {
+            formRegion: @new
+            column: التاريخ_نهاية_العقد_الجاري
+            dataType: date
+        }
+    )
+
+    pageItem P42_الكلفة_التقديرية (
+        type: numberField
+        label {
+            label: الكلفة التقديرية
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @new
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            formatMask: 999G999G999G999D999
+            width: 30
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @new
+            column: الكلفة_التقديرية
+            dataType: number
+        }
+    )
+
+    pageItem P42_اللجنة_المختصة_1 (
+        type: selectList
+        label {
+            label: اللجنة المختصة
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:CRA;CRA,CME;CME,CAE;CAE
+        }
+        layout {
+            sequence: 80
+            region: @new
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @new
+            column: اللجنة_المختصة
+            dataType: varchar2
+        }
+    )
+
+    pageItem P42_المكلف_بالملف (
+        type: selectOne
+        label {
+            label: المكلف بالملف
+            alignment: left
+        }
+        settings {
+            infiniteScroll: false
+        }
+        lov {
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select T_USER.NOM as NOM,
+                T_USER.NOM as N
+                 from T_USER 
+                ```
+        }
+        layout {
+            sequence: 130
+            region: @new
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @new
+            column: المكلف_بالملف
+            dataType: varchar2
+        }
+        default {
+            type: sqlQuerySingleValue
+            sqlQuerySingleValue:
+                ```sql
+                select ID,
+                      
+                       "المكلف_بالملف"
+                   
+                  from SUIVI
+                WHERE ID = :P42_T
+                ```
+        }
+    )
+
+    pageItem P42_تاريخ_بداية_معالجة_الملف_الجديد (
+        type: hidden
+        layout {
+            sequence: 110
+            region: @new
+            slot: regionBody
+        }
+        source {
+            formRegion: @new
+            column: تاريخ_بداية_معالجة_الملف_الجديد
+            dataType: date
+        }
+    )
+
+    pageItem P42_طريقة_ابرام_الصفقة_1 (
+        type: selectOne
+        label {
+            label: طريقة ابرام الصفقة
+            alignment: left
+        }
+        settings {
+            infiniteScroll: false
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:استشارة مفتوحة;استشارة مفتوحة,استشارة مضيقة;استشارة مضيقة,طلب عروض مفتوح;طلب عروض مفتوح,استشارة بالتفاوض المباشر;استشارة بالتفاوض المباشر,التفاوض المباشر;التفاوض المباشر
+        }
+        layout {
+            sequence: 100
+            region: @new
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            valueRequired: true
+            maxLength: 50
+        }
+        source {
+            formRegion: @new
+            column: طريقة_ابرام_الصفقة
+            dataType: varchar2
+        }
+    )
+
+    pageItem P42_موضوع_الصفقة (
+        type: textarea
+        label {
+            label: موضوع الصفقة
+            alignment: left
+        }
+        layout {
+            sequence: 60
+            region: @new
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 5
+        }
+        validation {
+            valueRequired: true
+            maxLength: 4000
+        }
+        source {
+            formRegion: @new
+            column: موضوع_الصفقة
+            dataType: varchar2
+        }
+    )
+
+    pageItem P42_نوعية_الطلب_1 (
+        type: selectList
+        label {
+            label: نوعية الطلب
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:Service;Service,Etude;Etude
+        }
+        layout {
+            sequence: 70
+            region: @new
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @new
+            column: نوعية_الطلب
+            dataType: varchar2
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Créer
+        layout {
+            sequence: 40
+            region: @boutons
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+    )
+
+    dynamicAction new (
+        name: New
+        execution {
+            sequence: 20
+        }
+        when {
+            event: ready
+        }
+        clientSideCondition {
+            type: item=value
+            item: P42_ETAT
+            value: OK
+        }
+
+        action native-disable (
+            action: disable
+            affectedElements {
+                selectionType: button
+                button: @create
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-hide (
+            action: hide
+            affectedElements {
+                selectionType: items
+                items: P42_MESSAGE
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    process fermer-la-boîte-de-dialogue (
+        name: Fermer la boîte de dialogue
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 60
+        }
+        advanced {
+            executionMappingIdentifier: 21033659603748970
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+    process initialize-form-nouveau-cc (
+        name: Initialize form nouveau cc
+        type: formInitialization
+        formRegion: @new
+        execution {
+            sequence: 30
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 20898577269342823
+        }
+    )
+
+    process insert-into-3-tables (
+        name: Insert_Into_3_Tables
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                DECLARE
+                    v_cc_id NUMBER;
+                BEGIN
+                    -- 1. Insertion dans CC (ID généré automatiquement)
+                    INSERT INTO CC (
+                        REF_AO,
+                       OBJET_CCT,
+                    
+                       BUDGET,
+                       DÉTAIL_DE_RÉPONSE,
+                       NATURE_DE_DEPENSE,
+                        DATE_CRÉATION,
+                        CREER_PAR,
+                        PV_CCT,
+                        STATUS
+                        
+                    ) VALUES (
+                        v('P42_DR'),
+                        v('P42_موضوع_الصفقة'),
+                
+                        v('P42_الكلفة_التقديرية'),
+                        v('P42_آجال_الانجاز'),
+                        'Exploitation',
+                        SYSDATE,
+                        :P42_CREER_PAR,
+                        'Y',
+                        '1'
+                    ) RETURNING ID INTO v_cc_id;  -- Récupère l'ID généré
+                    
+                    -- 2. Insertion dans SP avec le même ID que CC
+                    INSERT INTO SP (
+                        ID,
+                          عدد,
+                    طريقة_ابرام_الصفقة,
+                    نوعية_الطلب,
+                    اللجنة_المختصة,
+                    تاريخ_ورود_CPT_ممضاة,
+                    المكلف_بالملف
+                    ) VALUES (
+                        v_cc_id,  -- Utilise l'ID récupéré de CC
+                         v('P42_DR'),
+                    v('P42_طريقة_ابرام_الصفقة_1'),
+                     v('P42_نوعية_الطلب_1'),
+                    v('P42_اللجنة_المختصة_1'),
+                    v('P42_تاريخ_بداية_معالجة_الملف_الجديد'),
+                       v('P42_المكلف_بالملف_1')
+                    );
+                    
+                
+                
+                  
+                    -- 3. Insertion dans FICHIER_DE_LANCEMENT avec IDCC
+                    INSERT INTO FICHIER_LNCEMENT (
+                               ID_CC,
+                       PROPOSITION_COMMISSION,
+                       CC_POUR_LANCEMENT,
+                       CRITERES_EVALUATION,
+                       AVIS_DE_PRESSE,
+                      DESIGNATION_DE_LA_COMMISSION,
+                         MAIL_PRESTATAIRE,
+                      PROGRAMME_OUVERTURE_DE_PLIS,
+                      NOTE_OUVERTURE_PLIS,
+                      CAUTION_P
+                     )
+                VALUES (
+                     v_cc_id,  -- Utilise l'ID récupéré de CC
+                    'N',
+                    'N',
+                    'N',
+                    'N',
+                    'N',
+                    'N',
+                    'N',
+                    'N',
+                    'N'
+                     
+                    );
+                    
+                    -- Commit de la transaction
+                    COMMIT;
+                    
+                    -- Message de succès avec l'ID généré
+                    apex_application.g_print_success_message := 
+                        'Enregistrement réussi. ID généré : ' || v_cc_id;
+                    
+                EXCEPTION
+                    WHEN OTHERS THEN
+                        -- Annulation de toutes les insertions en cas d'erreur
+                        ROLLBACK;
+                        
+                        -- Affichage de l'erreur
+                        apex_error.add_error(
+                            p_message => 'Erreur lors de l''insertion : ' || SQLERRM,
+                            p_display_location => apex_error.c_inline_in_notification
+                        );
+                        
+                        -- Relance l'exception pour arrêter le traitement
+                        RAISE;
+                END;
+                ```
+        }
+        execution {
+            sequence: 50
+            point: afterSubmit
+        }
+        advanced {
+            executionMappingIdentifier: 20900952406342847
+        }
+        serverSideCondition {
+            whenButtonPressed: @create
+        }
+    )
+
+    process new (
+        name: New
+        type: formInitialization
+        formRegion: @new
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 20899881630342836
+        }
+    )
+
+)
+

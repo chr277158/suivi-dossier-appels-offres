@@ -1,0 +1,267 @@
+page 50 (
+    name: solde
+    alias: SOLDE
+    title: solde
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region solde (
+        name: solde
+        type: form
+        source {
+            location: localDatabase
+            tableName: SOLDE_CONGE
+            whereClause: MATRICULE = :P0_MAT
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+            ]
+        }
+    )
+
+    pageItem P50_ID_SOLDE (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @solde
+            slot: regionBody
+        }
+        source {
+            formRegion: @solde
+            column: ID_SOLDE
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P50_MATRICULE (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @solde
+            slot: regionBody
+        }
+        source {
+            formRegion: @solde
+            column: MATRICULE
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P50_SOLDE (
+        type: numberField
+        label {
+            label: Solde
+            alignment: right
+        }
+        layout {
+            sequence: 30
+            region: @solde
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 255
+        }
+        source {
+            formRegion: @solde
+            column: SOLDE
+            dataType: number
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Créer
+        layout {
+            sequence: 40
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: expression
+            language: sql
+            sqlExpression: :P50_ID_SOLDE is null or :P50_MATRICULE is null
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Supprimer
+        layout {
+            sequence: 20
+            region: @boutons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: expression
+            language: sql
+            sqlExpression: :P50_ID_SOLDE is not null and :P50_MATRICULE is not null
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Appliquer les modifications
+        layout {
+            sequence: 30
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: expression
+            language: sql
+            sqlExpression: :P50_ID_SOLDE is not null and :P50_MATRICULE is not null
+        }
+    )
+
+    process fermer-la-boîte-de-dialogue (
+        name: Fermer la boîte de dialogue
+        type: closeDialog
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 36257700234712404
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+    process initialiser-le-panneau-solde (
+        name: Initialiser le panneau solde
+        type: formInitialization
+        formRegion: @solde
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 36256909548712403
+        }
+    )
+
+    process traiter-le-panneau-solde (
+        name: Traiter le panneau solde
+        type: formAutoRowProcessing
+        formRegion: @solde
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 36257349157712403
+        }
+    )
+
+)
+

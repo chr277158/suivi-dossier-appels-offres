@@ -1,0 +1,36 @@
+buildOption (
+    buildOption: @feature-push-notifications
+)
+
+buildOption (
+    buildOption: @feature-user-settings
+)
+
+buildOption (
+    buildOption: @mis-en-commentaire
+)
+
+buildOption (
+    buildOption: @fonctionnalité-contrôle-d-accès
+)
+
+buildOption (
+    buildOption: @fonctionnalité-génération-d-états-d-activité
+)
+
+buildOption (
+    buildOption: @fonctionnalité-informations-en-retour
+)
+
+buildOption (
+    buildOption: @fonctionnalité-options-de-configuration
+)
+
+buildOption (
+    buildOption: @fonctionnalité-a-propos-de-la-page
+)
+
+buildOption (
+    buildOption: @fonctionnalité-sélection-du-style-de-thème
+)
+

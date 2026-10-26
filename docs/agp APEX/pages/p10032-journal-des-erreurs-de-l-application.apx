@@ -1,0 +1,261 @@
+page 10032 (
+    name: Journal des erreurs de l'application
+    alias: JOURNAL-DES-ERREURS-DE-L-APPLICATION
+    title: Journal des erreurs de l'application
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authorizationScheme: @droits-d-administration
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>Cette page fournit un état interactif de toutes les erreurs inattendues consignées par cette application.</p>
+            <p>Pour trier et filtrer les données, cliquez sur les en-têtes de colonne, ou cliquez sur le bouton <strong>Actions</strong> pour personnaliser l'affichage des colonnes et de nombreuses fonctionnalités avancées supplémentaires. Pour rétablir les paramètres par défaut de l'état interactif, cliquez sur le bouton <strong>Réinitialiser</strong>.</p>
+            ```
+    }
+    config {
+        buildOption: @fonctionnalité-génération-d-états-d-activité
+    }
+
+    region journal-des-erreurs-de-l-application (
+        name: Journal des erreurs de l'application
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select step_id,
+                       userid,
+                       time_stamp err_time,
+                       sqlerrm,
+                       sqlerrm_component_type,
+                       sqlerrm_component_name
+                  from apex_activity_log
+                 where flow_id = :app_id
+                   and sqlerrm is not null
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: Aucune donnée n'a été trouvée.
+            whenMoreDataFound: Le nombre maximal de lignes pour cet état est de #MAX_ROW_COUNT# lignes. Appliquez un filtre pour réduire le nombre d'enregistrements dans votre requête.
+        }
+        searchBar {
+            rowsPerPageSelector: true
+        }
+        actionsMenu {
+            rowsPerPage: false
+            savePublicReport: true
+        }
+        advanced {
+            savedReportMappingIdentifier: 48201970895131053393
+        }
+
+        column ERR_TIME (
+            type: plainText
+            heading {
+                heading: Err Time
+                alignment: center
+            }
+            layout {
+                sequence: 3
+                columnAlignment: center
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column SQLERRM (
+            type: plainText
+            heading {
+                heading: Erreur
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column SQLERRM_COMPONENT_NAME (
+            type: plainText
+            heading {
+                heading: Nom de composant
+            }
+            layout {
+                sequence: 6
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column SQLERRM_COMPONENT_TYPE (
+            type: plainText
+            heading {
+                heading: Contexte
+            }
+            layout {
+                sequence: 5
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column STEP_ID (
+            type: plainText
+            heading {
+                heading: Page
+                alignment: end
+            }
+            layout {
+                sequence: 1
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column USERID (
+            type: plainText
+            heading {
+                heading: Utilisateur
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Journal des erreurs de l'application
+        }
+
+        savedReport 482019758 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn ERR_TIME (
+                sequence: 3
+            )
+
+            displayColumn SQLERRM (
+                sequence: 4
+            )
+
+            displayColumn SQLERRM_COMPONENT_NAME (
+                sequence: 6
+            )
+
+            displayColumn SQLERRM_COMPONENT_TYPE (
+                sequence: 5
+            )
+
+            displayColumn STEP_ID (
+                sequence: 1
+            )
+
+            displayColumn USERID (
+                sequence: 2
+            )
+
+            sort (
+                column: ERROR_TIME
+                sort {
+                    direction: desc
+                    sequence: 1
+                }
+            )
+
+        )
+
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Réinitialiser
+        layout {
+            sequence: 20
+            region: @journal-des-erreurs-de-l-application
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: t-Button--iconLeft
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+)
+

@@ -1,0 +1,9 @@
+.reminder-recipients{grid-column:1/-1;min-width:0;margin:0;padding:10px 12px;border:1px solid #dfe5df;border-radius:4px}
+.reminder-recipients legend{padding:0 5px;color:#586860;font-size:11px;font-weight:600}
+.reminder-recipients>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 12px;max-height:150px;overflow:auto}
+.reminder-recipients label{display:flex;min-width:0;align-items:center;gap:7px;color:#43524b;font-size:11px;font-weight:400;cursor:pointer}
+.reminder-recipients input{flex:none;width:15px;min-height:15px;margin:0;accent-color:var(--green)}
+.reminder-recipients label span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:root[data-theme='dark'] .reminder-recipients{border-color:#425249}
+:root[data-theme='dark'] .reminder-recipients legend,:root[data-theme='dark'] .reminder-recipients label{color:#c1ccc4}
+@media(max-width:640px){.reminder-recipients>div{grid-template-columns:repeat(2,minmax(0,1fr))}}

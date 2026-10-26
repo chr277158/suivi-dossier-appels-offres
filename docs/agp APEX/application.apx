@@ -1,0 +1,142 @@
+app SUIVI_DES_APPELS_D_OFFRES177924 (
+    name: Suivi Des Dossiers v2.3
+    version: Release 2.3
+    logo {
+        type: text
+        text: Suivi Des Dossiers
+    }
+    navigation {
+        homeUrl: {
+            page: 10002
+        }
+        loginUrl: {
+            page: 9999
+        }
+    }
+    navigationMenu {
+        listTemplate: @/side-navigation-menu
+        templateOptions: [
+            js-addActions
+            js-defaultCollapsed
+            js-navCollapsed--default
+            t-TreeNav--classic
+        ]
+        list: @menu-de-navigation
+    }
+    navigationBar {
+        list: @barre-de-navigation
+        listTemplate: @/navigation-bar
+        templateOptions: #DEFAULT#
+    }
+    userInterface {
+        currentTheme: @universal-theme
+        globalPage: 0
+        usersCanChooseThemeStyle: true
+        addBuiltWithApexToFooter: false
+        autoDismissSuccessMessages: true
+    }
+    appFormatMasks {
+        date: DS
+        timestamp: DS
+        timestampTimeZone: DS
+    }
+    javaScript {
+        includeLegacyJavascript: [
+            pre18
+            18
+        ]
+    }
+    authentication {
+        scheme: @custom-login-t-user
+        publicUser: APEX_PUBLIC_USER
+    }
+    authorization {
+        scheme: @droits-de-lecteur
+    }
+    security {
+        browserCache: true
+        runtimeApiUsage: modifyThisApp
+    }
+    sessionStateProtection {
+        checksumSalt: 0B00C078EF3062D9EBDB203D2BA43EEAB088A0AE6A23CC7D81322E742714AE96
+    }
+    sessionManagement {
+        rejoinSessions: publicSessions
+        sessionStateCommits: immediate
+        maxSessionIdleTime: 43200
+    }
+    globalization {
+        primaryLanguage: fr
+        documentDirection: leftToRight
+        translationMethod: translationApps
+    }
+    progressiveWebApp {
+        installable: true
+        enablePushNotifications: true
+        pushNotificationsCredentials: @App_102_Push_Notifications_Credentials
+        contactEmail: chr277158@gmail.com
+    }
+    reportPrinting {
+        type: useInstanceSettings
+    }
+    runtime {
+        allowFeedback: true
+        accessibleReadOnlyItems: false
+    }
+    advanced {
+        passEcid: false
+        copyrightBanner:
+            ```
+            Nom : #APP_NAME#
+            Copyright (c) 2025, #YEAR#, CHR
+            ```
+    }
+
+    substitution APP_NAME (
+        value {
+            staticValue: AGP
+        }
+    )
+
+    appSetting ACCESS_CONTROL_SCOPE (
+        value {
+            staticValue: ALL_USERS
+            onUpgradeKeepValue: true
+        }
+        validation {
+            validValues: ACL_ONLY, ALL_USERS
+        }
+        config {
+            buildOption: @fonctionnalité-contrôle-d-accès
+        }
+        comments {
+            comments: Niveau d'accès par défaut attribué aux utilisateurs authentifiés qui ne figurent pas dans la liste de contrôle d'accès
+        }
+    )
+
+    appSetting FEEDBACK_ATTACHMENTS_YN (
+        value {
+            staticValue: Y
+            onUpgradeKeepValue: true
+        }
+        validation {
+            validValues: Y, N
+        }
+        config {
+            buildOption: @fonctionnalité-informations-en-retour
+        }
+    )
+
+    pwaShortcut agp (
+        name: AGP
+        sequence: 10
+        shortcut {
+            target: {
+                page: 1
+            }
+            iconUrl: pwa/shortcut-icon-10.png
+        }
+    )
+
+)
+

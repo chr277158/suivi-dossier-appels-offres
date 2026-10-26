@@ -1,0 +1,463 @@
+page 10053 (
+    name: Gérer les informations en retour
+    alias: GÉRER-LES-INFORMATIONS-EN-RETOUR
+    title: Gérer les informations en retour
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    css {
+        inline:
+            ```css
+            /* Color feedback rating icons */
+            .feedback-positive { color: var(--ut-feedback-positive-text-color, var(--ut-palette-success)); }
+            .feedback-neutral { color: var(--ut-feedback-neutral-text-color, var(--ut-palette-warning)); }
+            .feedback-negative { color: var(--ut-feedback-negative-text-color, var(--ut-palette-danger)); }
+            ```
+    }
+    security {
+        authorizationScheme: @droits-d-administration
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>Les informations en retour peuvent être saisies par les utilisateurs finals à partir de n'importe quelle page normale dans l'application.</p>
+            <p>Cet état affiche les informations en retour saisies, les réponses transmises par les administrateurs et le statut des informations en retour.</p>
+            <p>Cliquez sur l'icône de modification (crayon jaune) pour saisir une réponse ou mettre à jour le statut des informations en retour.</p>
+            <p><em><strong>Remarque :</strong> si des destinataires ont été définis pour les informations en retour, ces derniers seront également envoyés par courriel aux adresses électroniques figurant dans la liste des destinataires des informations en retour.</em></p>
+            ```
+    }
+    config {
+        buildOption: @fonctionnalité-informations-en-retour
+    }
+
+    region gérer-les-informations-en-retour (
+        name: Gérer les informations en retour
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select feedback_id id,
+                    page_id||'. '||page_name page_name,
+                    created_on created,
+                    lower(created_by) created_by,
+                    feedback,
+                    feedback_rating rating,
+                    case feedback_rating
+                      when 1 then 'fa-frown-o feedback-negative' 
+                      when 2 then 'fa-emoji-neutral feedback-neutral'  
+                      when 3 then 'fa-smile-o feedback-positive'
+                    end rating_icon,
+                    feedback_status status,
+                    public_response response,
+                    http_user_agent user_agent,
+                    updated_on updated,
+                    lower(updated_by) updated_by,
+                    page_id
+                from apex_team_feedback f
+                where application_id = :APP_ID
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                page: 10054
+                items: {
+                    P10054_ID: \#ID#\
+                }
+                action: resetPagination
+            }
+            linkIcon: <span aria-label="Modifier"><span class="fa fa-edit" aria-hidden="true" title="Modifier"></span></span>
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: Aucune donnée n'a été trouvée.
+            whenMoreDataFound: Le nombre maximal de lignes pour cet état est de #MAX_ROW_COUNT# lignes. Appliquez un filtre pour réduire le nombre d'enregistrements dans votre requête.
+        }
+        searchBar {
+            rowsPerPageSelector: true
+        }
+        actionsMenu {
+            rowsPerPage: false
+            savePublicReport: true
+        }
+        advanced {
+            savedReportMappingIdentifier: 48202061605178053552
+        }
+
+        column CREATED (
+            type: plainText
+            heading {
+                heading: Enregistré
+            }
+            layout {
+                sequence: 3
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column CREATED_BY (
+            type: plainText
+            heading {
+                heading: Enregistré par
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column FEEDBACK (
+            type: plainText
+            heading {
+                heading: Informations en retour
+            }
+            layout {
+                sequence: 5
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 0
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column PAGE_ID (
+            type: plainText
+            heading {
+                heading: Page
+                alignment: end
+            }
+            layout {
+                sequence: 13
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: M
+            }
+        )
+
+        column PAGE_NAME (
+            type: plainText
+            heading {
+                heading: Page
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column RATING (
+            type: plainTextBasedOnLov
+            heading {
+                heading: Evaluation
+                alignment: center
+            }
+            lov {
+                lov: @feedback-rating
+            }
+            layout {
+                sequence: 6
+                columnAlignment: center
+            }
+            columnFormatting {
+                htmlExpression: <span class="fa #RATING_ICON#" aria-hidden="true" title="#RATING#"></span>
+            }
+            source {
+                dataType: NUMBER
+            }
+            columnFilter {
+                type: defaultBasedOnColumnType
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column RATING_ICON (
+            type: hidden
+            heading {
+                heading: RATING ICON
+            }
+            layout {
+                sequence: 7
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column RESPONSE (
+            type: plainText
+            heading {
+                heading: Réponse
+            }
+            layout {
+                sequence: 9
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column STATUS (
+            type: plainTextBasedOnLov
+            heading {
+                heading: Statut
+            }
+            lov {
+                lov: @feedback-status
+            }
+            layout {
+                sequence: 8
+            }
+            source {
+                dataType: NUMBER
+            }
+            columnFilter {
+                type: defaultBasedOnColumnType
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column UPDATED (
+            type: plainText
+            heading {
+                heading: Mis à jour
+            }
+            layout {
+                sequence: 11
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: K
+            }
+        )
+
+        column UPDATED_BY (
+            type: plainText
+            heading {
+                heading: Mis à jour par
+            }
+            layout {
+                sequence: 12
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: L
+            }
+        )
+
+        column USER_AGENT (
+            type: plainText
+            heading {
+                heading: Agent utilisateur
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: J
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Gérer les informations en retour
+        }
+
+        savedReport 482020721 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn CREATED (
+                sequence: 2
+            )
+
+            displayColumn CREATED_BY (
+                sequence: 3
+            )
+
+            displayColumn FEEDBACK (
+                sequence: 4
+            )
+
+            displayColumn PAGE_NAME (
+                sequence: 1
+            )
+
+            displayColumn RATING (
+                sequence: 5
+            )
+
+            displayColumn RESPONSE (
+                sequence: 7
+            )
+
+            displayColumn STATUS (
+                sequence: 6
+            )
+
+            displayColumn UPDATED (
+                sequence: 8
+            )
+
+            displayColumn UPDATED_BY (
+                sequence: 9
+            )
+
+            sort (
+                column: UPDATED
+                sort {
+                    direction: desc
+                    sequence: 1
+                }
+            )
+
+        )
+
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Réinitialiser
+        layout {
+            sequence: 20
+            region: @gérer-les-informations-en-retour
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: t-Button--iconLeft
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction régénérer-l-état (
+        name: Régénérer l'état
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @gérer-les-informations-en-retour
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @gérer-les-informations-en-retour
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

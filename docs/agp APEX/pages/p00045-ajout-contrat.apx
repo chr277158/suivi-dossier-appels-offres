@@ -1,0 +1,1306 @@
+page 45 (
+    name: AJOUT CONTRAT
+    alias: AJOUT-CONTRAT
+    title: AJOUT CONTRAT
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+        ]
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    css {
+        inline: "  $(\"N_CONTRAT_BC\").mask(\"A*.##.#.####\");"
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region ajout-contrat (
+        name: AJOUT CONTRAT
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            tableName: CONTRATS
+            whereClause: ID_cc = :P45_ID_CC
+        }
+        layout {
+            sequence: 40
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        advanced {
+            htmlDomId: contrats_ig
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+        editAuthorization {
+            add: @droits-de-contribution
+            update: @droits-de-contribution
+            delete: @droits-de-contribution
+        }
+        toolbar {
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                resetButton
+                saveButton
+            ]
+            addButtonLabel: إضافة عقد جديد
+        }
+        enableUsersTo {
+            flashback: false
+            defineChartView: false
+        }
+        download {
+            authorization: @droits-de-contribution
+            formats: [
+                csv
+                html
+                pdf
+                excel
+            ]
+        }
+        heading {
+            fixedTo: region
+            fixedReportHeight: 300
+        }
+        advanced {
+            savedReportMappingIdentifier: 23612471984674954
+        }
+
+        savedReport 236129 (
+            visibility: primary
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    frozen: true
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @ID_CC
+                layout {
+                    frozen: true
+                    width: 41.5
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @REF_AO
+                layout {
+                    width: 87.5
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @TITULAIRE_DU_MARCHÉ
+                layout {
+                    width: 134
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @CADRE__PONCTUEL
+                layout {
+                    width: 99.18799999999999
+                    sequence: 7
+                }
+            )
+
+            displayColumn (
+                column: @MONTANT
+                layout {
+                    width: 108.18799999999999
+                    sequence: 8
+                }
+            )
+
+            displayColumn (
+                column: @DEVISE
+                layout {
+                    width: 64.18799999999999
+                    sequence: 9
+                }
+            )
+
+            displayColumn (
+                column: @OBJET
+                layout {
+                    width: 300.25
+                    sequence: 10
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DE_MISE_VIGUEUR
+                layout {
+                    width: 127.93799999999999
+                    sequence: 11
+                }
+            )
+
+            displayColumn (
+                column: @ID
+                layout {
+                    sequence: 12
+                }
+            )
+
+            displayColumn (
+                column: @N_CONTRAT_BC
+                layout {
+                    width: 136.5
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @DATE_FIN_DU_MARCHÉ
+                layout {
+                    sequence: 13
+                }
+            )
+
+            displayColumn (
+                column: @MONTANT_DE_LA_CAUTION
+                layout {
+                    sequence: 14
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DE_MAIN_LEVÉE
+                layout {
+                    sequence: 15
+                }
+            )
+
+            displayColumn (
+                column: @N__COMMISSION
+                layout {
+                    width: 85.75
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @ETAT
+                layout {
+                    sequence: 16
+                }
+            )
+
+            displayColumn (
+                column: @OBSERVATION_
+                layout {
+                    sequence: 17
+                }
+            )
+
+            displayColumn (
+                column: @COL016
+                layout {
+                    sequence: 18
+                }
+            )
+
+            displayColumn (
+                column: @DEMANDEUR
+                layout {
+                    sequence: 19
+                }
+            )
+
+            displayColumn (
+                column: @RESPONSABLE
+                layout {
+                    sequence: 20
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DE_LA_PREMIÈRE_PIÈCE_LÉGALE
+                layout {
+                    sequence: 21
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DE_LA_DERNIÈRE_PIÈCE_LÉGALE
+                layout {
+                    sequence: 22
+                }
+            )
+
+            displayColumn (
+                column: @N__ARCHIVAGE
+                layout {
+                    sequence: 23
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DE_L_ARCHIVAGE
+                layout {
+                    sequence: 24
+                }
+            )
+
+            displayColumn (
+                column: @N__RANG_ARCHIVAGE
+                layout {
+                    sequence: 25
+                }
+            )
+
+            displayColumn (
+                column: @OBSERVATION
+                layout {
+                    sequence: 26
+                }
+            )
+
+            displayColumn (
+                column: @DATE_LIVRAISON_JURIDIQUE
+                layout {
+                    sequence: 27
+                }
+            )
+
+            displayColumn (
+                column: @DATE_AVIS_JURIDIQUE
+                layout {
+                    sequence: 28
+                }
+            )
+
+            displayColumn (
+                column: @DATE_ENVOI_CLIENT_SIGNATURE
+                layout {
+                    sequence: 29
+                }
+            )
+
+            displayColumn (
+                column: @DATE_RETOUR_CLIENT_SIGNE
+                layout {
+                    sequence: 30
+                }
+            )
+
+            displayColumn (
+                column: @DATE_ENVOI_ADMIN_SIGNATURE
+                layout {
+                    sequence: 31
+                }
+            )
+
+            displayColumn (
+                column: @DATE_RETOUR_ADMIN_SIGNE
+                layout {
+                    sequence: 32
+                }
+            )
+
+            displayColumn (
+                column: @DATE_ENVOI_CLIENT_ENREGISTREMENT
+                layout {
+                    sequence: 33
+                }
+            )
+
+            displayColumn (
+                column: @DATE_RETOUR_ENREGISTRE
+                layout {
+                    sequence: 34
+                }
+            )
+
+            displayColumn (
+                column: @DATE_GARANTIE_FINALE
+                layout {
+                    sequence: 35
+                }
+            )
+
+            displayColumn (
+                column: @RESPONSABLE_DOS
+                layout {
+                    width: 73
+                    sequence: 36
+                }
+            )
+
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 20
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 10
+            }
+        )
+
+        column CADRE__PONCTUEL (
+            type: selectList
+            heading {
+                heading: Cadre  Ponctuel
+                alignment: center
+            }
+            lov {
+                type: staticValues
+                staticValues: STATIC:CADRE;Cadre,PONCTUEL;Ponctuel
+            }
+            layout {
+                sequence: 90
+                columnAlignment: center
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: CADRE__PONCTUEL
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+        )
+
+        column COL016 (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 210
+            }
+            source {
+                databaseColumn: COL016
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_AVIS_JURIDIQUE (
+            type: hidden
+            layout {
+                sequence: 310
+            }
+            source {
+                databaseColumn: DATE_AVIS_JURIDIQUE
+                dataType: date
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_DE_LA_DERNIÈRE_PIÈCE_LÉGALE (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 250
+            }
+            source {
+                databaseColumn: DATE_DE_LA_DERNIÈRE_PIÈCE_LÉGALE
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_DE_LA_PREMIÈRE_PIÈCE_LÉGALE (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 240
+            }
+            source {
+                databaseColumn: DATE_DE_LA_PREMIÈRE_PIÈCE_LÉGALE
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_DE_L_ARCHIVAGE (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 270
+            }
+            source {
+                databaseColumn: DATE_DE_L_ARCHIVAGE
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_DE_MAIN_LEVÉE (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 170
+            }
+            source {
+                databaseColumn: DATE_DE_MAIN_LEVÉE
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_DE_MISE_VIGUEUR (
+            type: datePicker
+            heading {
+                heading: Date De Mise Vigueur
+                alignment: center
+            }
+            layout {
+                sequence: 130
+                columnAlignment: center
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: DATE_DE_MISE_VIGUEUR
+                dataType: date
+            }
+        )
+
+        column DATE_ENVOI_ADMIN_SIGNATURE (
+            type: hidden
+            layout {
+                sequence: 340
+            }
+            source {
+                databaseColumn: DATE_ENVOI_ADMIN_SIGNATURE
+                dataType: date
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_ENVOI_CLIENT_ENREGISTREMENT (
+            type: hidden
+            layout {
+                sequence: 360
+            }
+            source {
+                databaseColumn: DATE_ENVOI_CLIENT_ENREGISTREMENT
+                dataType: date
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_ENVOI_CLIENT_SIGNATURE (
+            type: hidden
+            layout {
+                sequence: 320
+            }
+            source {
+                databaseColumn: DATE_ENVOI_CLIENT_SIGNATURE
+                dataType: date
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_FIN_DU_MARCHÉ (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 150
+            }
+            source {
+                databaseColumn: DATE_FIN_DU_MARCHÉ
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_GARANTIE_FINALE (
+            type: hidden
+            layout {
+                sequence: 380
+            }
+            source {
+                databaseColumn: DATE_GARANTIE_FINALE
+                dataType: date
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_LIVRAISON_JURIDIQUE (
+            type: hidden
+            layout {
+                sequence: 300
+            }
+            source {
+                databaseColumn: DATE_LIVRAISON_JURIDIQUE
+                dataType: date
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_RETOUR_ADMIN_SIGNE (
+            type: hidden
+            layout {
+                sequence: 350
+            }
+            source {
+                databaseColumn: DATE_RETOUR_ADMIN_SIGNE
+                dataType: date
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_RETOUR_CLIENT_SIGNE (
+            type: hidden
+            layout {
+                sequence: 330
+            }
+            source {
+                databaseColumn: DATE_RETOUR_CLIENT_SIGNE
+                dataType: date
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_RETOUR_ENREGISTRE (
+            type: hidden
+            layout {
+                sequence: 370
+            }
+            source {
+                databaseColumn: DATE_RETOUR_ENREGISTRE
+                dataType: date
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DEMANDEUR (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 220
+            }
+            source {
+                databaseColumn: DEMANDEUR
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DEVISE (
+            type: popupLov
+            heading {
+                heading: Devise
+                alignment: center
+            }
+            settings {
+                displayAs: modalDialog
+            }
+            lov {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    SELECT 
+                        CASE code
+                            WHEN 'USD' THEN '💵 Dollar (USD)'
+                            WHEN 'EUR' THEN '💶 Euro (EUR)'
+                            WHEN 'TND' THEN '🇹🇳 Dinar (TND)'
+                            ELSE '💰 Autre'
+                        END as display_value,
+                        code as return_value
+                    FROM (
+                        SELECT 'USD' as code FROM dual UNION ALL
+                        SELECT 'EUR' FROM dual UNION ALL
+                        SELECT 'TND' FROM dual UNION ALL
+                        SELECT 'OTHER' FROM dual
+                    )
+                    ```
+                displayExtraValues: false
+                displayNullValue: false
+            }
+            layout {
+                sequence: 110
+                columnAlignment: center
+            }
+            appearance {
+                icon: fa-money
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: DEVISE
+                dataType: varchar2
+            }
+            columnFilter {
+                enabled: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+        column ETAT (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 190
+            }
+            source {
+                databaseColumn: ETAT
+                dataType: varchar2
+            }
+            default {
+                type: static
+                staticValue: 1
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column ID (
+            type: hidden
+            layout {
+                sequence: 140
+            }
+            source {
+                databaseColumn: ID
+                dataType: number
+                queryOnly: true
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column ID_CC (
+            type: displayOnly
+            heading {
+                alignment: center
+            }
+            layout {
+                sequence: 40
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: ID_CC
+                dataType: number
+            }
+            default {
+                type: item
+                item: P45_ID_CC
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column MONTANT (
+            type: textField
+            heading {
+                heading: Montant
+                alignment: center
+            }
+            layout {
+                sequence: 100
+                columnAlignment: center
+            }
+            validation {
+                valueRequired: true
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: MONTANT
+                dataType: varchar2
+            }
+            columnFilter {
+                enabled: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+        column MONTANT_DE_LA_CAUTION (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 160
+            }
+            source {
+                databaseColumn: MONTANT_DE_LA_CAUTION
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column N_CONTRAT_BC (
+            type: textField
+            heading {
+                heading: Réf Contrat /  Bc
+                alignment: center
+            }
+            layout {
+                sequence: 60
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: A*.##.#.####
+            }
+            validation {
+                valueRequired: true
+                maxLength: 50
+            }
+            source {
+                databaseColumn: N_CONTRAT_BC
+                dataType: varchar2
+            }
+            default {
+                duplicateCopiesExistingValue: false
+            }
+            columnFilter {
+                enabled: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+        column N__ARCHIVAGE (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 260
+            }
+            source {
+                databaseColumn: N__ARCHIVAGE
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column N__COMMISSION (
+            type: textField
+            heading {
+                heading: N Commission
+            }
+            layout {
+                sequence: 70
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: N__COMMISSION
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column N__RANG_ARCHIVAGE (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 280
+            }
+            source {
+                databaseColumn: N__RANG_ARCHIVAGE
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column OBJET (
+            type: textField
+            heading {
+                heading: Objet
+                alignment: center
+            }
+            layout {
+                sequence: 120
+                columnAlignment: center
+            }
+            validation {
+                valueRequired: true
+                maxLength: 455
+            }
+            source {
+                databaseColumn: OBJET
+                dataType: varchar2
+            }
+            default {
+                type: sqlQuerySingleValue
+                sqlQuerySingleValue:
+                    ```sql
+                    select CC.OBJET_CCT as OBJET_CCT 
+                     from CC CC 
+                     where CC.REF_AO=:P45_REF_AO
+                    ```
+            }
+            columnFilter {
+                enabled: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+        column OBSERVATION (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 290
+            }
+            source {
+                databaseColumn: OBSERVATION
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column OBSERVATION_ (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 200
+            }
+            source {
+                databaseColumn: OBSERVATION_
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column REF_AO (
+            type: displayOnly
+            heading {
+                heading: Ref Ao
+                alignment: center
+            }
+            layout {
+                sequence: 50
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: REF_AO
+                dataType: varchar2
+            }
+            default {
+                type: item
+                item: P45_REF_AO
+            }
+            columnFilter {
+                enabled: false
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+        column RESPONSABLE (
+            type: hidden
+            settings {
+                valueProtected: false
+            }
+            layout {
+                sequence: 230
+            }
+            source {
+                databaseColumn: RESPONSABLE
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column RESPONSABLE_DOS (
+            type: popupLov
+            heading {
+                heading: Responsable Dos
+            }
+            lov {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select  distinct T_USER.NOM as display_value,
+                    T_USER.NOM as return_value
+                     from T_USER 
+                    order by 1;
+                    ```
+            }
+            layout {
+                sequence: 390
+            }
+            validation {
+                maxLength: 255
+            }
+            source {
+                databaseColumn: RESPONSABLE_DOS
+                dataType: varchar2
+            }
+            default {
+                type: sqlQuerySingleValue
+                sqlQuerySingleValue:
+                    ```sql
+                    select SP."المكلف_بالملف" as "المكلف_بالملف"
+                     
+                     from SP SP
+                      where SP."عدد" = :P45_REF_AO
+                    ```
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+        )
+
+        column TITULAIRE_DU_MARCHÉ (
+            type: textField
+            heading {
+                heading: Titulaire Du Marché
+                alignment: center
+            }
+            layout {
+                sequence: 80
+                columnAlignment: center
+            }
+            validation {
+                valueRequired: true
+                maxLength: 455
+            }
+            source {
+                databaseColumn: TITULAIRE_DU_MARCHÉ
+                dataType: varchar2
+            }
+            columnFilter {
+                enabled: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: AJOUT CONTRAT
+        }
+    )
+
+    region تذكير (
+        name: تذكير
+        type: staticContent
+        source {
+            htmlCode:
+                ```html
+                <style>
+                h1 {color:orange;}
+                p {color:blue;}
+                </style>
+                
+                <body>
+                
+                <h1 style="text-align:center">الرجاء التثبت من جميع المعلومات قبل  التسجيل النهائي</h1>
+                <p style="text-align:center">خاصة العدد الكامل للعقود </p>
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--removeHeader js-removeLandmark
+                t-Region--scrollBody
+                t-Form--leftLabels
+                t-Form--labelsAbove
+            ]
+        }
+    )
+
+    pageItem P45_ID_CC (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @تذكير
+            slot: regionBody
+        }
+    )
+
+    pageItem P45_REF_AO (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @تذكير
+            slot: regionBody
+        }
+    )
+
+    button exit (
+        buttonName: exit
+        label: " خروج"
+        layout {
+            sequence: 60
+            region: @ajout-contrat
+            slot: bottom
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+                t-Button--gapTop
+            ]
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: هل تأكدت من صحة جميع المعلومات
+            style: warning
+        }
+    )
+
+    dynamicAction nouveau (
+        name: Nouveau
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: P45_NB_CONTRAT
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    var nb = $v("P45_NB_CONTRAT"); 
+                    var igRegion = apex.region("contrats_ig"); // ID statique de ta région IG 
+                    var igWidget = igRegion.widget(); var igActions = igWidget.interactiveGrid("getActions");
+                    
+                    
+                    for (var i = 0; i < nb; i++) {
+                       igActions.invoke("row-add-row");  // ✅ action correcte
+                    }
+                    
+                    ```
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction nouveau-2 (
+        name: Nouveau_1
+        execution {
+            sequence: 20
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @ajout-contrat
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @ajout-contrat
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process ajout-contrat-enregistrer-les-données-de-grille-interactive (
+        name: AJOUT CONTRAT - Enregistrer les données de grille interactive
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @ajout-contrat
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 23626732857674978
+        }
+    )
+
+    process close (
+        name: Close
+        type: closeDialog
+        execution {
+            sequence: 20
+            point: afterSubmit
+        }
+        advanced {
+            executionMappingIdentifier: 24440235216749612
+        }
+    )
+
+)
+

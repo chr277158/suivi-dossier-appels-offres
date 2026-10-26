@@ -1,0 +1,255 @@
+page 11 (
+    name: Gestion de Compte
+    alias: GESTION-DE-COMPTE
+    title: Gestion de Compte
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region chemin-de-navigation (
+        name: Chemin de navigation
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region gestion-de-mon-compte (
+        name: Gestion de Mon Compte
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: T_USER
+            whereClause: NOM = v('P0_USER')
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+            ]
+        }
+        reportLayout {
+            numberOfRows: 50
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--staticRowColors
+                t-Report--rowHighlight
+                t-Report--inline
+                t-Report--hideNoPagination
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: aucune donnée n'a été trouvée
+        }
+
+        column FONCTION (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Fonction
+                alignment: center
+            }
+            layout {
+                sequence: 15
+                columnAlignment: center
+            }
+        )
+
+        column GROUPE (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Groupe
+            }
+            layout {
+                sequence: 5
+            }
+            security {
+                authorizationScheme: @droits-d-administration
+            }
+        )
+
+        column ID_1 (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: link
+            heading {
+                alignment: center
+            }
+            layout {
+                sequence: 0
+                columnAlignment: center
+            }
+            link {
+                target: {
+                    page: 12
+                    items: {
+                        P12_ID_1: \#ID_1#\
+                    }
+                    action: resetPagination
+                }
+                linkText: <span aria-label="Modifier"><span class="fa fa-edit" aria-hidden="true" title="Modifier"></span></span>
+            }
+            sorting {
+                sortable: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column MATRICULE (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Matricule
+                alignment: center
+            }
+            layout {
+                sequence: 3
+                columnAlignment: end
+            }
+            columnFormatting {
+                htmlExpression: <div align= center> #MATRICULE#</div>
+            }
+        )
+
+        column MDP (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Mot de Passe
+                alignment: center
+            }
+            layout {
+                sequence: 4
+            }
+            columnFormatting {
+                htmlExpression: <div align= center> #MDP#</div>
+            }
+        )
+
+        column NOM (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Nom
+                alignment: center
+            }
+            layout {
+                sequence: 2
+            }
+            columnFormatting {
+                htmlExpression: <div align= center> #NOM#</div>
+            }
+        )
+
+        column TEL (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Tel
+                alignment: center
+            }
+            layout {
+                sequence: 25
+                columnAlignment: center
+            }
+        )
+
+    )
+
+    pageItem P11_ (
+        type: displayImage
+        label {
+            label: " "
+            alignment: left
+        }
+        settings {
+            basedOn: url
+        }
+        layout {
+            sequence: 10
+            slot: body
+            alignment: left
+            column: 5
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            type: staticValue
+            staticValue:
+                ```
+                
+                #APP_FILES#logo/&P0_USER.-designstyle-diesel-l.png
+                ```
+        }
+    )
+
+    dynamicAction modifier-un-état-boîte-de-dialogue-fermée (
+        name: Modifier un état - Boîte de dialogue fermée
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @gestion-de-mon-compte
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @gestion-de-mon-compte
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

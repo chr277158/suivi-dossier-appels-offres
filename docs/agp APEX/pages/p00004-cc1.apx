@@ -1,0 +1,2678 @@
+page 4 (
+    name: Cc
+    alias: CC1
+    title: Cc
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        fileUrls: #APP_FILES#jquery.maskedinput.min.js
+        executeWhenPageLoads:
+            ```javascript-browser
+            $("#P4_REF_AO").mask("A#.##.#.####");
+            //$("#P4_BUDGET").mask("## ###.###,###")
+            //$("#P4_BUDGET").mask("FML999G999G999G999G990D00");
+            ```
+    }
+    css {
+        inline:
+            ```css
+            @media print {
+                /* 1. Masquer toute la barre de boutons du bas (Annuler, Imprimer, etc.) */
+                .t-Dialog-footer, .t-ButtonRegion {
+                    display: none !important;
+                }
+            
+                /* 2. (Sécurité) Masquer spécifiquement les boutons par leur classe générique APEX */
+                button.t-Button, .t-Button {
+                    display: none !important;
+                }
+                
+                /* 3. Masquer les éléments de navigation et de debug */
+                .t-Header, .t-Footer, .apex-debug-bar, .t-Body-nav {
+                    display: none !important;
+                }
+            
+                /* 4. Afficher le titre personnalisé */
+                body::before {
+                    content: attr(data-page-title);
+                    display: block;
+                    text-align: center;
+                    font-size: 24pt;
+                    font-weight: bold;
+                    margin-bottom: 20px;
+                    padding-bottom: 10px;
+                    border-bottom: 1px solid #ccc;
+                    width: 100%;
+                }
+                
+                /* 5. Réinitialiser les marges et l'affichage pour l'impression */
+                body, .t-Dialog-page {
+                    background: white !important;
+                    margin: 0 !important;
+                    overflow: visible !important;
+                }
+            }
+            
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region appel-d-offfres (
+        name: "APPEL D’OFFFRES "
+        type: form
+        source {
+            location: localDatabase
+            tableName: CC
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        accessibility {
+            useLandmark: false
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region dates (
+        name: Dates
+        type: staticContent
+        layout {
+            sequence: 70
+            parentRegion: @appel-d-offfres
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    region fichiers-de-lancement (
+        name: Fichiers de lancement
+        type: form
+        source {
+            location: localDatabase
+            tableName: FICHIER_LNCEMENT
+        }
+        layout {
+            sequence: 120
+            parentRegion: @معلومات-أساسية-عن-الصفقة
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        accessibility {
+            useLandmark: false
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    region new (
+        name: New
+        title: Demande de clarification des prestataires
+        type: staticContent
+        layout {
+            sequence: 180
+            parentRegion: @تحيين-المعطيات
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    region rem (
+        name: rem
+        title: "ملاحظات "
+        type: staticContent
+        layout {
+            sequence: 190
+            parentRegion: @dates
+            slot: subRegions
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    region statut (
+        name: Statut
+        type: staticContent
+        layout {
+            sequence: 40
+            parentRegion: @appel-d-offfres
+            slot: regionBody
+            rowCssClasses: [
+                u-color-21-bg
+                u-color-21-text
+            ]
+            columnCssClasses: [
+                u-color-20-bg
+                u-color-21-text
+            ]
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+            cssClasses: [
+                u-color-22-bg
+                u-color-0-text
+            ]
+        }
+    )
+
+    region تحيين-المعطيات (
+        name: " تحيين المعطيات"
+        title: " "
+        type: form
+        source {
+            location: localDatabase
+            tableName: SP
+        }
+        layout {
+            sequence: 60
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    region معلومات-أساسية-عن-الصفقة (
+        name: "معلومات أساسية عن الصفقة "
+        type: staticContent
+        layout {
+            sequence: 60
+            parentRegion: @appel-d-offfres
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        settings {
+            expandShortcuts: true
+        }
+    )
+
+    pageItem P4_ACORD (
+        type: datePicker
+        label {
+            label: تاريخ مصادقة اللجنة على كراسات الشروط
+            alignment: left
+        }
+        layout {
+            sequence: 60
+            region: @dates
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--preTextBlock
+                t-Form-fieldContainer--postTextBlock
+            ]
+            width: 30
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_مصادقة_اللجنة_على_كراسات_الشروط
+            dataType: date
+        }
+    )
+
+    pageItem P4_AVIS_DE_PRESSE (
+        type: switch
+        label {
+            label: Avis De Presse
+            alignment: left
+        }
+        layout {
+            sequence: 110
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: AVIS_DE_PRESSE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_BUDGET (
+        type: textField
+        label {
+            label: "التكلفة التقديرية "
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @معلومات-أساسية-عن-الصفقة
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            formatMask: FML999G999G999G999G990D999
+            width: 32
+        }
+        validation {
+            maxLength: 50
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: BUDGET
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P4_CAUTION_P (
+        type: switch
+        label {
+            label: Caution Provisoire
+            alignment: left
+        }
+        layout {
+            sequence: 230
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: CAUTION_P
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_CC_POUR_LANCEMENT (
+        type: switch
+        label {
+            label: CC Pour Lancement
+            alignment: left
+        }
+        layout {
+            sequence: 120
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: CC_POUR_LANCEMENT
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_CREER_PAR (
+        type: hidden
+        layout {
+            sequence: 100
+            region: @appel-d-offfres
+            slot: regionBody
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: CREER_PAR
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_CRITERES_EVALUATION (
+        type: switch
+        label {
+            label: Criteres Evaluation
+            alignment: left
+        }
+        layout {
+            sequence: 70
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: CRITERES_EVALUATION
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_DATE_AVIS81 (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 140
+            region: @fichiers-de-lancement
+            slot: regionBody
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: DATE_AVIS
+            dataType: date
+        }
+        sessionState {
+            storage: session
+        }
+    )
+
+    pageItem P4_DATE_CC (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 60
+            region: @fichiers-de-lancement
+            slot: regionBody
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: DATE_CC
+            dataType: date
+        }
+        sessionState {
+            storage: session
+        }
+    )
+
+    pageItem P4_DATE_CRITERES (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 130
+            region: @fichiers-de-lancement
+            slot: regionBody
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: DATE_CRITERES
+            dataType: date
+        }
+        sessionState {
+            storage: session
+        }
+    )
+
+    pageItem P4_DATE_CRÉATION (
+        type: hidden
+        layout {
+            sequence: 110
+            region: @appel-d-offfres
+            slot: regionBody
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: DATE_CRÉATION
+            dataType: date
+        }
+    )
+
+    pageItem P4_DATE_DESIGNATION (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 150
+            region: @fichiers-de-lancement
+            slot: regionBody
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: DATE_DESIGNATION
+            dataType: date
+        }
+        sessionState {
+            storage: session
+        }
+    )
+
+    pageItem P4_DATE_DE_LANC (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 110
+            region: @dates
+            slot: regionBody
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: DATE_DE_LANC
+            dataType: date
+        }
+        security {
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P4_DATE_LC (
+        type: datePicker
+        label {
+            label: التاريخ الإعلان عن المنافسة
+            alignment: left
+        }
+        layout {
+            sequence: 90
+            region: @dates
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: التاريخ__للإعلان_عن_المنافسة
+            dataType: date
+        }
+        security {
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P4_DATE_LIMITE_PROPOSÉE (
+        type: datePicker
+        label {
+            label: آخر أجال تقديم العروض
+            alignment: left
+        }
+        settings {
+            showTime: true
+        }
+        layout {
+            sequence: 120
+            region: @dates
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            formatMask: DD-MON-YYYY HH24:MI
+            width: 32
+            valuePlaceholder: أخر اجل لتقديم العروض
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: DATE_LIMITE_PROPOSÉE
+            dataType: date
+        }
+    )
+
+    pageItem P4_DATE_MAIL (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 180
+            region: @fichiers-de-lancement
+            slot: regionBody
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: DATE_MAIL
+            dataType: date
+        }
+        sessionState {
+            storage: session
+        }
+    )
+
+    pageItem P4_DATE_NOTE_OP (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 220
+            region: @fichiers-de-lancement
+            slot: regionBody
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: DATE_NOTE_OP
+            dataType: date
+        }
+        sessionState {
+            storage: session
+        }
+    )
+
+    pageItem P4_DATE_OUVERTURE_DES_PLIS (
+        type: datePicker
+        label {
+            label: تاريخ فتح العروض
+            alignment: left
+        }
+        settings {
+            showTime: true
+        }
+        layout {
+            sequence: 130
+            region: @dates
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            formatMask: DD-MON-YYYY HH24:MI
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: DATE_OUVERTURE_DES_PLIS
+            dataType: date
+        }
+    )
+
+    pageItem P4_DATE_PROGRAM_LANC (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 160
+            region: @fichiers-de-lancement
+            slot: regionBody
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: DATE_PROGRAM_LANC
+            dataType: date
+        }
+        sessionState {
+            storage: session
+        }
+    )
+
+    pageItem P4_DATE_PROGRAM_OUVERTURE (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 200
+            region: @fichiers-de-lancement
+            slot: regionBody
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: DATE_PROGRAM_OUVERTURE
+            dataType: date
+        }
+        sessionState {
+            storage: session
+        }
+    )
+
+    pageItem P4_DATE_PROPOSITION (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 40
+            region: @fichiers-de-lancement
+            slot: regionBody
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: DATE_PROPOSITION
+            dataType: date
+        }
+        sessionState {
+            storage: session
+        }
+    )
+
+    pageItem P4_DECISION (
+        type: datePicker
+        label {
+            label: تاريخ قرار لجنة الصفقات
+            alignment: left
+        }
+        layout {
+            sequence: 160
+            region: @dates
+            slot: regionBody
+            alignment: left
+            columnSpan: 6
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--preTextBlock
+                t-Form-fieldContainer--postTextBlock
+            ]
+            width: 30
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_قرار__لجنة_الصفقات
+            dataType: date
+        }
+    )
+
+    pageItem P4_DESIGNATION_DE_LA_COMMISSION (
+        type: switch
+        label {
+            label: Designation De La Commission
+            alignment: left
+        }
+        layout {
+            sequence: 80
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: DESIGNATION_DE_LA_COMMISSION
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_DÉTAIL_DE_RÉPONSE (
+        type: textField
+        label {
+            label: الفترة المحددة لتسليم العروض
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            region: @معلومات-أساسية-عن-الصفقة
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 5
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: DÉTAIL_DE_RÉPONSE
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P4_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @appel-d-offfres
+            slot: regionBody
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P4_ID_1 (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: ID
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P4_ID_2 (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 10
+            region: @fichiers-de-lancement
+            slot: regionBody
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P4_ID_CC (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 20
+            region: @fichiers-de-lancement
+            slot: regionBody
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: ID_CC
+            dataType: number
+        }
+    )
+
+    pageItem P4_JOURS_REST (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 10
+            region: @dates
+            slot: regionBody
+        }
+        appearance {
+            formatMask: DD-MON-YYYY HH24:MI:SS
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: JOURS_REST
+            dataType: date
+        }
+    )
+
+    pageItem P4_MAIL_PRESTATAIRE (
+        type: switch
+        label {
+            label: Mail Prestataire
+            alignment: left
+        }
+        layout {
+            sequence: 170
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: MAIL_PRESTATAIRE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_NATURE_DE_DEPENSE (
+        type: selectList
+        label {
+            label: Nature De Depense
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:Exploitation;Exploitation,Investissement;Investissement
+        }
+        layout {
+            sequence: 70
+            region: @معلومات-أساسية-عن-الصفقة
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 3
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: NATURE_DE_DEPENSE
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P4_NB (
+        type: hidden
+        layout {
+            sequence: 2
+            region: @appel-d-offfres
+            slot: regionBody
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: REF_AO
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_NEW_2 (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 3
+            region: @rem
+            slot: regionBody
+        }
+        source {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                select count(*)
+                 from REMARQUE REMARQUE 
+                 where REMARQUE.REF_DOS = :P4_NB
+                ```
+            used: always
+        }
+    )
+
+    pageItem P4_NEW_NTB (
+        type: datePicker
+        label {
+            label: تاريخ ارجاع كراسات الشروط حسب المحضر
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @dates
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر
+            dataType: date
+        }
+    )
+
+    pageItem P4_NOTE_OUVERTURE_PLIS (
+        type: switch
+        label {
+            label: Note Ouverture Plis
+            alignment: left
+        }
+        layout {
+            sequence: 210
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: NOTE_OUVERTURE_PLIS
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_OBJET_CCT (
+        type: textarea
+        label {
+            label: Titre
+            alignment: left
+        }
+        settings {
+            autoHeight: true
+        }
+        layout {
+            sequence: 80
+            region: @معلومات-أساسية-عن-الصفقة
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+            height: 5
+        }
+        validation {
+            maxLength: 500
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: OBJET_CCT
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P4_PROGRAMME_DE_LANCEMENT (
+        type: hidden
+        layout {
+            sequence: 120
+            region: @appel-d-offfres
+            slot: regionBody
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: PROGRAMME_DE_LANCEMENT
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_PROGRAMME_OUVERTURE_DE_PLIS (
+        type: switch
+        label {
+            label: Programe De lancemnt
+            alignment: left
+        }
+        layout {
+            sequence: 100
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: PROGRAMME_OUVERTURE_DE_PLIS
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_PROGRAMME_OUVERTURE_DE_PLIS_1 (
+        type: hidden
+        layout {
+            sequence: 90
+            region: @appel-d-offfres
+            slot: regionBody
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: PROGRAMME_OUVERTURE_DE_PLIS
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_PROGRAM_LANC (
+        type: hidden
+        layout {
+            sequence: 90
+            region: @fichiers-de-lancement
+            slot: regionBody
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: PROGRAM_LANC
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_PROPOSITION_COMMISSION (
+        type: switch
+        label {
+            label: Proposition Commission
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @fichiers-de-lancement
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @fichiers-de-lancement
+            column: PROPOSITION_COMMISSION
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_PV_CCT (
+        type: hidden
+        layout {
+            sequence: 80
+            region: @appel-d-offfres
+            slot: regionBody
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: PV_CCT
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_REM (
+        type: displayOnly
+        label {
+            label: لا توجد ملاحظات في هذا الملف حاليا
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @rem
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            column: 1
+            columnSpan: 7
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P4_STATUS (
+        type: radioGroup
+        label {
+            label: Statut
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC2:هذا الملف تمت معالجته  و إرجاع الضمانات الوقتية الرجاء تحديد حالة الملف;4,مثمر;5,غير مثمر;6
+            displayNullValue: false
+        }
+        layout {
+            sequence: 50
+            region: @statut
+            slot: regionBody
+            alignment: left
+            columnCssClasses: --ut-palette-warning-contrast
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @appel-d-offfres
+            column: STATUS
+            dataType: varchar2
+        }
+        security {
+            authorizationScheme: @droits-de-contribution
+        }
+    )
+
+    pageItem P4_اللجنة_المختصة (
+        type: selectList
+        label {
+            label: اللجنة المختصة
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:CRA;CRA,CME;CME,CAE;CAE,CSM;CSM
+        }
+        layout {
+            sequence: 110
+            region: @معلومات-أساسية-عن-الصفقة
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: اللجنة_المختصة
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P4_المكلف_بالملف (
+        type: selectList
+        label {
+            label: المكلف بالملف
+            alignment: left
+        }
+        lov {
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select T_USER.NOM as NOM,
+                T_USER.NOM as N
+                 from T_USER 
+                
+                ```
+        }
+        layout {
+            sequence: 190
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            column: 5
+            columnSpan: 4
+            columnAttributes: align="center"
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: المكلف_بالملف
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_تاريخ__لجنة_الصفقات (
+        type: hidden
+        layout {
+            sequence: 150
+            region: @dates
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ__لجنة_الصفقات
+            dataType: date
+        }
+    )
+
+    pageItem P4_تاريخ_ارجاع_الضمانات_الوقتية (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 180
+            region: @dates
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ارجاع_الضمانات_الوقتية
+            dataType: date
+            queryOnly: true
+        }
+        default {
+            type: static
+            staticValue: &P4_تاريخ_قرار__لجنة_الصفقات. + 120
+        }
+        security {
+            authorizationScheme: @droits-d-administration
+        }
+    )
+
+    pageItem P4_تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر (
+        type: hidden
+        layout {
+            sequence: 130
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر
+            dataType: date
+        }
+    )
+
+    pageItem P4_تاريخ_ارسال_التقرير_للتقييم_الفني (
+        type: hidden
+        layout {
+            sequence: 140
+            region: @dates
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ارسال_التقرير_للتقييم_الفني
+            dataType: date
+        }
+    )
+
+    pageItem P4_تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم (
+        type: hidden
+        layout {
+            sequence: 100
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم
+            dataType: date
+        }
+    )
+
+    pageItem P4_تاريخ_امضاء_تقرير_تقييم_العروض (
+        type: hidden
+        layout {
+            sequence: 140
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_امضاء_تقرير_تقييم_العروض
+            dataType: date
+        }
+    )
+
+    pageItem P4_تاريخ_تبليغ_الصفقة (
+        type: hidden
+        layout {
+            sequence: 170
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_تبليغ_الصفقة
+            dataType: date
+        }
+    )
+
+    pageItem P4_تاريخ_تقديم_الملف_للجنة_الشراءات (
+        type: hidden
+        layout {
+            sequence: 150
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_تقديم_الملف_للجنة_الشراءات
+            dataType: date
+        }
+    )
+
+    pageItem P4_تاريخ_تقديم_كراسات_الشروط_للمصادقة (
+        type: datePicker
+        label {
+            label: تاريخ_تقديم_كراسات_الشروط_للمصادقة
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @dates
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_تقديم_كراسات_الشروط_للمصادقة
+            dataType: date
+        }
+    )
+
+    pageItem P4_تاريخ_نشر_نتائج_المنافسة (
+        type: hidden
+        layout {
+            sequence: 170
+            region: @dates
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_نشر_نتائج_المنافسة
+            dataType: date
+        }
+    )
+
+    pageItem P4_تاريخ_ورود_CPT_ممضاة (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @dates
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ورود_CPT_ممضاة
+            dataType: date
+        }
+    )
+
+    pageItem P4_تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم (
+        type: hidden
+        layout {
+            sequence: 50
+            region: @dates
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم
+            dataType: date
+        }
+    )
+
+    pageItem P4_تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط (
+        type: hidden
+        layout {
+            sequence: 70
+            region: @dates
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط
+            dataType: date
+        }
+    )
+
+    pageItem P4_تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2 (
+        type: hidden
+        layout {
+            sequence: 80
+            region: @dates
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2
+            dataType: date
+        }
+    )
+
+    pageItem P4_طريقة_ابرام_الصفقة (
+        type: selectList
+        label {
+            label: طريقة ابرام الصفقة
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:استشارة مفتوحة;استشارة مفتوحة,استشارة مضيقة;استشارة مضيقة,طلب عروض مفتوح;طلب عروض مفتوح,استشارة بالتفاوض المباشر;استشارة بالتفاوض المباشر
+        }
+        layout {
+            sequence: 100
+            region: @معلومات-أساسية-عن-الصفقة
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: طريقة_ابرام_الصفقة
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P4_نوعية_الطلب (
+        type: selectList
+        label {
+            label: نوعية الطلب
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:Exploitation;Exploitation,Étude;Étude
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 90
+            region: @معلومات-أساسية-عن-الصفقة
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: نوعية_الطلب
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    button ajout-rem (
+        buttonName: Ajout_Rem
+        label: "إضافة ملاحظة جديدة "
+        layout {
+            sequence: 40
+            region: @rem
+            slot: regionBody
+            startNewRow: false
+            column: 8
+            columnSpan: 4
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 27
+                items: {
+                    P27_ID_CC: &P4_ID.
+                    P27_REF_DOS: &P4_NB.
+                }
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button avis-de-presse (
+        buttonName: avis_de_presse
+        label: Ajout Demandes de renseignements
+        layout {
+            sequence: 30
+            region: @new
+            slot: regionBody
+            startNewRow: false
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 8
+                items: {
+                    P8_REF_AE: &P4_NB.
+                }
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+            executeValidations: false
+        }
+
+        triggerAction native-dialog-close (
+            action: closeDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Appliquer les modifications
+        layout {
+            sequence: 30
+            region: @boutons
+            slot: change
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P4_ID
+        }
+    )
+
+    button vew (
+        buttonName: Vew
+        label: "Voir les demandes "
+        layout {
+            sequence: 20
+            region: @new
+            slot: regionBody
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 9
+                items: {
+                    P9_REF: &P4_NB.
+                }
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button voir-rem (
+        buttonName: Voir_Rem
+        label: "مشاهدة الملاحظات "
+        layout {
+            sequence: 20
+            region: @rem
+            slot: regionBody
+            column: 1
+            columnSpan: 4
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 29
+                items: {
+                    P29_REF: &P4_ID.
+                }
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction activation-modif-admin-zone (
+        name: activation_modif_admin_zone1
+        execution {
+            sequence: 140
+        }
+        when {
+            event: apexafterrefresh
+            selectionType: region
+            region: @معلومات-أساسية-عن-الصفقة
+        }
+        clientSideCondition {
+            type: itemIsInList
+            item: P0_MAT
+            list: [
+                91591
+                92491
+            ]
+        }
+
+        action activation (
+            name: activation
+            action: enable
+            affectedElements {
+                selectionType: items
+                items: [
+                    P4_BUDGET
+                    P4_DÉTAIL_DE_RÉPONSE
+                    P4_NATURE_DE_DEPENSE
+                    P4_OBJET_CCT
+                    نوعية الطلب
+                    P4_طريقة_ابرام_الصفقة
+                    اللجنة المختصة
+                ]
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-disable (
+            action: disable
+            affectedElements {
+                selectionType: items
+                items: [
+                    P4_BUDGET
+                    P4_DÉTAIL_DE_RÉPONSE
+                    P4_NATURE_DE_DEPENSE
+                    P4_OBJET_CCT
+                    نوعية الطلب
+                    P4_طريقة_ابرام_الصفقة
+                    اللجنة المختصة
+                ]
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction affiche-rem (
+        name: affiche REM
+        execution {
+            sequence: 4
+        }
+        when {
+            event: ready
+        }
+        clientSideCondition {
+            type: item=value
+            item: P4_NEW_2
+            value: 0
+        }
+
+        action native-hide (
+            action: hide
+            affectedElements {
+                selectionType: button
+                button: @voir-rem
+            }
+            execution {
+                sequence: 6
+            }
+        )
+
+        action native-hide-2 (
+            action: hide
+            affectedElements {
+                selectionType: items
+                items: P4_REM
+            }
+            execution {
+                sequence: 8
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-show (
+            action: show
+            affectedElements {
+                selectionType: button
+                button: @voir-rem
+            }
+            execution {
+                sequence: 9
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-show-2 (
+            action: show
+            affectedElements {
+                selectionType: items
+                items: P4_REM
+            }
+            execution {
+                sequence: 7
+            }
+        )
+
+    )
+
+    dynamicAction da-caution (
+        name: DA_CAUTION
+        execution {
+            sequence: 260
+        }
+        when {
+            selectionType: items
+            items: P4_CAUTION_P
+        }
+        clientSideCondition {
+            type: item=value
+            item: P4_CAUTION_P
+            value: Y
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: plsqlExpression
+                plsqlExpression: SYSDATE
+                itemsToSubmit: P4_CAUTION_P
+                escapeSpecialChars: false
+            }
+            affectedElements {
+                selectionType: items
+                items: P4_تاريخ_ارجاع_الضمانات_الوقتية
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-set-value-2 (
+            action: setValue
+            affectedElements {
+                selectionType: items
+                items: P4_تاريخ_ارجاع_الضمانات_الوقتية
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction da-date-de-lanc (
+        name: DA_date de lanc
+        execution {
+            sequence: 270
+        }
+        when {
+            selectionType: items
+            items: P4_DATE_LC
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: jsExpression
+                jsExpression: $v("P4_DATE_LC")
+            }
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_DE_LANC
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction da-designation-de-la-commission (
+        name: DA_DESIGNATION_DE_LA_COMMISSION
+        execution {
+            sequence: 210
+        }
+        when {
+            selectionType: items
+            items: P4_DESIGNATION_DE_LA_COMMISSION
+        }
+        clientSideCondition {
+            type: item=value
+            item: P4_DESIGNATION_DE_LA_COMMISSION
+            value: Y
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: plsqlExpression
+                plsqlExpression: SYSDATE
+                itemsToSubmit: P4_DESIGNATION_DE_LA_COMMISSION
+                escapeSpecialChars: false
+            }
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_DESIGNATION
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-set-value-2 (
+            action: setValue
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_DESIGNATION
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction da-mail (
+        name: DA_MAIL
+        execution {
+            sequence: 230
+        }
+        when {
+            selectionType: items
+            items: P4_MAIL_PRESTATAIRE
+        }
+        clientSideCondition {
+            type: item=value
+            item: P4_MAIL_PRESTATAIRE
+            value: Y
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: plsqlExpression
+                plsqlExpression: SYSDATE
+                itemsToSubmit: P4_MAIL_PRESTATAIRE
+                escapeSpecialChars: false
+            }
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_MAIL
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-set-value-2 (
+            action: setValue
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_MAIL
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction da-note-op (
+        name: DA_NOTE_OP
+        execution {
+            sequence: 250
+        }
+        when {
+            selectionType: items
+            items: P4_NOTE_OUVERTURE_PLIS
+        }
+        clientSideCondition {
+            type: item=value
+            item: P4_NOTE_OUVERTURE_PLIS
+            value: Y
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: plsqlExpression
+                plsqlExpression: SYSDATE
+                itemsToSubmit: P4_NOTE_OUVERTURE_PLIS
+                escapeSpecialChars: false
+            }
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_NOTE_OP
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-set-value-2 (
+            action: setValue
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_NOTE_OP
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction da-program-lanc (
+        name: DA_PROGRAM_LANC
+        execution {
+            sequence: 220
+        }
+        when {
+            selectionType: items
+            items: P4_PROGRAM_LANC
+        }
+        clientSideCondition {
+            type: item=value
+            item: P4_PROGRAM_LANC
+            value: Y
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: plsqlExpression
+                plsqlExpression: SYSDATE
+                itemsToSubmit: P4_PROGRAM_LANC
+            }
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_PROGRAM_LANC
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-set-value-2 (
+            action: setValue
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_PROGRAM_LANC
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction da-program-ouverture (
+        name: DA_PROGRAM_OUVERTURE
+        execution {
+            sequence: 240
+        }
+        when {
+            selectionType: items
+            items: P4_PROGRAMME_OUVERTURE_DE_PLIS
+        }
+        clientSideCondition {
+            type: item=value
+            item: P4_PROGRAMME_OUVERTURE_DE_PLIS
+            value: Y
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: plsqlExpression
+                plsqlExpression: SYSDATE
+                itemsToSubmit: P4_PROGRAMME_OUVERTURE_DE_PLIS
+                escapeSpecialChars: false
+            }
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_PROGRAM_OUVERTURE
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-set-value-2 (
+            action: setValue
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_PROGRAM_OUVERTURE
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction da-set-date-avis (
+        name: DA_SET_DATE_AVIS
+        execution {
+            sequence: 200
+        }
+        when {
+            selectionType: items
+            items: P4_AVIS_DE_PRESSE
+        }
+        clientSideCondition {
+            type: item=value
+            item: P4_AVIS_DE_PRESSE
+            value: Y
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: plsqlExpression
+                plsqlExpression: SYSDATE
+                itemsToSubmit: P4_AVIS_DE_PRESSE
+                escapeSpecialChars: false
+            }
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_AVIS81
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-set-value-2 (
+            action: setValue
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_AVIS81
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction da-set-date-cc (
+        name: DA_SET_DATE_CC
+        execution {
+            sequence: 180
+        }
+        when {
+            selectionType: items
+            items: P4_CC_POUR_LANCEMENT
+        }
+        clientSideCondition {
+            type: item=value
+            item: P4_CC_POUR_LANCEMENT
+            value: Y
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: plsqlExpression
+                plsqlExpression: SYSDATE
+                itemsToSubmit: P4_CC_POUR_LANCEMENT
+                escapeSpecialChars: false
+            }
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_CC
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-set-value-2 (
+            action: setValue
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_CC
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction da-set-date-criteres (
+        name: DA_SET_DATE_CRITERES
+        execution {
+            sequence: 190
+        }
+        when {
+            selectionType: items
+            items: P4_CRITERES_EVALUATION
+        }
+        clientSideCondition {
+            type: item=value
+            item: P4_CRITERES_EVALUATION
+            value: Y
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: plsqlExpression
+                plsqlExpression: SYSDATE
+                itemsToSubmit: P4_CRITERES_EVALUATION
+                escapeSpecialChars: false
+            }
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_CRITERES
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-set-value-2 (
+            action: setValue
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_CRITERES
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction date-lancement-statut (
+        name: date lancement statut
+        execution {
+            sequence: 280
+        }
+        when {
+            selectionType: items
+            items: P4_DATE_OUVERTURE_DES_PLIS
+        }
+
+        action native-execute-plsql-code (
+            action: executeServerSideCode
+            settings {
+                plsqlCode:
+                    ```plsql
+                     
+                    
+                      -- Règle 2 : DATE_OUVERTURE_DES_PLIS  
+                      IF :P4_DATE_OUVERTURE_DES_PLIS IS NOT NULL 
+                         AND TO_DATE(:P4_DATE_OUVERTURE_DES_PLIS, 'DD-MM-YYYY') < SYSDATE
+                         AND :P4_STATUS < 3
+                      THEN
+                        :P4_STATUS := 3;
+                      END IF;
+                    
+                    ```
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction new (
+        name: New_2
+        execution {
+            sequence: 9
+        }
+        when {
+            event: ready
+        }
+        clientSideCondition {
+            type: itemIsNotInList
+            item: P0_MAT
+            list: [
+                91591
+                915912
+                91492
+                80503
+                3259
+            ]
+        }
+
+        action native-disable (
+            action: disable
+            affectedElements {
+                selectionType: items
+                items: [
+                    P4_BUDGET
+                    " P4_DÉTAIL_DE_RÉPONSE"
+                    " P4_NATURE_DE_DEPENSE"
+                    " P4_OBJET_CCT"
+                    " P4_نوعية_الطلب"
+                    " P4_طريقة_ابرام_الصفقة"
+                    " P4_اللجنة_المختصة"
+                ]
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction new-2 (
+        name: New_3
+        execution {
+            sequence: 9
+        }
+        when {
+            event: ready
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode: apex.util.getTopApex().jQuery(".ui-dialog-content").dialog("option", "title", "Référence Dossier  " + $v("P4_NB") );
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction new-3 (
+        name: New_1
+        execution {
+            sequence: 60
+        }
+        when {
+            selectionType: items
+            items: P4_DATE_OUVERTURE_DES_PLIS
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: plsqlExpression
+                plsqlExpression: TO_DATE(:P4_DATE_OUVERTURE_DES_PLIS, 'DD-MM-YYYY')
+            }
+            affectedElements {
+                selectionType: items
+                items: P4_JOURS_REST
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction nouveau (
+        name: Nouveau
+        execution {
+            sequence: 300
+        }
+        when {
+            selectionType: items
+            items: P4_STATUS
+        }
+        clientSideCondition {
+            type: jsExpression
+            javaScriptExpression: apex.item("P4_STATUS").getValue() <= 4 && apex.item("P4_CAUTION_P").getValue() == 'N'
+        }
+
+        action native-hide (
+            action: hide
+            affectedElements {
+                selectionType: region
+                region: @statut
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-show (
+            action: show
+            affectedElements {
+                selectionType: region
+                region: @statut
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction proposition (
+        name: proposition
+        execution {
+            sequence: 170
+        }
+        when {
+            selectionType: items
+            items: P4_PROPOSITION_COMMISSION
+        }
+        clientSideCondition {
+            type: item=value
+            item: P4_PROPOSITION_COMMISSION
+            value: Y
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                type: plsqlExpression
+                plsqlExpression: SYSDATE
+                itemsToSubmit: P4_PROPOSITION_COMMISSION
+                escapeSpecialChars: false
+            }
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_PROPOSITION
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-set-value-2 (
+            action: setValue
+            affectedElements {
+                selectionType: items
+                items: P4_DATE_PROPOSITION
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction pv (
+        name: PV
+        execution {
+            sequence: 100
+        }
+        when {
+            selectionType: items
+            items: P4_DÉTAIL_DE_RÉPONSE
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                value: Y
+            }
+            affectedElements {
+                selectionType: items
+                items: P4_PV_CCT
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process enregistrement-des-création (
+        name: enregistrement des création
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                
+                    INSERT INTO SUIVI_MODIF (MODIFIER_PAR, DATE_MODIF, ID_OBJET) VALUES (:P0_USER, sysdate, :P4_ID);
+                
+                ```
+        }
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 18414707175893957
+        }
+    )
+
+    process fermer-la-boîte-de-dialogue (
+        name: Fermer la boîte de dialogue
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 70
+        }
+        advanced {
+            executionMappingIdentifier: 18414495275893957
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: SAVE,DELETE
+        }
+    )
+
+    process initialiser-le-panneau-cc (
+        name: Initialiser le panneau Cc
+        type: formInitialization
+        formRegion: @appel-d-offfres
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 18378897946893935
+        }
+    )
+
+    process initialize-form-cc (
+        name: Initialize form Cc
+        type: formInitialization
+        formRegion: @تحيين-المعطيات
+        execution {
+            sequence: 20
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 18375214135893934
+        }
+    )
+
+    process initialize-form-cc-copie-page (
+        name: Initialize form Cc copie Page 4
+        type: formInitialization
+        formRegion: @fichiers-de-lancement
+        execution {
+            sequence: 30
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 18396659097893945
+        }
+    )
+
+    process process-form-fichiers-de-lancement (
+        name: Process form Fichiers de lancement
+        type: formAutoRowProcessing
+        formRegion: @fichiers-de-lancement
+        target {
+            targetType: tableView
+            tableName: FICHIER_LNCEMENT
+        }
+        lockRow {
+            lockRow: false
+        }
+        execution {
+            sequence: 40
+        }
+        advanced {
+            executionMappingIdentifier: 18397023206893945
+        }
+    )
+
+    process traiter-le-panneau-cc (
+        name: Traiter le panneau Cc_1
+        type: formAutoRowProcessing
+        formRegion: @تحيين-المعطيات
+        lockRow {
+            lockRow: false
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 18375680571893934
+        }
+    )
+
+    process traiter-le-panneau-cc-2 (
+        name: Traiter le panneau Cc
+        type: formAutoRowProcessing
+        formRegion: @appel-d-offfres
+        lockRow {
+            lockRow: false
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 18379287001893937
+        }
+    )
+
+)
+

@@ -1,0 +1,1343 @@
+page 1 (
+    name: Page d'accueil
+    alias: PAGE-D-ACCUEIL
+    title: Page d'accueil
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        functionAndGlobalVariableDeclaration:
+            ```javascript-browser
+            // 1. طلب الإذن لتنبيهات الـ Windows
+            function requestNotificationPermission() {
+                if ('Notification' in window &&
+                    Notification.permission !== 'granted' &&
+                    Notification.permission !== 'denied') {
+                    Notification.requestPermission();
+                }
+            }
+            
+            // 2. تنبيهات مستمرة حتى انتهاء الموعد (تعمل عند النداء)
+            function checkAndDisplayReminders() {
+                apex.server.process('GET_PENDING_REMINDERS', {
+                    x01: 'Check'
+                }, {
+                    dataType: "json",
+                    success: function (pData) {
+                        if (pData && pData.items && pData.items.length > 0) {
+                            pData.items.forEach(function (item) {
+                                var title = item.NOTE_TITLE;
+                                var details = item.NOTE_DETAILS;
+                                var importance = item.IMPORTANCE_LEVEL;
+            
+                                if (importance == 3) {
+                                    // 🔴 مهم جداً: Native Notification
+                                    if (Notification.permission === "granted") {
+                                        new Notification("🚨 تذكير مستمر: " + title, {
+                                            body: details + "\n(سيستمر حتى الموعد النهائي)",
+                                            icon: "data:image/svg+xml;utf8,",
+                                            badge: "data:image/svg+xml;utf8,"
+                                        });
+                                    }
+                                } else if (importance == 2) {
+                                    // 🟠 مهم: Popup
+                                    apex.message.showPageSuccess("🔔 تذكير مستمر: " + title + "<br>" + details);
+                                } else if (importance == 1) {
+                                    // 🔵 عادي: إشعار خفيف
+                                    apex.message.clearErrors();
+                                    apex.message.showPageSuccess("📝 " + title);
+                                }
+                            });
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.error("خطأ في جلب التنبيهات:", textStatus);
+                    }
+                });
+            }
+            
+            // 3. تطبيق النسبة المئوية على شريط التقدم داخل الـ Badge
+            function applyProgressWidth() {
+                document.querySelectorAll('#reminders_cards .a-CardView-badge').forEach(function (badge) {
+                    var text = badge.innerText || badge.textContent;
+                    // مثال نص: "15 دقيقة (40%)" أو "🔄 تذكير مستمر (70%)"
+                    var match = text.match(/\((\d+)%\)/);
+                    if (match && match[1]) {
+                        var percent = match[1];
+                        badge.style.setProperty('--progress-width', percent + '%');
+                    }
+                });
+            }
+            
+            // 4. تحديث كروت التذكير + الشريط
+            function refreshRemindersCards() {
+                try {
+                    var reg = apex.region('reminders_cards');
+                    if (reg) {
+                        reg.refresh();
+                        // بعد أن ينتهي الـ refresh نطبّق النسبة على البادجات
+                        setTimeout(applyProgressWidth, 500);
+                    }
+                } catch (e) {
+                    console.error('Refresh error:', e);
+                }
+            }
+            
+            // 5. تشغيل كل شيء عند تحميل الصفحة
+            requestNotificationPermission();
+            checkAndDisplayReminders();   // فحص فوري أول مرة
+            refreshRemindersCards();      // تحديث الكروت أول مرة
+            
+            // تنبيهات + تحديث كروت كل 30 ثانية
+            setInterval(function () {
+                checkAndDisplayReminders();
+                refreshRemindersCards();
+            }, 30000); // 30000 ms = 30 ثانية
+            
+            ```
+    }
+    css {
+        inline:
+            ```css
+            .a-CardView-badge {
+                background: linear-gradient(90deg, #f7fafc, #edf2f7) !important;
+                border-radius: 20px !important;
+                padding: 6px 12px !important;
+                border: 2px solid #e2e8f0 !important;
+                margin-top: 12px !important;
+                font-weight: 600 !important;
+                font-size: 0.9rem !important;
+                position: relative !important;
+                overflow: hidden !important;
+            }
+            
+            .a-CardView-badge::before {
+                content: '';
+                position: absolute;
+                top: 0; left: 0; bottom: 0;
+                width: calc(var(--progress-width, 0%) - 8px);
+                /* لون أخضر شفاف بدل تدرّج قوي */
+                background: rgba(72, 187, 120, 0.25);  /* 0.25 = شفافية 25% */
+                border-radius: 16px;
+                transition: width 1s ease;
+                z-index: 1;
+            }
+            .u-color-9 .a-CardView-badge::before  { background: rgba(245, 101, 101, 0.25); }  /* أحمر شفاف */
+            .u-color-37 .a-CardView-badge::before { background: rgba(250, 191, 137, 0.25); }  /* برتقالي شفاف */
+            .u-color-1 .a-CardView-badge::before  { background: rgba(99, 179, 237, 0.25); }   /* أزرق شفاف */
+            
+            
+            /* ألوان الأهمية */
+            .u-color-9 .a-CardView-badge::before  { background: linear-gradient(90deg, #f56565, #e53e3e); }
+            .u-color-37 .a-CardView-badge::before { background: linear-gradient(90deg, #fabf89, #dd6b20); }
+            .u-color-1 .a-CardView-badge::before  { background: linear-gradient(90deg, #63b3ed, #3182ce); }
+            
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region appels-d-offfres-en-cours (
+        name: APPELS D’OFFFRES en Cours
+        title: &ID_CC.
+        type: cards
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select ID,
+                       ID_CC,
+                      
+                       "Titre",
+                        OBJET,
+                       PROPOSITION_COMMISSION,
+                       PC,
+                       DATE_PROPOSITION,
+                       CC_POUR_LANCEMENT,
+                       CC,
+                       DATE_CC,
+                       CRITERES_EVALUATION,
+                       CE,
+                       DATE_CRITERES,
+                       AVIS_DE_PRESSE,
+                       AP,
+                       DATE_AVIS,
+                       DESIGNATION_DE_LA_COMMISSION,
+                       DC,
+                       DATE_DESIGNATION,
+                       PROGRAM_LANC,
+                       PL,
+                       DATE_PROGRAM_LANC,
+                       MAIL_PRESTATAIRE,
+                       MP,
+                       DATE_MAIL,
+                       PROGRAMME_OUVERTURE_DE_PLIS,
+                       POP,
+                       DATE_PROGRAM_OUVERTURE,
+                       NOTE_OUVERTURE_PLIS,
+                       NOP,
+                       DATE_NOTE_OP,
+                       CAUTION_P,
+                       STATUS,
+                       ST,
+                       STAT,
+                       DATE_DE_LANC,
+                       TEX,
+                       DATE_OUVERTURE_DES_PLIS,
+                       IDS,
+                       CRA,
+                       CRA2,
+                       JOURS,
+                       PROGRESS_COLOR,
+                       BODY_HTML,
+                       "linkh",
+                       CP,
+                       "المكلف_بالملف"
+                 
+                FROM FICHIER_MANQUANT_PAR_DOSSIER
+                WHERE (
+                    -- Cas 1 : Utilisateur standard (ne voit que ses dossiers)
+                    (UPPER(v('P1_ROLE')) NOT IN ('ADMINISTRATOR', 'CONTRIBUTOR') 
+                     AND "المكلف_بالملف" = v('P0_USER'))
+                    
+                    OR
+                    
+                    -- Cas 2 : Admin/Contributeur
+                    (UPPER(v('P1_ROLE')) IN ('ADMINISTRATOR', 'CONTRIBUTOR') 
+                     AND (
+                         :P1_FILTER_USER IS NULL -- Option "Tous les dossiers"
+                         OR 
+                         "المكلف_بالملف" = :P1_FILTER_USER -- Option filtre spécifique
+                     ))
+                )
+                ```
+        }
+        layout {
+            sequence: 10
+            parentRegion: @appels-d-offfres-en-cours-2
+            slot: subRegions
+        }
+        appearance {
+            template: @/cards-container
+            templateOptions: [
+                #DEFAULT#
+                t-CardsRegion--hideHeader js-addHiddenHeadingRoleDesc
+                t-CardsRegion--styleA
+            ]
+        }
+        componentAppearance {
+            gridColumns: 3
+        }
+        title {
+            column: "Titre"
+        }
+        subtitle {
+            advancedFormatting: true
+            htmlExpression: &TEX. &DATE_DE_LANC.
+        }
+        body {
+            advancedFormatting: true
+            htmlExpression:
+                ```html
+                <style>
+                    /* ... ( bloc de style CSS inchangé) ... */
+                    .div-1 {
+                        background-color:  #777799;
+                    }
+                    .div-2 {
+                       background-color:  rgb(228,249,153); 
+                    }
+                    .div-3 {
+                        background-color: rgb(120,120,0);
+                        font-family: verdana;
+                        font-size: 150%;
+                    }
+                    .div-4 {
+                        background-color:  #FFBE53;
+                    }
+                
+                progress {
+                  width: 300px;
+                  height: 25px;
+                  -webkit-appearance: none;
+                  appearance: none;
+                }
+                
+                /* Fond de la barre */
+                progress::-webkit-progress-bar {
+                  background-color: #eee;
+                  border-radius: 2px;
+                }
+                
+                /* STYLE COMMUN POUR L'EFFET RAYÉ */
+                .progress-style::-webkit-progress-value {
+                  border-radius: 2px;
+                  background-size: 35px 25px, 100% 100%, 100% 100%;
+                  background-image: 
+                    -webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%),
+                    -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25));
+                }
+                
+                /* ÉTAT BLEU (Valeur < 75) */
+                progress.blue::-webkit-progress-value {
+                  background-color: #09c; /* Couleur de base bleue */
+                  background-image: 
+                    -webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%),
+                    -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25)),
+                    -webkit-linear-gradient(left, #09c, #09c);
+                }
+                
+                /* ÉTAT ROUGE (Valeur >= 75) */
+                progress.red::-webkit-progress-value {
+                  background-color: #f44; /* Couleur de base rouge */
+                  background-image: 
+                    -webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%),
+                    -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25)),
+                    -webkit-linear-gradient(left, #f44, #f44);
+                }
+                /* Texte centré */
+                .progress-value {
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-weight: bold;
+                  color: white; /* couleur du texte */
+                }
+                
+                /* COMPATIBILITÉ FIREFOX */
+                progress.blue::-moz-progress-bar { background-color: #09c; }
+                progress.red::-moz-progress-bar { background-color: #f44; }
+                 
+                
+                </style>
+                {IF CRA2/}
+                <table>
+                    <tr class="div-3" style="height:40px"><td> Fichiers manquant : </td></tr>
+                     <tr class="div-2"><td> &CC.</td></tr>
+                    
+                    <tr class="div-2"><td> &MP. </td></tr>
+                    <tr class="div-2"><td> &NOP. </td></tr>
+                    <tr class="div-2"><td> &CP.  </td></tr>
+                    <tr class="div-4"><td> &ST. </td></tr>
+                     <tr class="div-4"><td> &STAT. </td></tr>
+                     
+                </table>
+                
+                
+                {ELSE/}
+                 <table>
+                    <tr class="div-3" style="height:40px"><td> Fichiers manquant : </td></tr>
+                    <tr class="div-2"><td> &PC. </td></tr>
+                    <tr class="div-2"><td> &CC.</td></tr>
+                    <tr class="div-2"><td> &CE.</td></tr>
+                    <tr class="div-2"><td> &AP.</td></tr>
+                    <tr class="div-2"><td> &DC. </td></tr>
+                    
+                    <tr class="div-2"><td> &MP. </td></tr>
+                    <tr class="div-2"><td> &POP.</td></tr>
+                    <tr class="div-2"><td> &NOP. </td></tr>
+                    <tr class="div-2"><td> &CP. </td></tr>
+                    <tr class="div-4"><td> &ST. </td></tr>
+                   <tr class="div-4"><td> &STAT. </td></tr>
+                </table> 
+                &CRA2.
+                {ENDIF/}
+                
+                
+                ```
+        }
+        secondaryBody {
+            column: CRA
+        }
+        performance {
+            lazyLoading: true
+        }
+
+        action action (
+            label: Modifer
+            layout {
+                sequence: 10
+            }
+            behavior {
+                target: {
+                    page: 40
+                    items: {
+                        P40_ID: &ID_CC.
+                        P40_ID_1: &ID_CC.
+                        P40_ID_2: &ID.
+                    }
+                    clearCache: 40
+                }
+            }
+            appearance {
+                displayType: icon
+                icon: fa-edit
+                hot: true
+            }
+            serverSideCondition {
+                type: expression
+                plsqlExpression:
+                    ```plsql
+                    -- NVL(:CRA, 'Y') = 'CRA'
+                    :CRA = 'CRA'
+                    ```
+            }
+        )
+
+        action action-2 (
+            label: Modifier
+            layout {
+                sequence: 20
+            }
+            behavior {
+                target: {
+                    page: 4
+                    items: {
+                        P4_ID: &ID_CC.
+                        P4_ID_1: &ID_CC.
+                        P4_ID_2: &ID.
+                    }
+                }
+            }
+            appearance {
+                displayType: icon
+                icon: fa-edit
+                hot: true
+            }
+            serverSideCondition {
+                type: expression
+                plsqlExpression: :CRA != 'CRA'
+            }
+        )
+
+        action action-3 (
+            label: imprimer classement
+            layout {
+                sequence: 30
+            }
+            behavior {
+                target: {
+                    page: 53
+                    items: {
+                        P53_REF: &"Titre".
+                        P53_OBJET: &OBJET.
+                    }
+                }
+            }
+            appearance {
+                hot: true
+            }
+        )
+
+        action action-4 (
+            label: imprimer Progr. de Lancment
+            layout {
+                sequence: 40
+            }
+            behavior {
+                target: {
+                    page: 55
+                    items: {
+                        P55_REF: &ID_CC.
+                    }
+                }
+            }
+            appearance {
+                hot: true
+            }
+        )
+
+    )
+
+    region appels-d-offfres-en-cours-2 (
+        name: APPELS D’OFFFRES en Cours
+        type: staticContent
+        layout {
+            sequence: 40
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+    )
+
+    region bienvenu (
+        name: Bienvenu
+        type: staticContent
+        source {
+            htmlCode:
+                ```html
+                <img
+                    src="#APP_FILES#icons/app-icon-512.png"
+                  alt="Left Aligned" align="left" />
+                  </img>
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/collapsible
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                js-useLocalStorage
+                is-collapsed
+                t-Region--scrollBody
+                t-Form--large
+            ]
+            renderComponents: belowContent
+        }
+        accessibility {
+            useLandmark: false
+        }
+    )
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region navigation-de-page (
+        name: Navigation de page
+        type: list
+        source {
+            list: @navigation-de-page
+        }
+        layout {
+            sequence: 30
+            slot: body
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        componentAppearance {
+            listTemplate: @/cards
+            templateOptions: [
+                #DEFAULT#
+                u-colors
+                t-Cards--featured t-Cards--block force-fa-lg
+                t-Cards--displayIcons
+                t-Cards--4cols
+                t-Cards--hideBody
+                t-Cards--animColorFill
+            ]
+        }
+    )
+
+    region new (
+        name: New
+        title: الملفات الجاهزة لفتح العروض &P1_NB.
+        type: themeTemplateComponent/comments
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                SELECT 
+                    SP.ID as SPID,
+                    CC.ID as CCID, 
+                    "عدد" as REF_DOSSIER,
+                    CC.OBJET_CCT as SUJET,
+                    CC.DATE_OUVERTURE_DES_PLIS as DATE_OUVERTURE,
+                    TRUNC(DATE_OUVERTURE_DES_PLIS) - TRUNC(SYSDATE) as JOURS_RESTANTS
+                FROM SP SP,
+                CC CC
+                WHERE ((SP.ID=CC.ID) AND 
+                    -- On cherche les dates comprises entre aujourd'hui et dans 7 jours
+                   (TRUNC(DATE_OUVERTURE_DES_PLIS) BETWEEN TRUNC(SYSDATE) AND TRUNC(SYSDATE) + 7)) and  (
+                    -- Condition 1 : Si l'utilisateur connecté est ADMIN, on affiche tout
+                    UPPER(v('APP_USER')) IN ('92491', '91591' ,'3259','915912', '80503') 
+                    OR
+                    -- Condition 2 : Sinon, on filtre sur le champ
+                    "المكلف_بالملف" = v('P0_USER')
+                )
+                
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: beforeNavigationBar
+        }
+        appearance {
+            template: @/collapsible
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                js-useLocalStorage
+                is-collapsed
+                t-Region--scrollBody
+            ]
+        }
+        security {
+            authorizationScheme: @droits-de-lecteur
+        }
+        componentAppearance {
+            display: report
+        }
+        settings {
+            commentText: REF_DOSSIER
+            userName: DATE_OUVERTURE
+            attributes: تبقى لفتح العروض &JOURS_RESTANTS. يوم
+            style: chatSpeechBubbles
+        }
+        plugin-avatar {
+            icon: fa-sm fa-calendar-clock
+        }
+        messages {
+            whenNoDataFound: لا توجد ملفات الجاهزة لفتح العروض
+        }
+
+        column CCID (
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: CCID
+                dataType: number
+            }
+        )
+
+        column DATE_OUVERTURE (
+            layout {
+                sequence: 60
+            }
+            source {
+                databaseColumn: DATE_OUVERTURE
+                dataType: date
+            }
+        )
+
+        column JOURS_RESTANTS (
+            layout {
+                sequence: 70
+            }
+            source {
+                databaseColumn: JOURS_RESTANTS
+                dataType: number
+            }
+        )
+
+        column REF_DOSSIER (
+            layout {
+                sequence: 40
+            }
+            source {
+                databaseColumn: REF_DOSSIER
+                dataType: varchar2
+            }
+        )
+
+        column SPID (
+            layout {
+                sequence: 20
+            }
+            source {
+                databaseColumn: SPID
+                dataType: number
+            }
+        )
+
+        column SUJET (
+            layout {
+                sequence: 50
+            }
+            source {
+                databaseColumn: SUJET
+                dataType: varchar2
+            }
+        )
+
+        action détails (
+            position: actions
+            label: Détails
+            layout {
+                sequence: 10
+            }
+            behavior {
+                target: {
+                    page: 10
+                    items: {
+                        P10_ID: &CCID.
+                        P10_REF: &REF_DOSSIER.
+                    }
+                }
+            }
+        )
+
+    )
+
+    region notes (
+        name: Notes
+        type: cards
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                SELECT
+                    cc.id,
+                    cc.ref_ao,
+                    cc.objet_cct,
+                    cc.budget,
+                    cc."DÉTAIL_DE_RÉPONSE",
+                    cc.nature_de_depense,
+                    cc."DATE_LIMITE_PROPOSÉE",
+                    cc.date_de_lanc,
+                    cc.pv_cct,
+                    cc.programme_ouverture_de_plis,
+                    cc.jours_rest,
+                    cc.date_ouverture_des_plis,
+                    cc.status,
+                    case 
+                    WHEN  sysdate - cc.date_ouverture_des_plis > = 30 THEN  'لقد مر  ' || FLOOR(sysdate - cc.date_ouverture_des_plis) || '   يوما على فتح العروض و لقد تمت معالجة الملف و إرجاع الضمانات الوقتية الرجاء إدخال المعطيات الخاصة بالعقود و ذلك بالضغط على الرابط أسفل هذا التنبيه   '
+                        WHEN  sysdate - cc.date_ouverture_des_plis > 20 and  sysdate - cc.date_ouverture_des_plis < 30 THEN 'لقد مر  ' || FLOOR(sysdate - cc.date_ouverture_des_plis) || '   يوما على فتح العروض و لقد تمت معالجة الملف و إرجاع الضمانات الوقتية الرجاء إدخال المعطيات الخاصة بالعقود ( إن توفرت ) و ذلك بالضغط على الرابط أسفل هذا التنبيه   '
+                        WHEN sysdate - cc.date_ouverture_des_plis > 0 and  sysdate - cc.date_ouverture_des_plis < 20 THEN  'لقد مرت ' || FLOOR(sysdate - cc.date_ouverture_des_plis) || '   أيام على فتح العروض و لقد تمت معالجة الملف و إرجاع الضمانات الوقتية الرجاء إدخال المعطيات الخاصة بالعقود ( إن توفرت ) و ذلك بالضغط على الرابط أسفل هذا التنبيه   '
+                        ELSE '🔴🔴🔴 🔴🔴🔴🔴وضع الملف غير عادي الرجاء التثبت'
+                    
+                   
+                    end as stat,
+                    CASE  
+                        WHEN sysdate - cc.date_ouverture_des_plis > 30 THEN 'u-color-39'
+                        WHEN  sysdate - cc.date_ouverture_des_plis > 20 and  sysdate - cc.date_ouverture_des_plis < 30  THEN 'u-color-37'
+                        WHEN sysdate - cc.date_ouverture_des_plis > 0 and  sysdate - cc.date_ouverture_des_plis < 20  THEN 'u-color-35'
+                        ELSE 'u-color-44-contrast'
+                    END AS COLOR_CELL,
+                   CASE  
+                        WHEN sysdate - cc.date_ouverture_des_plis > 30 THEN '🔴 عاجل جداً'
+                        WHEN  sysdate - cc.date_ouverture_des_plis > 20 and  sysdate - cc.date_ouverture_des_plis < 30  THEN '🟠 مهم'
+                        WHEN sysdate - cc.date_ouverture_des_plis > 10 and  sysdate - cc.date_ouverture_des_plis < 20  THEN '🔵 عادي'
+                        ELSE '⚪ عادي'
+                    END AS IMPORTANCETEXT,
+                    CASE
+                        WHEN  sysdate - cc.date_ouverture_des_plis > 30 THEN 'fa-fire fa-1x fa-stop-circle fa-anim-horizontal-shake fa-lg'
+                        WHEN  sysdate - cc.date_ouverture_des_plis > 20 and  sysdate - cc.date_ouverture_des_plis < 30 THEN 'fa-alarm-snooze fa-anim-spin-step fam-information fam-is-warning fa-lg'
+                        WHEN sysdate - cc.date_ouverture_des_plis > 10 and  sysdate - cc.date_ouverture_des_plis < 20 THEN 'fa-sticky-note text-info'
+                        ELSE 'fa-circle text-muted'
+                    END AS CARDICON,
+                       CASE
+                        WHEN sysdate - cc.date_ouverture_des_plis > 30
+                            THEN 'near'
+                        ELSE ''
+                    END AS BADGE_CLASS,
+                    cc.creer_par,
+                    cc."DATE_CRÉATION",
+                    cc.programme_de_lancement
+                FROM cc
+                WHERE cc.status = 5
+                
+                  AND NOT EXISTS (
+                        SELECT 1
+                        FROM contrats ct
+                        WHERE ct.id_cc = cc.id
+                  )
+                
+                
+                /*
+                SELECT
+                    ID,
+                    NOTE_TITLE   AS NOTETITLE,
+                    NOTE_DETAILS AS NOTEDETAILS,
+                    REMINDER_DATETIME,
+                    TO_CHAR(REMINDER_DATETIME, 'DD Mon - HH24:MI') AS REMINDERFMT,
+                
+                    -- أيقونة ولون حسب الأهمية
+                    CASE IMPORTANCE_LEVEL
+                        WHEN 3 THEN 'fa-bell text-danger'
+                        WHEN 2 THEN 'fa-exclamation-triangle text-warning'
+                        WHEN 1 THEN 'fa-sticky-note text-info'
+                        ELSE 'fa-circle text-muted'
+                    END AS CARDICON,
+                
+                    -- نص الأهمية
+                    CASE IMPORTANCE_LEVEL
+                        WHEN 3 THEN '🔴 عاجل جداً'
+                        WHEN 2 THEN '🟠 مهم'
+                        WHEN 1 THEN '🔵 عادي'
+                        ELSE '⚪ عادي'
+                    END AS IMPORTANCETEXT,
+                
+                    -- نص الشريط: الدقائق + النسبة المئوية
+                    CASE
+                        WHEN REMINDER_DATETIME - (NVL(PRE_REMINDER_MINS,0)/1440) <= SYSDATE
+                             AND REMINDER_DATETIME >= SYSDATE - 0.1/24 THEN
+                             '🔄 تذكير مستمر (' || ROUND(
+                                 LEAST(100, GREATEST(0,
+                                   (1 - (((REMINDER_DATETIME - (NVL(PRE_REMINDER_MINS,0)/1440)) - SYSDATE) /
+                                         ((REMINDER_DATETIME - (NVL(PRE_REMINDER_MINS,0)/1440)) - TRUNC(SYSDATE)))) * 100
+                                 ))
+                             ) || '%)'
+                        WHEN REMINDER_DATETIME - (NVL(PRE_REMINDER_MINS,0)/1440) <= SYSDATE THEN
+                             '✅ انتهى (100%)'
+                        ELSE
+                             FLOOR(((REMINDER_DATETIME - (NVL(PRE_REMINDER_MINS,0)/1440)) - SYSDATE) * 1440)
+                             || ' Minutes ('
+                             || ROUND(
+                                 LEAST(100, GREATEST(0,
+                                   (1 - (((REMINDER_DATETIME - (NVL(PRE_REMINDER_MINS,0)/1440)) - SYSDATE) /
+                                         ((REMINDER_DATETIME - (NVL(PRE_REMINDER_MINS,0)/1440)) - TRUNC(SYSDATE)))) * 100
+                                 ))
+                             )
+                             || '%) '
+                    END AS MINUTES_LEFT,
+                
+                    -- نسبة التقدم (0-100) متاحة لو احتجتها لاحقاً
+                    LEAST(100, GREATEST(0,
+                        (1 - (((REMINDER_DATETIME - (NVL(PRE_REMINDER_MINS,0)/1440)) - SYSDATE) /
+                              ((REMINDER_DATETIME - (NVL(PRE_REMINDER_MINS,0)/1440)) - TRUNC(SYSDATE)))) * 100
+                    )) AS PROGRESS_PERCENT,
+                
+                    -- كلاس إضافي لو أردت تأثير خاص عند الاقتراب (اختياري)
+                    CASE
+                        WHEN ((REMINDER_DATETIME - (NVL(PRE_REMINDER_MINS,0)/1440)) - SYSDATE) * 1440 <= 30
+                            THEN 'near'
+                        ELSE ''
+                    END AS BADGE_CLASS,
+                
+                    -- لون شريط التقدم حسب الأهمية (لو استخدمته داخل CSS)
+                    CASE IMPORTANCE_LEVEL
+                        WHEN 3 THEN 'bg-danger'
+                        WHEN 2 THEN 'bg-warning'
+                        WHEN 1 THEN 'bg-info'
+                        ELSE 'bg-secondary'
+                    END AS PROGRESS_COLOR
+                
+                FROM USER_NOTES
+                WHERE USER_ID = :P32_ROLE
+                   AND NOT (IS_SENT = 'Y'
+                           AND REMINDER_DATETIME - (NVL(PRE_REMINDER_MINS,0)/1440) < SYSDATE -1)
+                ORDER BY IMPORTANCE_LEVEL DESC, REMINDER_DATETIME ASC;
+                */
+                
+                ```
+        }
+        layout {
+            sequence: 50
+            slot: body
+        }
+        appearance {
+            template: @/cards-container
+            templateOptions: [
+                #DEFAULT#
+                t-CardsRegion--hideHeader js-addHiddenHeadingRoleDesc
+                t-Form--stretchInputs
+                t-Form--leftLabels
+            ]
+        }
+        advanced {
+            customAttributes: Refresh Interval: 600
+        }
+        componentAppearance {
+            gridColumns: 4
+        }
+        title {
+            column: REF_AO
+        }
+        subtitle {
+            column: STAT
+            cssClasses: &COLOR_CELL.
+        }
+        body {
+            column: OBJET_CCT
+        }
+        iconAndBadge {
+            iconSource: iconClassColumn
+            iconColumn: CARDICON
+            iconCssClasses: &COLOR_CELL.
+            iconPosition: top
+            badgeColumn: IMPORTANCETEXT
+        }
+
+        action action (
+            label: تغيير الملفات التي في حالة الإنتظار
+            layout {
+                sequence: 20
+            }
+            behavior {
+                target: {
+                    page: 39
+                }
+            }
+            appearance {
+                displayType: textWithIcon
+                icon: fa-reply-all
+                hot: true
+            }
+        )
+
+    )
+
+    pageItem P1_FILTER_USER (
+        type: selectList
+        label {
+            label: Filtrer pour Charger les dossiers
+            alignment: left
+        }
+        settings {
+            pageActionOnSelection: redirectSetValue
+        }
+        lov {
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select distinct "المكلف_بالملف" as display_value, 
+                       "المكلف_بالملف" as return_value
+                from FICHIER_MANQUANT_PAR_DOSSIER
+                order by 1
+                ```
+            displayExtraValues: false
+            nullDisplayValue: - Tous les dossiers -
+        }
+        layout {
+            sequence: 10
+            region: @appels-d-offfres-en-cours-2
+            slot: sortOrder
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        advanced {
+            cssClasses: u-color-3
+            warnOnUnsavedChanges: ignore
+        }
+        default {
+            type: static
+            staticValue: NULL
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: UPPER(:P1_ROLE) IN ('ADMINISTRATOR', 'CONTRIBUTOR')
+        }
+    )
+
+    pageItem P1_NB (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @new
+            slot: regionBody
+        }
+        source {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                SELECT
+                    COUNT(*) AS NOMBRE_DE_LIGNES
+                FROM
+                    SP SP,
+                    CC CC
+                WHERE
+                    ((SP.ID=CC.ID) AND 
+                    -- On cherche les dates comprises entre aujourd'hui et dans 7 jours
+                   (TRUNC(DATE_OUVERTURE_DES_PLIS) BETWEEN TRUNC(SYSDATE) AND TRUNC(SYSDATE) + 7)) and  (
+                    -- Condition 1 : Si l'utilisateur connecté est ADMIN, on affiche tout
+                    UPPER(v('APP_USER')) IN ('92491', '91591' ,'3259','915912', '80503') 
+                    OR
+                    -- Condition 2 : Sinon, on filtre sur le champ
+                    "المكلف_بالملف" = v('P0_USER')
+                )
+                ```
+        }
+    )
+
+    pageItem P1_ROLE (
+        type: hidden
+        layout {
+            sequence: 10
+            slot: body
+        }
+    )
+
+    dynamicAction alert-ouverture (
+        name: Alert_ouverture
+        execution {
+            sequence: 50
+            eventScope: once
+        }
+        when {
+            event: ready
+        }
+        clientSideCondition {
+            type: item!=value
+            item: P1_NB
+            value: 0
+        }
+        security {
+            authorizationScheme: @droits-de-lecteur
+        }
+
+        action native-alert (
+            action: alert
+            settings {
+                title: الملفات الجاهزة لفتح العروض &P1_NB.
+                message: الملفات الجاهزة لفتح العروض &P1_NB.
+                style: danger
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction masqué-notes (
+        name: masqué_notes
+        execution {
+            sequence: 40
+        }
+        when {
+            event: ready
+        }
+        clientSideCondition {
+            type: item=value
+            item: P1_ROLE
+            value: READER
+        }
+
+        action native-hide (
+            action: hide
+            affectedElements {
+                selectionType: region
+                region: @notes
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-show (
+            action: show
+            affectedElements {
+                selectionType: region
+                region: @notes
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction new (
+        name: New
+        execution {
+            sequence: 30
+        }
+        when {
+            event: ready
+        }
+        clientSideCondition {
+            type: item=value
+            item: P1_NB
+            value: 0
+        }
+
+        action native-hide (
+            action: hide
+            affectedElements {
+                selectionType: region
+                region: @new
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction refresh (
+        name: refresh2
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @appels-d-offfres-en-cours
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @appels-d-offfres-en-cours
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction refresh-2 (
+        name: refresh_1
+        execution {
+            sequence: 20
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @navigation-de-page
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @appels-d-offfres-en-cours
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process get-pending-reminders (
+        name: GET_PENDING_REMINDERS
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                BEGIN
+                    apex_json.open_object;
+                    apex_json.open_array('items');
+                
+                    FOR r IN (
+                        SELECT id, note_title, note_details, importance_level
+                        FROM user_notes
+                        WHERE user_id = :APP_USER
+                        AND reminder_datetime - (NVL(pre_reminder_mins,0)/1440) <= SYSDATE  -- حان وقت التنبيه
+                        AND reminder_datetime >= SYSDATE - 1/24  -- الموعد لم ينتهِ تماماً (آخر ساعة)
+                        AND rownum <= 10
+                    )
+                    LOOP
+                        apex_json.open_object;
+                        apex_json.write('ID', r.id);
+                        apex_json.write('NOTE_TITLE', r.note_title);
+                        apex_json.write('NOTE_DETAILS', r.note_details);
+                        apex_json.write('IMPORTANCE_LEVEL', r.importance_level);
+                        apex_json.close_object;
+                    END LOOP;
+                
+                    apex_json.close_array;
+                    apex_json.close_object;
+                END;
+                
+                ```
+        }
+        execution {
+            sequence: 30
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 24348450550120834
+        }
+    )
+
+    process get-user-role (
+        name: Get_User_Role
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                SELECT role_static_id
+                  INTO :P1_ROLE
+                  FROM apex_appl_acl_user_roles
+                 WHERE application_id = :APP_ID
+                   AND user_name = :APP_USER
+                 FETCH FIRST 1 ROW ONLY; -- Sécurité si l'utilisateur a plusieurs rôles
+                ```
+        }
+        execution {
+            sequence: 40
+            point: beforeRegions
+        }
+        advanced {
+            executionMappingIdentifier: 24371652983479887
+        }
+    )
+
+    process mark-reminder-sent (
+        name: MARK_REMINDER_SENT
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                DECLARE
+                    l_reminder_id NUMBER := APEX_APPLICATION.G_X01;
+                BEGIN
+                    UPDATE user_notes 
+                    SET is_sent = 'Y',
+                        last_updated = SYSDATE
+                    WHERE id = l_reminder_id 
+                    AND user_id = :P0_MAT;
+                    
+                    IF SQL%ROWCOUNT > 0 THEN
+                        apex_json.open_object;
+                        apex_json.write('status', 'success');
+                        apex_json.write('message', 'تم تحديث حالة التنبيه');
+                        apex_json.close_object;
+                    ELSE
+                        apex_json.open_object;
+                        apex_json.write('status', 'error');
+                        apex_json.write('message', 'لم يتم العثور على التنبيه');
+                        apex_json.close_object;
+                    END IF;
+                END;
+                
+                ```
+        }
+        execution {
+            sequence: 20
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 24348184274119348
+        }
+    )
+
+    process nouveau (
+        name: Nouveau
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                BEGIN
+                   FOR rec IN (
+                      SELECT cc.id,
+                             cc.ref_ao,
+                             cc.objet_cct,
+                             cc.budget,
+                             cc.creer_par
+                      FROM cc
+                      WHERE cc.status = 5
+                        AND NOT EXISTS (
+                              SELECT 1 
+                              FROM contrats ct 
+                              WHERE ct.id_cc = cc.id
+                        )
+                        AND EXISTS (
+                              SELECT 1
+                              FROM sp
+                              WHERE sp.id = cc.id
+                                AND sp."تاريخ_قرار__لجنة_الصفقات" + 5 < SYSDATE
+                        )
+                   ) LOOP
+                      DECLARE
+                         v_count NUMBER;
+                      BEGIN
+                         -- Vérifier si une note existe déjà pour cet AO (peu importe l'user_id)
+                         SELECT COUNT(*)
+                         INTO v_count
+                         FROM user_notes un
+                         WHERE un.note_title = 'Contrat manquant pour AO ' || rec.ref_ao;
+                
+                         IF v_count = 0 THEN
+                            -- Insertion pour le premier utilisateur
+                            INSERT INTO user_notes (
+                               user_id,
+                               note_title,
+                               note_details,
+                               reminder_datetime,
+                               importance_level
+                            ) VALUES (
+                               'CONTRIBUTOR',
+                               'Contrat manquant pour AO ' || rec.ref_ao,
+                               'Objet: ' || rec.objet_cct || ', Budget: ' || rec.budget,
+                               SYSDATE,
+                               3
+                            );
+                
+                            -- Insertion pour le deuxième utilisateur
+                            INSERT INTO user_notes (
+                               user_id,
+                               note_title,
+                               note_details,
+                               reminder_datetime,
+                               importance_level
+                            ) VALUES (
+                               'ADMINISTRATOR',
+                               'Contrat manquant pour AO ' || rec.ref_ao,
+                               'Objet: ' || rec.objet_cct || ', Budget: ' || rec.budget,
+                               SYSDATE,
+                               3
+                            );
+                         END IF;
+                      END;
+                   END LOOP;
+                END;
+                
+                ```
+        }
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 24329183785495306
+        }
+    )
+
+    branch (
+        name: Aller à la page 4
+        execution {
+            sequence: 10
+        }
+        behavior {
+            target: {
+                page: 4
+                items: {
+                    ID: &P4_ID.
+                }
+            }
+        }
+    )
+
+)
+

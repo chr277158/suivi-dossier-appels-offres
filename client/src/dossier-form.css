@@ -1,0 +1,21 @@
+.budget-input-group{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:7px}
+.dossier-four-fields{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:end;gap:12px}.dossier-four-fields>label{display:grid;min-width:0;gap:6px;color:#586860;font-size:11px;font-weight:600}.dossier-four-fields>label>input,.dossier-four-fields .budget-input-group input,.dossier-four-fields .budget-input-group select{width:100%;min-width:0;min-height:39px;border:1px solid #dfe5df;border-radius:4px;background:#fff;color:#35463f;padding:8px 10px;font:inherit}.dossier-four-fields .launch-specification-status,.dossier-four-fields .provisional-bond-status{box-sizing:border-box;min-width:0;min-height:60px;align-content:center}.dossier-four-fields .launch-specification-status label,.dossier-four-fields .provisional-bond-status label{font-size:.77rem}
+.compliance-checkbox{display:flex!important;align-items:center;gap:4px!important;min-height:39px}.compliance-checkbox input{width:16px;height:16px;margin:0;accent-color:#183e38}
+.launch-specification-status{display:flex;flex-wrap:wrap;gap:5px 12px;width:fit-content;max-width:100%;margin:0;padding:4px 8px;border:1px solid #dfe5df;border-radius:5px}.launch-specification-status legend{padding:0 4px;font-size:.82rem;font-weight:600;color:#35463f}.launch-specification-status label{display:inline-flex;align-items:center;gap:5px;font-size:.88rem}.launch-specification-status input{accent-color:#183e38}
+.provisional-bond-status{display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px;min-width:0;margin:0;padding:4px 8px;border:1px solid #dfe5df;border-radius:5px}.provisional-bond-status legend{padding:0 4px;font-size:.82rem;font-weight:600;color:#35463f}.provisional-bond-status label{display:inline-flex;align-items:center;gap:5px;font-size:.82rem}.provisional-bond-status input{width:16px;min-width:16px;min-height:16px;margin:0;padding:0;accent-color:#183e38}
+.budget-input-group input,.budget-input-group select,.dossier-form-grid select{width:100%;min-height:39px;border:1px solid #dfe5df;border-radius:4px;background:#fff;color:#35463f;padding:8px 10px;font:inherit}
+.budget-input-group select{padding-inline:7px}
+.reference-suggestion{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px}.reference-suggestion small{color:#52635b;font-size:.8rem;line-height:1.4}
+.dossier-form-grid label.date-order-invalid{padding:9px;border:1px solid #d77a5d;border-radius:7px;background:#fff2ed;color:#9b3f2d}
+.dossier-form-grid label.date-order-invalid input{border-color:#c84f3a;box-shadow:0 0 0 2px #c84f3a24}
+.dossier-status-warning{display:flex;align-items:flex-start;gap:6px;margin-top:7px;color:#a16207;font-size:.82rem;line-height:1.4}
+.dossier-status-warning svg{flex:0 0 auto;margin-top:2px}
+.status-override-backdrop{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:#0f172a80}
+.status-override-dialog{width:min(540px,100%);padding:24px;border:1px solid #facc15;border-radius:14px;background:#fff;box-shadow:0 20px 60px #0f172a40;color:#243330}
+.status-override-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#fef3c7;color:#a16207}
+.status-override-dialog h2{margin:14px 0 8px;font-size:1.2rem}
+.status-override-dialog p{margin:0;color:#475569;line-height:1.6}
+.status-override-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px;margin-top:22px}
+@media(max-width:560px){.status-override-actions{flex-direction:column-reverse}.status-override-actions button{width:100%}}
+@media(max-width:1000px){.dossier-four-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.dossier-four-fields{grid-template-columns:1fr}}

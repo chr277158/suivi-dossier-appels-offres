@@ -1,0 +1,36 @@
+authentication comptes-de-base-de-données (
+    name: Comptes de base de données
+    type: custom
+    settings {
+        authFunctionName: LIBRARY_F
+    }
+)
+
+authentication copy-of-comptes-de-base-de-données (
+    name: Copy of Comptes de base de données
+    type: databaseAccounts
+    loginProcessing {
+        postAuthenticationProcedureName: SELECT GROUPE    INTO :G_USER_GROUP   FROM T_USER  WHERE MATRICULE = :APP_USER; -- On suppose que l'utilisateur se connecte avec son matricule
+    }
+)
+
+authentication custom-login-t-user (
+    name: Custom Login T_USER
+    type: custom
+    settings {
+        authFunctionName: f_authenticate_user
+    }
+    loginProcessing {
+        postAuthenticationProcedureName: p_post_auth
+        switchInSession: true
+    }
+)
+
+authentication f-librery (
+    name: F_LIBRERY
+    type: custom
+    settings {
+        authFunctionName: LIBRARY_F
+    }
+)
+

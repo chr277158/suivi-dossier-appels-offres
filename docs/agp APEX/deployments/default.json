@@ -1,0 +1,11 @@
+{
+  "app" : {
+    "id" : 105,
+    "databaseSession" : {
+      "parsingSchema" : "WKSP_GCT"
+    },
+    "runtime" : {
+      "debugging" : true
+    }
+  }
+}

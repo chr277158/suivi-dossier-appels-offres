@@ -1,0 +1,64 @@
+page 0 (
+    name: Page globale
+    appearance {
+        templateOptions: #DEFAULT#
+    }
+
+    pageItem P0_HOME (
+        type: hidden
+        layout {
+            sequence: 13
+            slot: body
+        }
+        source {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                SELECT 
+                case when 
+                 T_USER.GROUPE  IN ('CONTRIBUTOR', 'ADMINISTRATOR')
+                 then '44'
+                 else '1' 
+                 end as k
+                
+                 FROM T_USER where UPPER(MATRICULE) = UPPER(V('APP_USER'))
+                ```
+        }
+    )
+
+    pageItem P0_MAT (
+        type: hidden
+        layout {
+            sequence: 2
+            slot: body
+        }
+    )
+
+    pageItem P0_ROLE (
+        type: hidden
+        layout {
+            sequence: 3
+            slot: body
+        }
+        source {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                SELECT role_static_id
+                FROM apex_appl_acl_user_roles
+                WHERE application_id = :APP_ID
+                  AND user_name = :APP_USER;
+                ```
+        }
+    )
+
+    pageItem P0_USER (
+        type: hidden
+        layout {
+            sequence: 1
+            slot: body
+        }
+    )
+
+)
+

@@ -1,0 +1,80 @@
+supportingObject (
+    prerequisites {
+        freeSpace: 100
+        systemPrivileges: [
+            createMaterializedView
+            createProcedure
+            createSequence
+            createSynonym
+            createTable
+            createTrigger
+            createType
+            createView
+        ]
+    }
+    installation {
+        objectNames: [
+            AJOUT_CONTRAT
+            AJOUT_NOTE
+            APEX_REMINDER_CHECKER_JOB
+            AUDIT_LOG
+            BI_ETAT_AVIS
+            BIU_HEUR_SPP
+            CC
+            CC_BU_STATUS
+            CC_SP_COMPLET
+            CC_SP_FL
+            COMMISSION
+            CONTRATS_T
+            CONTRATS
+            CTRL_CC_RAPPELS_CUSTOM
+            CUSTOM_NOTIFICATIONS
+            DATE_DE_LANCEMENT_PROPOSÉE_SEQ
+            DEMANDE_CLARIFICATION
+            DEMANDE_CONGE
+            ETAT_AFFICHAGE_PUBLIC_SEQ
+            ETAT_AVIS_SEQ
+            ETAT_AVIS_T
+            ETAT_CC_COPLETE
+            FACTURES
+            F_AUTHENTICATE_USER
+            FICHIER_LNCEMENT
+            FACTURES_T
+            HEUR_SPP
+            ID_INC
+            INFORMATION_COMPLETE_CC
+            MODIFICATION
+            NOTIFICATION_OP
+            MODIF
+            T_CONGE
+            TABLE_TOTAL
+            SUIVI_MODIF
+            SUIVI_CONTRATS_SEQ
+            SUIVI_CONTRATS
+            SUIVI
+            SP
+            SP_ALERTES_FACTURES
+            SOLDE_CONGE
+            TRG_SUIVI_CONTRATS_BI
+            TRG_AUDIT_SP
+            TRG_AUDIT_CC
+            USER_NOTES
+            V_FACTURES
+            V_SUIVI_CONTRATS
+            SEQ_CONGE
+            REMARQUE
+            NOTE_COMMISSION
+            NOTE_OUVERTUE_PLIS
+            MEMBRE
+            LIBRARY_F
+            K
+            CLEANUP_EXPIRED_REMINDERS
+            CC_STATUS_HOURLY_CHECK
+            CLEANUP_EXPIRED_REMINDERS_JOB
+        ]
+    }
+    advanced {
+        includeInAppExport: true
+    }
+)
+

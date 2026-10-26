@@ -1,0 +1,1400 @@
+page 35 (
+    name: Contrats
+    alias: CONTRATS
+    title: Contrats
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        executeWhenPageLoads:
+            ```javascript-browser
+            // On attend un court instant que le widget IG Single Row View soit rendu
+            setTimeout(function() {
+                $(".a-RV-body .a-Collapsible.is-expanded button").each(function() {
+                    $(this).click();
+                });
+            }, 50);
+            ```
+    }
+    css {
+        inline:
+            ```css
+            /* 1) Donne une hauteur plus grande à la zone header (optionnel) */
+            .myClass .a-GV-header{
+              height: 60px;         /* Ajuste selon ton besoin */
+              line-height: 50px;     /* Optionnel: vertical align/centrage */
+              padding: 5px;
+              white-space: normal;   /* Autorise le retour à la ligne */
+              overflow-wrap: break-word;
+              word-wrap: break-word;
+            }
+            
+            /* 2) Force le texte du libellé à se wrapper */
+            .myClass .a-GV-header .a-GV-headerLabel{
+              white-space: normal;
+              overflow-wrap: break-word;
+              word-wrap: break-word;
+              height: auto;
+              line-height: 1.1;      /* Plus naturel pour du multi-ligne */
+              padding: 5px;
+            }
+            
+            
+            
+            
+            /* 2 colonnes pour la Single Row View */
+            .u-Form {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr ;
+                gap: 10px;
+            }
+            
+            .a-RV .u-Form-inputContainer {
+                align-items: baseline;
+                background-color: #dddde6;
+            }
+            
+            /* Style général */
+            .a-IG-recordView {
+                background-color: #f0f4ff;
+            }
+            
+            .u-Form-label {
+                font-size: 13px !important;
+                font-weight: bold;
+            
+            }
+            
+            .apex-item-text,
+            .apex-item-select,
+            .apex-item-textarea {
+                font-size: 13px !important;
+                font-weight: bold;
+                border-radius: 10px !important;
+            }
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region chemin-de-navigation (
+        name: Chemin de navigation
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region suivi-des-contrats-p46-new (
+        name: suivi des contrats &P46_NEW.
+        title: suivi des contrats &P46_NEW.
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            tableName: CONTRATS
+        }
+        layout {
+            sequence: 30
+            slot: body
+            rowCssClasses: myClass
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        advanced {
+            htmlDomId: mregion
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                update
+                delete
+            ]
+        }
+        editAuthorization {
+            update: @droits-de-contribution
+            delete: @droits-de-contribution
+        }
+        componentAppearance {
+            selectFirstRow: false
+            fixedRowHeight: false
+        }
+        pagination {
+            showTotalCount: false
+        }
+        toolbar {
+            controls: [
+                searchField
+                actionsMenu
+                saveButton
+            ]
+        }
+        download {
+            formats: [
+                csv
+                html
+                excel
+                pdf
+            ]
+        }
+        advanced {
+            savedReportMappingIdentifier: 66345069942847718
+        }
+
+        savedReport 329899 (
+            visibility: primary
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @ID
+                layout {
+                    frozen: true
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @ID_CC
+                layout {
+                    show: false
+                    frozen: true
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @N_CONTRAT_BC
+                layout {
+                    frozen: true
+                    width: 89.989
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @TITULAIRE_DU_MARCHÉ
+                layout {
+                    frozen: true
+                    width: 175.043
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @REF_AO
+                layout {
+                    show: false
+                    frozen: true
+                    width: 84.9375
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @OBJET
+                layout {
+                    frozen: true
+                    width: 407.457
+                    sequence: 7
+                }
+            )
+
+            displayColumn (
+                column: @CADRE__PONCTUEL
+                layout {
+                    frozen: true
+                    width: 67.483
+                    sequence: 8
+                }
+            )
+
+            displayColumn (
+                column: @MONTANT
+                layout {
+                    frozen: true
+                    width: 100.9148
+                    sequence: 9
+                }
+            )
+
+            displayColumn (
+                column: @DEVISE
+                layout {
+                    frozen: true
+                    width: 73.13069999999999
+                    sequence: 10
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DE_MISE_VIGUEUR
+                layout {
+                    frozen: true
+                    width: 86.1222
+                    sequence: 11
+                }
+            )
+
+            displayColumn (
+                column: @DATE_FIN_DU_MARCHÉ
+                layout {
+                    frozen: true
+                    width: 80.1193
+                    sequence: 12
+                }
+            )
+
+            displayColumn (
+                column: @MONTANT_DE_LA_CAUTION
+                layout {
+                    frozen: true
+                    width: 92.108
+                    sequence: 13
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DE_MAIN_LEVÉE
+                layout {
+                    show: false
+                    frozen: true
+                    width: 172.131
+                    sequence: 14
+                }
+            )
+
+            displayColumn (
+                column: @N__COMMISSION
+                layout {
+                    show: false
+                    frozen: true
+                    sequence: 15
+                }
+            )
+
+            displayColumn (
+                column: @ETAT
+                layout {
+                    width: 94.66999999999999
+                    sequence: 16
+                }
+            )
+
+            displayColumn (
+                column: @OBSERVATION_
+                layout {
+                    show: false
+                    sequence: 17
+                }
+            )
+
+            displayColumn (
+                column: @COL016
+                layout {
+                    show: false
+                    sequence: 18
+                }
+            )
+
+            displayColumn (
+                column: @DEMANDEUR
+                layout {
+                    show: false
+                    width: 87.91499999999999
+                    sequence: 19
+                }
+            )
+
+            displayColumn (
+                column: @RESPONSABLE
+                layout {
+                    show: false
+                    sequence: 20
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DE_LA_PREMIÈRE_PIÈCE_LÉGALE
+                layout {
+                    show: false
+                    sequence: 21
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DE_LA_DERNIÈRE_PIÈCE_LÉGALE
+                layout {
+                    show: false
+                    sequence: 22
+                }
+            )
+
+            displayColumn (
+                column: @N__ARCHIVAGE
+                layout {
+                    show: false
+                    sequence: 23
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DE_L_ARCHIVAGE
+                layout {
+                    show: false
+                    width: 105
+                    sequence: 24
+                }
+            )
+
+            displayColumn (
+                column: @N__RANG_ARCHIVAGE
+                layout {
+                    show: false
+                    sequence: 25
+                }
+            )
+
+            displayColumn (
+                column: @OBSERVATION
+                layout {
+                    show: false
+                    sequence: 26
+                }
+            )
+
+            displayColumn (
+                column: @DATE_LIVRAISON_JURIDIQUE
+                layout {
+                    show: false
+                    sequence: 27
+                }
+            )
+
+            displayColumn (
+                column: @DATE_AVIS_JURIDIQUE
+                layout {
+                    show: false
+                    sequence: 28
+                }
+            )
+
+            displayColumn (
+                column: @DATE_ENVOI_CLIENT_SIGNATURE
+                layout {
+                    show: false
+                    sequence: 29
+                }
+            )
+
+            displayColumn (
+                column: @DATE_RETOUR_CLIENT_SIGNE
+                layout {
+                    show: false
+                    sequence: 30
+                }
+            )
+
+            displayColumn (
+                column: @DATE_ENVOI_ADMIN_SIGNATURE
+                layout {
+                    show: false
+                    sequence: 31
+                }
+            )
+
+            displayColumn (
+                column: @DATE_RETOUR_ADMIN_SIGNE
+                layout {
+                    show: false
+                    sequence: 32
+                }
+            )
+
+            displayColumn (
+                column: @DATE_ENVOI_CLIENT_ENREGISTREMENT
+                layout {
+                    show: false
+                    sequence: 33
+                }
+            )
+
+            displayColumn (
+                column: @DATE_RETOUR_ENREGISTRE
+                layout {
+                    show: false
+                    sequence: 34
+                }
+            )
+
+            displayColumn (
+                column: @DATE_GARANTIE_FINALE
+                layout {
+                    show: false
+                    sequence: 35
+                }
+            )
+
+            displayColumn (
+                column: @RESPONSABLE_DOS
+                layout {
+                    show: false
+                    sequence: 36
+                }
+            )
+
+            displayColumn (
+                column: @DATE_RESILIATION
+                layout {
+                    show: false
+                    sequence: 37
+                }
+            )
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    frozen: true
+                    sequence: 1
+                }
+            )
+
+            sort (
+                column: @CADRE__PONCTUEL
+                sort {
+                    direction: desc
+                    nulls: first
+                    sequence: 1
+                }
+            )
+
+        )
+
+        columnGroup archivage (
+            heading: Archivage
+        )
+
+        columnGroup données-du-contrat (
+            heading: Données Du Contrat
+        )
+
+        columnGroup etapes-de-réalisation (
+            heading: Etapes De réalisation
+        )
+
+        columnGroup service-demandeur (
+            heading: "Service Demandeur "
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 20
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 10
+            }
+        )
+
+        column CADRE__PONCTUEL (
+            type: selectList
+            heading {
+                heading: Cadre Ponctuel
+            }
+            lov {
+                type: staticValues
+                staticValues: STATIC:Cadre;Cadre,Ponctuel;Ponctuel
+            }
+            layout {
+                sequence: 100
+                group: @données-du-contrat
+            }
+            source {
+                databaseColumn: CADRE__PONCTUEL
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+        )
+
+        column COL016 (
+            type: hidden
+            layout {
+                sequence: 200
+            }
+            source {
+                databaseColumn: COL016
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_AVIS_JURIDIQUE (
+            type: datePicker
+            heading {
+                heading: Date Avis Juridique
+                alignment: center
+            }
+            layout {
+                sequence: 240
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: DATE_AVIS_JURIDIQUE
+                dataType: date
+            }
+        )
+
+        column DATE_DE_LA_DERNIÈRE_PIÈCE_LÉGALE (
+            type: hidden
+            layout {
+                sequence: 330
+            }
+            source {
+                databaseColumn: DATE_DE_LA_DERNIÈRE_PIÈCE_LÉGALE
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_DE_LA_PREMIÈRE_PIÈCE_LÉGALE (
+            type: hidden
+            layout {
+                sequence: 320
+            }
+            source {
+                databaseColumn: DATE_DE_LA_PREMIÈRE_PIÈCE_LÉGALE
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DATE_DE_L_ARCHIVAGE (
+            type: datePicker
+            heading {
+                heading: Date De L Archivage
+                alignment: center
+            }
+            layout {
+                sequence: 410
+                group: @archivage
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: DATE_DE_L_ARCHIVAGE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column DATE_DE_MAIN_LEVÉE (
+            type: textField
+            heading {
+                heading: Date De Main Levée
+                alignment: center
+            }
+            layout {
+                sequence: 160
+                group: @données-du-contrat
+            }
+            validation {
+                maxLength: 255
+            }
+            source {
+                databaseColumn: DATE_DE_MAIN_LEVÉE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column DATE_DE_MISE_VIGUEUR (
+            type: datePicker
+            heading {
+                heading: Date De Mise Vigueur
+                alignment: center
+            }
+            layout {
+                sequence: 130
+                group: @données-du-contrat
+            }
+            source {
+                databaseColumn: DATE_DE_MISE_VIGUEUR
+                dataType: date
+            }
+        )
+
+        column DATE_ENVOI_ADMIN_SIGNATURE (
+            type: datePicker
+            heading {
+                heading: Date Envoi Admin Signature
+                alignment: center
+            }
+            layout {
+                sequence: 270
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: DATE_ENVOI_ADMIN_SIGNATURE
+                dataType: date
+            }
+        )
+
+        column DATE_ENVOI_CLIENT_ENREGISTREMENT (
+            type: datePicker
+            heading {
+                heading: Date Envoi Client Enregistrement
+                alignment: center
+            }
+            layout {
+                sequence: 290
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: DATE_ENVOI_CLIENT_ENREGISTREMENT
+                dataType: date
+            }
+        )
+
+        column DATE_ENVOI_CLIENT_SIGNATURE (
+            type: datePicker
+            heading {
+                heading: Date Envoi Client Signature
+                alignment: center
+            }
+            layout {
+                sequence: 250
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: DATE_ENVOI_CLIENT_SIGNATURE
+                dataType: date
+            }
+        )
+
+        column DATE_FIN_DU_MARCHÉ (
+            type: textField
+            heading {
+                heading: Date Fin Du Marché
+                alignment: center
+            }
+            layout {
+                sequence: 140
+                group: @données-du-contrat
+            }
+            validation {
+                maxLength: 50
+            }
+            source {
+                databaseColumn: DATE_FIN_DU_MARCHÉ
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column DATE_GARANTIE_FINALE (
+            type: datePicker
+            heading {
+                heading: Date Garantie Finale
+                alignment: center
+            }
+            layout {
+                sequence: 310
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: DATE_GARANTIE_FINALE
+                dataType: date
+            }
+        )
+
+        column DATE_LIVRAISON_JURIDIQUE (
+            type: datePicker
+            heading {
+                heading: Date Livraison Juridique
+                alignment: center
+            }
+            layout {
+                sequence: 230
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: DATE_LIVRAISON_JURIDIQUE
+                dataType: date
+            }
+        )
+
+        column DATE_RESILIATION (
+            type: datePicker
+            heading {
+                heading: Date Resiliation
+                alignment: center
+            }
+            layout {
+                sequence: 390
+            }
+            source {
+                databaseColumn: DATE_RESILIATION
+                dataType: date
+            }
+        )
+
+        column DATE_RETOUR_ADMIN_SIGNE (
+            type: datePicker
+            heading {
+                heading: Date Retour Admin Signe
+                alignment: center
+            }
+            layout {
+                sequence: 280
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: DATE_RETOUR_ADMIN_SIGNE
+                dataType: date
+            }
+        )
+
+        column DATE_RETOUR_CLIENT_SIGNE (
+            type: datePicker
+            heading {
+                heading: Date Retour Client Signe
+                alignment: center
+            }
+            layout {
+                sequence: 260
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: DATE_RETOUR_CLIENT_SIGNE
+                dataType: date
+            }
+        )
+
+        column DATE_RETOUR_ENREGISTRE (
+            type: datePicker
+            heading {
+                heading: Date Retour Enregistre
+                alignment: center
+            }
+            layout {
+                sequence: 300
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: DATE_RETOUR_ENREGISTRE
+                dataType: date
+            }
+        )
+
+        column DEMANDEUR (
+            type: textField
+            heading {
+                heading: Demandeur
+                alignment: center
+            }
+            layout {
+                sequence: 210
+                group: @service-demandeur
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: DEMANDEUR
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column DEVISE (
+            type: popupLov
+            heading {
+                heading: Devise
+            }
+            lov {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    SELECT 
+                        CASE code
+                            WHEN 'USD' THEN '💵 Dollar (USD)'
+                            WHEN 'EUR' THEN '💶 Euro (EUR)'
+                            WHEN 'TND' THEN '🇹🇳 Dinar (TND)'
+                            ELSE '💰 Autre'
+                        END as display_value,
+                        code as return_value
+                    FROM (
+                        SELECT 'USD' as code FROM dual UNION ALL
+                        SELECT 'EUR' FROM dual UNION ALL
+                        SELECT 'TND' FROM dual UNION ALL
+                        SELECT 'OTHER' FROM dual
+                    )
+                    ```
+            }
+            layout {
+                sequence: 120
+                group: @données-du-contrat
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: DEVISE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column ETAT (
+            type: displayOnly
+            heading {
+                heading: Etat
+            }
+            layout {
+                sequence: 180
+                group: @données-du-contrat
+            }
+            source {
+                databaseColumn: ETAT
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column ID (
+            type: hidden
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: ID
+                dataType: number
+                queryOnly: true
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column ID_CC (
+            type: hidden
+            layout {
+                sequence: 40
+            }
+            source {
+                databaseColumn: ID_CC
+                dataType: number
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column MONTANT (
+            type: textField
+            heading {
+                heading: Montant
+                alignment: center
+            }
+            layout {
+                sequence: 110
+                group: @données-du-contrat
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: MONTANT
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column MONTANT_DE_LA_CAUTION (
+            type: textField
+            heading {
+                heading: Montant De La Caution
+                alignment: center
+            }
+            layout {
+                sequence: 150
+                group: @données-du-contrat
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: MONTANT_DE_LA_CAUTION
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column N_CONTRAT_BC (
+            type: textField
+            heading {
+                heading: N Contrat Bc
+                alignment: center
+            }
+            layout {
+                sequence: 60
+                group: @données-du-contrat
+            }
+            validation {
+                maxLength: 50
+            }
+            source {
+                databaseColumn: N_CONTRAT_BC
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column N__ARCHIVAGE (
+            type: textField
+            heading {
+                heading: N Archivage
+                alignment: center
+            }
+            layout {
+                sequence: 400
+                group: @archivage
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: N__ARCHIVAGE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column N__COMMISSION (
+            type: textField
+            heading {
+                heading: N Commission
+                alignment: center
+            }
+            layout {
+                sequence: 170
+                group: @données-du-contrat
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: N__COMMISSION
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column N__RANG_ARCHIVAGE (
+            type: textField
+            heading {
+                heading: N Rang Archivage
+                alignment: center
+            }
+            layout {
+                sequence: 420
+                group: @archivage
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: N__RANG_ARCHIVAGE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column OBJET (
+            type: textarea
+            heading {
+                heading: Objet
+                alignment: center
+            }
+            layout {
+                sequence: 90
+                group: @données-du-contrat
+            }
+            validation {
+                maxLength: 1000
+            }
+            source {
+                databaseColumn: OBJET
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column OBSERVATION (
+            type: textarea
+            heading {
+                heading: Observation
+                alignment: center
+            }
+            layout {
+                sequence: 370
+                group: @archivage
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: OBSERVATION
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column OBSERVATION_ (
+            type: textField
+            heading {
+                heading: Observation
+                alignment: center
+            }
+            layout {
+                sequence: 190
+                group: @données-du-contrat
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: OBSERVATION_
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column REF_AO (
+            type: displayOnly
+            heading {
+                heading: Ref Ao
+            }
+            layout {
+                sequence: 50
+                group: @données-du-contrat
+            }
+            source {
+                databaseColumn: REF_AO
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column RESPONSABLE (
+            type: textField
+            heading {
+                heading: Responsable
+                alignment: center
+            }
+            layout {
+                sequence: 220
+                group: @service-demandeur
+            }
+            validation {
+                maxLength: 50
+            }
+            source {
+                databaseColumn: RESPONSABLE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column RESPONSABLE_DOS (
+            type: popupLov
+            heading {
+                heading: "المكلف بالملف "
+            }
+            lov {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select T_USER.NOM as NOM 
+                     from T_USER T_USER
+                    ```
+            }
+            layout {
+                sequence: 380
+            }
+            validation {
+                maxLength: 255
+            }
+            source {
+                databaseColumn: RESPONSABLE_DOS
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+        )
+
+        column TITULAIRE_DU_MARCHÉ (
+            type: textField
+            heading {
+                heading: Titulaire Du Marché
+                alignment: center
+            }
+            layout {
+                sequence: 70
+                group: @données-du-contrat
+            }
+            validation {
+                maxLength: 255
+            }
+            source {
+                databaseColumn: TITULAIRE_DU_MARCHÉ
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        page {
+            size: a4
+            units: millimeters
+            width: 297
+            height: 210
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: suivi des contrats &P46_NEW.
+        }
+    )
+
+)
+

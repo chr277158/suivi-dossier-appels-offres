@@ -1,0 +1,1124 @@
+list ajout-commande (
+    name: Ajout Commande
+
+    entry الرجاء-تحديد-أرقام-العقود-و-الشركات (
+        label: الرجاء تحديد أرقام العقود و الشركات
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 35
+            }
+        }
+    )
+
+    entry الرجاء-تحديد-عدد-الطلبيات-x2f-العقود (
+        label: الرجاء تحديد عدد الطلبيات &#x2F; العقود
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 34
+            }
+        }
+    )
+
+    entry خاصيات-العقد (
+        label: خاصيات العقد
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 36
+            }
+        }
+    )
+
+)
+
+list barre-de-navigation (
+    name: Barre de navigation
+
+    entry a-propos-de (
+        label: A propos de
+        icon {
+            imageIconCssClasses: fa-question-circle-o
+        }
+        layout {
+            sequence: 30
+        }
+        userDefinedAttributes {
+            2: icon-only
+        }
+        config {
+            buildOption: @fonctionnalité-a-propos-de-la-page
+        }
+    )
+
+    entry a-propos-de-la-page (
+        label: A propos de la page
+        icon {
+            imageIconCssClasses: fa-info-circle-o
+        }
+        layout {
+            sequence: 60
+            parentEntry: @a-propos-de
+        }
+        link {
+            target: {
+                page: 10060
+                clearCache: 10060
+            }
+        }
+        config {
+            buildOption: @fonctionnalité-a-propos-de-la-page
+        }
+    )
+
+    entry aide-de-la-page (
+        label: Aide de la page
+        icon {
+            imageIconCssClasses: fa-question-circle-o
+        }
+        layout {
+            sequence: 40
+            parentEntry: @a-propos-de
+        }
+        link {
+            target: {
+                page: 10061
+                items: {
+                    P10061_PAGE_ID: &APP_PAGE_ID.
+                }
+            }
+        }
+        userDefinedAttributes {
+            2: icon-only
+        }
+        config {
+            buildOption: @fonctionnalité-a-propos-de-la-page
+        }
+    )
+
+    entry fermer-la-session (
+        label: Fermer la session
+        icon {
+            imageIconCssClasses: fa-sign-out
+        }
+        layout {
+            sequence: 90
+            parentEntry: @p0-user
+        }
+        link {
+            target: {
+                type: url
+                url: &LOGOUT_URL.
+            }
+        }
+    )
+
+    entry informations-en-retour (
+        label: Informations en retour
+        icon {
+            imageIconCssClasses: fa-comment-o
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 10050
+                items: {
+                    P10050_PAGE_ID: &APP_PAGE_ID.
+                }
+                clearCache: 10050
+                action: resetPagination
+            }
+        }
+        userDefinedAttributes {
+            2: icon-only
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: apex_util.feedback_enabled
+        }
+        config {
+            buildOption: @fonctionnalité-informations-en-retour
+        }
+    )
+
+    entry installer-l-application (
+        label: Installer l'application
+        icon {
+            imageIconCssClasses: fa-cloud-download
+        }
+        layout {
+            sequence: 10
+        }
+        isCurrent {
+            type: never
+        }
+        link {
+            target: {
+                type: url
+                url: #action$a-pwa-install
+            }
+        }
+        userDefinedAttributes {
+            2: a-pwaInstall
+        }
+    )
+
+    entry list_item (
+        label: ---
+        layout {
+            sequence: 50
+            parentEntry: @a-propos-de
+        }
+        link {
+            target: {
+                type: url
+                url: separator
+            }
+        }
+    )
+
+    entry list_item-2 (
+        label: ---
+        layout {
+            sequence: 80
+            parentEntry: @p0-user
+        }
+        link {
+            target: {
+                type: url
+                url: separator
+            }
+        }
+    )
+
+    entry p0-user (
+        label: &P0_USER.
+        icon {
+            imageIconCssClasses: fa-user
+        }
+        layout {
+            sequence: 70
+        }
+        link {
+            target: {
+                type: url
+                url: #
+            }
+        }
+        userDefinedAttributes {
+            2: has-username
+        }
+    )
+
+)
+
+list configuration-de-l-application (
+    name: Configuration de l'application
+    config {
+        buildOption: @fonctionnalité-options-de-configuration
+    }
+
+    entry options-de-configuration (
+        label: Options de configuration
+        icon {
+            imageIconCssClasses: fa-sliders
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10010
+                clearCache: 10010
+            }
+        }
+        userDefinedAttributes {
+            1: Activer ou désactiver des fonctionnalités de l'application
+        }
+        config {
+            buildOption: @fonctionnalité-options-de-configuration
+        }
+    )
+
+)
+
+list contrôle-d-accès (
+    name: Contrôle d'accès
+    config {
+        buildOption: @fonctionnalité-contrôle-d-accès
+    }
+
+    entry contrôle-d-accès (
+        label: Contrôle d'accès
+        icon {
+            imageIconCssClasses: fa-key
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 10040
+            }
+        }
+        userDefinedAttributes {
+            1: Modifier les paramètres de contrôle d'accès et désactiver le contrôle d'accès
+        }
+    )
+
+    entry utilisateurs (
+        label: Utilisateurs
+        icon {
+            imageIconCssClasses: fa-users
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10041
+                action: resetPagination
+            }
+        }
+        userDefinedAttributes {
+            1: Définir le niveau d'accès des utilisateurs authentifiés de cette application
+        }
+    )
+
+)
+
+list etats-d-activité (
+    name: Etats d'activité
+    config {
+        buildOption: @fonctionnalité-génération-d-états-d-activité
+    }
+
+    entry journal-des-automatisations (
+        label: Journal des automatisations
+        icon {
+            imageIconCssClasses: fa-gears
+        }
+        layout {
+            sequence: 60
+        }
+        link {
+            target: {
+                page: 10035
+                clearCache: 10035
+                action: resetRegions
+            }
+        }
+        userDefinedAttributes {
+            1: Etat des messages et des exécutions d'automatisation consignés par cette application
+        }
+        serverSideCondition {
+            type: rowsReturned
+            sqlQuery:
+                ```sql
+                select 1
+                from apex_appl_automations a, apex_automation_log l
+                where a.automation_id = l.automation_id
+                and l.application_id = :APP_ID
+                ```
+        }
+    )
+
+    entry journal-des-erreurs-de-l-application (
+        label: Journal des erreurs de l'application
+        icon {
+            imageIconCssClasses: fa-exclamation
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 10032
+                clearCache: 10032
+            }
+        }
+        userDefinedAttributes {
+            1: Etat des erreurs consignées par cette application
+        }
+    )
+
+    entry performances-de-page (
+        label: Performances de page
+        icon {
+            imageIconCssClasses: fa-file-chart
+        }
+        layout {
+            sequence: 40
+        }
+        link {
+            target: {
+                page: 10033
+                clearCache: 10033
+            }
+        }
+        userDefinedAttributes {
+            1: Etat de l'activité et des performances par page d'application
+        }
+    )
+
+    entry principaux-utilisateurs (
+        label: Principaux utilisateurs
+        icon {
+            imageIconCssClasses: fa-user-chart
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 10031
+                clearCache: 10031
+            }
+        }
+        userDefinedAttributes {
+            1: Etat des vues de page consolidées par utilisateur
+        }
+    )
+
+    entry tableau-de-bord (
+        label: Tableau de bord
+        icon {
+            imageIconCssClasses: fa-area-chart
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10030
+                clearCache: 10030
+            }
+        }
+        userDefinedAttributes {
+            1: Consulter les mesures d'activité d'application
+        }
+    )
+
+    entry vues-de-page (
+        label: Vues de page
+        icon {
+            imageIconCssClasses: fa-file-search
+        }
+        layout {
+            sequence: 50
+        }
+        link {
+            target: {
+                page: 10034
+                clearCache: 10034
+                action: resetRegions
+            }
+        }
+        userDefinedAttributes {
+            1: Etat de chaque vue de page par utilisateur comportant la date d'accès et le temps écoulé
+        }
+    )
+
+)
+
+list informations-en-retour (
+    name: Informations en retour
+    config {
+        buildOption: @fonctionnalité-informations-en-retour
+    }
+
+    entry informations-en-retour-des-utilisateurs (
+        label: Informations en retour des utilisateurs
+        icon {
+            imageIconCssClasses: fa-comment-o
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10053
+                clearCache: 10053
+            }
+        }
+        userDefinedAttributes {
+            1: Etat de l'ensemble des informations en retour envoyées par les utilisateurs de l'application
+        }
+    )
+
+)
+
+list interface-utilisateur (
+    name: Interface utilisateur
+    config {
+        buildOption: @fonctionnalité-sélection-du-style-de-thème
+    }
+
+    entry sélection-du-style-de-thème (
+        label: Sélection du style de thème
+        icon {
+            imageIconCssClasses: fa-paint-brush
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10020
+                clearCache: 10020
+            }
+        }
+        userDefinedAttributes {
+            1: Définir la présentation par défaut de l'application
+        }
+        config {
+            buildOption: @fonctionnalité-sélection-du-style-de-thème
+        }
+    )
+
+)
+
+list menu-de-navigation (
+    name: Menu de navigation
+
+    entry administration (
+        label: Administration
+        icon {
+            imageIconCssClasses: fa-user-wrench
+        }
+        layout {
+            sequence: 120
+        }
+        link {
+            target: {
+                page: 10000
+            }
+        }
+        security {
+            authorizationScheme: @droits-d-administration
+        }
+    )
+
+    entry affectation-des-contrats (
+        label: Affectation des Contrats
+        icon {
+            imageIconCssClasses: fa-alarm-snooze
+        }
+        layout {
+            sequence: 44
+            parentEntry: @contrats
+        }
+        isCurrent {
+            type: pages
+            pages: 39
+        }
+        link {
+            target: {
+                page: 39
+            }
+        }
+        security {
+            authorizationScheme: @droits-de-contribution
+        }
+    )
+
+    entry calendrier (
+        label: Calendrier
+        icon {
+            imageIconCssClasses: fa-calendar-o
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 5
+            }
+        }
+    )
+
+    entry contrat-en-cours (
+        label: "Contrat en Cours "
+        layout {
+            sequence: 41
+            parentEntry: @contrats
+        }
+        link {
+            target: {
+                page: 43
+                action: resetPagination
+            }
+        }
+    )
+
+    entry contrats (
+        label: Contrats
+        icon {
+            imageIconCssClasses: fa-file-signature
+        }
+        layout {
+            sequence: 40
+        }
+        security {
+            authorizationScheme: @droits-de-contribution
+        }
+    )
+
+    entry contrats-2 (
+        label: Contrats
+        icon {
+            imageIconCssClasses: fa-table-search
+        }
+        layout {
+            sequence: 42
+            parentEntry: @contrats
+        }
+        isCurrent {
+            type: pages
+            pages: 35
+        }
+        link {
+            target: {
+                page: 35
+            }
+        }
+    )
+
+    entry dossiers-d-achats (
+        label: Dossiers d'Achats
+        layout {
+            sequence: 20
+        }
+    )
+
+    entry etat-appels-d-offres-en-cours (
+        label: Etat - Appels D’Offres En Cours
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 130
+            parentEntry: @dossiers-d-achats
+        }
+        link {
+            target: {
+                page: 2
+            }
+        }
+    )
+
+    entry gestion-de-compte (
+        label: Gestion de Compte
+        icon {
+            imageIconCssClasses: fa-address-book-o
+        }
+        layout {
+            sequence: 90
+        }
+        isCurrent {
+            type: pages
+            pages: [
+                11
+                12
+            ]
+        }
+        link {
+            target: {
+                page: 11
+            }
+        }
+    )
+
+    entry gestion-des-comptes (
+        label: Gestion des Comptes
+        icon {
+            imageIconCssClasses: fa-id-card
+        }
+        layout {
+            sequence: 100
+        }
+        isCurrent {
+            type: pages
+            pages: 13
+        }
+        link {
+            target: {
+                page: 13
+            }
+        }
+        security {
+            authorizationScheme: @droits-d-administration
+        }
+    )
+
+    entry gestion-des-rappels (
+        label: Gestion des Rappels
+        icon {
+            imageIconCssClasses: fa-alarm-check
+        }
+        layout {
+            sequence: 60
+        }
+        isCurrent {
+            type: pages
+            pages: 32
+        }
+        link {
+            target: {
+                page: 32
+            }
+        }
+    )
+
+    entry heur-sup (
+        label: heur sup
+        icon {
+            imageIconCssClasses: fa-forms
+        }
+        layout {
+            sequence: 250
+        }
+        isCurrent {
+            type: pages
+            pages: 48
+        }
+        link {
+            target: {
+                page: 48
+            }
+        }
+    )
+
+    entry mes-congés (
+        label: Mes Congés
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 260
+        }
+        isCurrent {
+            type: pages
+            pages: 51
+        }
+        link {
+            target: {
+                page: 51
+            }
+        }
+    )
+
+    entry modification (
+        label: Modification
+        icon {
+            imageIconCssClasses: fa-wrench
+        }
+        layout {
+            sequence: 50
+        }
+        security {
+            authorizationScheme: @droits-d-administration
+        }
+    )
+
+    entry page-d-accueil (
+        label: Page d'accueil
+        icon {
+            imageIconCssClasses: fa-home
+        }
+        layout {
+            sequence: 15
+        }
+        link {
+            target: {
+                page: 1
+                action: resetPagination
+            }
+        }
+    )
+
+    entry planning (
+        label: Planning
+        icon {
+            imageIconCssClasses: fa-combo-chart
+        }
+        layout {
+            sequence: 70
+        }
+        security {
+            authorizationScheme: @droits-de-contribution
+        }
+    )
+
+    entry recherche-appel-d-offfres (
+        label: Recherche - APPEL D’OFFFRES
+        icon {
+            imageIconCssClasses: fa-table-search
+        }
+        layout {
+            sequence: 140
+            parentEntry: @dossiers-d-achats
+        }
+        link {
+            target: {
+                page: 3
+            }
+        }
+        security {
+            authorizationScheme: @droits-de-contribution
+        }
+    )
+
+    entry suivi-des-contrats (
+        label: suivi des contrats
+        icon {
+            imageIconCssClasses: fa-table-pointer
+        }
+        layout {
+            sequence: 43
+            parentEntry: @contrats
+        }
+        isCurrent {
+            type: pages
+            pages: 30
+        }
+        link {
+            target: {
+                page: 30
+            }
+        }
+        security {
+            authorizationScheme: @droits-de-contribution
+        }
+    )
+
+    entry suivi-modification (
+        label: suivi modification
+        icon {
+            imageIconCssClasses: fa-table-search
+        }
+        layout {
+            sequence: 200
+            parentEntry: @modification
+        }
+        isCurrent {
+            type: pages
+            pages: 7
+        }
+        link {
+            target: {
+                page: 7
+            }
+        }
+        security {
+            authorizationScheme: @droits-d-administration
+        }
+    )
+
+    entry tableau-de-bord-des-dossiers (
+        label: Tableau de bord des Dossiers
+        icon {
+            imageIconCssClasses: fa-analytics
+        }
+        layout {
+            sequence: 10
+        }
+        isCurrent {
+            type: pages
+            pages: 44
+        }
+        link {
+            target: {
+                page: 44
+            }
+        }
+    )
+
+    entry test-install (
+        label: test install
+        icon {
+            imageIconCssClasses: fa-file-o
+        }
+        layout {
+            sequence: 80
+        }
+        isCurrent {
+            type: pages
+            pages: 38
+        }
+        link {
+            target: {
+                page: 38
+            }
+        }
+        security {
+            authorizationScheme: @droits-d-administration
+        }
+    )
+
+    entry testee (
+        label: testee
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 110
+        }
+        isCurrent {
+            type: pages
+            pages: 22
+        }
+        link {
+            target: {
+                page: 22
+            }
+        }
+        security {
+            authorizationScheme: @droits-d-administration
+        }
+    )
+
+    entry état-avancement (
+        label: état avancement
+        icon {
+            imageIconCssClasses: fa-briefcase
+        }
+        layout {
+            sequence: 150
+            parentEntry: @dossiers-d-achats
+        }
+        isCurrent {
+            type: pages
+            pages: 25
+        }
+        link {
+            target: {
+                page: 25
+            }
+        }
+        security {
+            authorizationScheme: @droits-de-contribution
+        }
+    )
+
+    entry جدول-الاشغال (
+        label: جدول الاشغال
+        icon {
+            imageIconCssClasses: fa-table-pointer
+        }
+        layout {
+            sequence: 230
+            parentEntry: @planning
+        }
+        isCurrent {
+            type: pages
+            pages: 34
+        }
+        link {
+            target: {
+                page: 34
+            }
+        }
+    )
+
+    entry قائمة-الصفقات-المبرمجة (
+        label: قائمة الصفقات المبرمجة
+        icon {
+            imageIconCssClasses: fa-table-search
+        }
+        layout {
+            sequence: 220
+            parentEntry: @planning
+        }
+        isCurrent {
+            type: pages
+            pages: 41
+        }
+        link {
+            target: {
+                page: 41
+            }
+        }
+        security {
+            authorizationScheme: @droits-de-contribution
+        }
+    )
+
+    entry متابع-التغيرات (
+        label: متابع التغيرات
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 190
+            parentEntry: @modification
+        }
+        isCurrent {
+            type: pages
+            pages: 26
+        }
+        link {
+            target: {
+                page: 26
+            }
+        }
+        security {
+            authorizationScheme: @droits-d-administration
+        }
+    )
+
+    entry متابعة-تقدم-الملفات (
+        label: متابعة تقدم الملفات
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 160
+            parentEntry: @dossiers-d-achats
+        }
+        isCurrent {
+            type: pages
+            pages: 21
+        }
+        link {
+            target: {
+                page: 21
+            }
+        }
+        security {
+            authorizationScheme: @droits-d-administration
+        }
+    )
+
+    entry متابعة-جميع-الملفات (
+        label: متابعة جميع الملفات
+        icon {
+            imageIconCssClasses: fa-files-o
+        }
+        layout {
+            sequence: 210
+            parentEntry: @planning
+        }
+        isCurrent {
+            type: pages
+            pages: 19
+        }
+        link {
+            target: {
+                page: 19
+            }
+        }
+        security {
+            authorizationScheme: @droits-de-contribution
+        }
+    )
+
+)
+
+list navigation-de-page (
+    name: Navigation de page
+
+    entry calendrier (
+        label: Calendrier
+        icon {
+            imageIconCssClasses: fa-calendar-o
+        }
+        layout {
+            sequence: 40
+        }
+        link {
+            target: {
+                page: 5
+            }
+        }
+    )
+
+    entry créer-un-nouveau-appel-d-offres (
+        label: Créer un Nouveau Appel d'Offres
+        icon {
+            imageIconCssClasses: fa-folder-plus
+        }
+        layout {
+            sequence: 50
+        }
+        link {
+            target: {
+                page: 6
+            }
+        }
+        security {
+            authorizationScheme: @droits-de-contribution
+        }
+    )
+
+    entry etat-appels-d-offres-en-cours (
+        label: Etat - Appels D’Offres En Cours
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 2
+            }
+        }
+    )
+
+    entry recherche-appel-d-offfres (
+        label: Recherche - APPEL D’OFFFRES
+        icon {
+            imageIconCssClasses: fa-table-search
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 3
+            }
+        }
+    )
+
+)
+
+list user-settings (
+    name: User Settings
+    config {
+        buildOption: @feature-user-settings
+    }
+
+    entry push-notifications (
+        label: Push Notifications
+        icon {
+            imageIconCssClasses: fa-bell-o
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 20010
+            }
+        }
+        userDefinedAttributes {
+            1: Configure whether you want to receive push notifications on this device.
+            2: <span class="a-pwaPush--state"></span>
+        }
+        config {
+            buildOption: @feature-push-notifications
+        }
+    )
+
+)
+

@@ -1,0 +1,364 @@
+page 10010 (
+    name: Options de configuration
+    alias: OPTIONS-DE-CONFIGURATION
+    title: Options de configuration
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authorizationScheme: @droits-d-administration
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>Les paramètres de configuration vous permettent de rendre des fonctionnalités spécifiques disponibles (activées) ou indisponibles (désactivées) pour les utilisateurs finals.</p>
+            <p>Si une fonction spécifique n'est pas intégralement prête ou nécessite d'être enlevée temporairement, cliquez sur <strong>Désactivé</strong>.
+            Une fois qu'elle doit être rendue disponible, cliquez simplement sur <strong>Activé</strong>.</p>
+            <p><em><strong>Remarque :</strong> les modifications apportées ici ne seront pas reflétées pour les utilisateurs finals individuels qui exécutent actuellement l'application. Lorsque l'utilisateur final se déconnecte, puis se reconnecte, le paramètre révisé de la fonction sera appelé.</em></p>
+            ```
+    }
+    config {
+        buildOption: @fonctionnalité-options-de-configuration
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region options-de-configuration (
+        name: Options de configuration
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select 
+                    build_option_id     ID, 
+                    build_option_name   application_option,
+                    apex_item.hidden(1, build_option_id) ||
+                    apex_item.hidden(2, build_option_status) ||
+                    apex_item.switch ( 
+                         p_idx        => 3,
+                         p_value      => build_option_status,
+                         p_on_value   => 'Include',
+                         p_on_label   => m.enabled,
+                         p_off_value  => 'Exclude',
+                         p_off_label  => m.disabled,
+                         p_item_id    => 'BO_OPT_' || rownum,
+                         p_item_label => ( case when build_option_status = 'Include' then
+                                               apex_lang.message( 'APEX.FEATURE.CONFIG.IS_ENABLED', apex_escape.html(build_option_name) )
+                                           when build_option_status = 'Exclude' then
+                                               apex_lang.message( 'APEX.FEATURE.CONFIG.IS_DISABLED', apex_escape.html(build_option_name) )
+                                           end ),
+                         p_attributes => 'style="white-space:pre;"') "STATUS",
+                    component_comment   description,
+                    last_updated_on        updated,
+                    lower(last_updated_by) updated_by,
+                    build_option_status current_status
+                  from apex_application_build_options,
+                  (select apex_lang.message('APEX.FEATURE.CONFIG.ENABLED') enabled, apex_lang.message('APEX.FEATURE.CONFIG.DISABLED') disabled from dual) m
+                 where application_id = :APP_ID 
+                 and feature_identifier not in ( 'APPLICATION_ACCESS_CONTROL', 'APPLICATION_CONFIGURATION')
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: Aucune donnée n'a été trouvée.
+            whenMoreDataFound: Le nombre maximal de lignes pour cet état est de #MAX_ROW_COUNT# lignes. Appliquez un filtre pour réduire le nombre d'enregistrements dans votre requête.
+        }
+        searchBar {
+            rowsPerPageSelector: true
+        }
+        actionsMenu {
+            rowsPerPage: false
+            savePublicReport: true
+        }
+        advanced {
+            savedReportMappingIdentifier: 48201910798579053312
+        }
+
+        column APPLICATION_OPTION (
+            type: plainText
+            heading {
+                heading: Fonctionnalité
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column CURRENT_STATUS (
+            type: plainText
+            heading {
+                heading: Statut en cours
+            }
+            layout {
+                sequence: 7
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column DESCRIPTION (
+            type: plainText
+            heading {
+                heading: Description
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 1
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column STATUS (
+            type: plainText
+            heading {
+                heading: Statut
+            }
+            layout {
+                sequence: 3
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: C
+            }
+            security {
+                escapeSpecialChars: false
+            }
+        )
+
+        column UPDATED (
+            type: plainText
+            heading {
+                heading: Mis à jour
+            }
+            layout {
+                sequence: 5
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column UPDATED_BY (
+            type: plainText
+            heading {
+                heading: Mis à jour par
+            }
+            layout {
+                sequence: 6
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Options de configuration
+        }
+
+        savedReport 482019164 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn APPLICATION_OPTION (
+                sequence: 1
+            )
+
+            displayColumn DESCRIPTION (
+                sequence: 3
+            )
+
+            displayColumn STATUS (
+                sequence: 2
+            )
+
+            displayColumn UPDATED (
+                sequence: 4
+            )
+
+            displayColumn UPDATED_BY (
+                sequence: 5
+            )
+
+        )
+
+    )
+
+    button apply-changes (
+        buttonName: APPLY_CHANGES
+        label: Appliquer les modifications
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Réinitialiser
+        layout {
+            sequence: 20
+            region: @options-de-configuration
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: t-Button--iconLeft
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    process mettre-à-jour (
+        name: Mettre à jour
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                for i in 1..apex_application.g_f01.count loop
+                    for c1 in ( select application_id, build_option_name, build_option_status
+                                from apex_application_build_options
+                                where apex_application.g_f01(i) = build_option_id
+                                   and application_Id = :APP_ID) loop
+                        if c1.build_option_status != apex_application.g_f03(i) then
+                            apex_util.set_build_option_status(  p_application_id => :APP_ID,
+                                                                p_id => apex_application.g_f01(i),
+                                                                p_build_status => upper(apex_application.g_f03(i)) );
+                        end if;
+                    end loop;
+                end loop;
+                ```
+        }
+        execution {
+            sequence: 10
+        }
+        successMessage {
+            successMessage: "Options de configuration mises à jour. "
+        }
+        advanced {
+            executionMappingIdentifier: 61391560485391275286
+        }
+    )
+
+    branch (
+        name: Branchement sur la page d'administration
+        execution {
+            sequence: 10
+        }
+        behavior {
+            target: {
+                page: 10000
+            }
+        }
+    )
+
+)
+

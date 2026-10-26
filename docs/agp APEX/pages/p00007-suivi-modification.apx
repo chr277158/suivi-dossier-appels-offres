@@ -1,0 +1,218 @@
+page 7 (
+    name: suivi modification
+    alias: SUIVI-MODIFICATION
+    title: suivi modification
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        authorizationScheme: @droits-d-administration
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region chemin-de-navigation (
+        name: Chemin de navigation
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region rechercher (
+        name: Rechercher
+        type: smartFilters
+        source {
+            filteredRegion: @résultats-de-la-recherche
+        }
+        layout {
+            sequence: 10
+            parentRegion: @chemin-de-navigation
+            slot: searchFieldAndSmartFilters
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            compactNosThreshold: 10000
+        }
+
+        filter P7_SEARCH (
+            type: search
+            label {
+                label: Rechercher
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dbColumns: ID_OBJET,MODIFIER_PAR,REF_AO,DATE_CRÉATION
+            }
+        )
+
+    )
+
+    region résultats-de-la-recherche (
+        name: Résultats de la recherche
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: MODIFICATION
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Region--scrollBody
+            ]
+        }
+        reportLayout {
+            numberOfRows: 50
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--staticRowColors
+                t-Report--rowHighlight
+                t-Report--inline
+                t-Report--hideNoPagination
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+        performance {
+            maxRowsToProcess: 100000
+        }
+        messages {
+            whenNoDataFound: aucune donnée n'a été trouvée
+        }
+
+        column CREER_PAR (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Creer Par
+                alignment: center
+            }
+            layout {
+                sequence: 72
+            }
+        )
+
+        column DATE_CRÉATION (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Date Création
+                alignment: center
+            }
+            layout {
+                sequence: 82
+            }
+        )
+
+        column DATE_MODIF (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Date Modif
+                alignment: center
+            }
+            layout {
+                sequence: 42
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: DD-MON-YYYY HH24:MI
+            }
+        )
+
+        column ID (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 62
+            }
+        )
+
+        column ID_MODIF (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Id Modif
+                alignment: end
+            }
+            layout {
+                sequence: 1
+                columnAlignment: end
+            }
+        )
+
+        column ID_OBJET (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Id Objet
+            }
+            layout {
+                sequence: 2
+            }
+        )
+
+        column MODIFIER_PAR (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Modifier Par
+            }
+            layout {
+                sequence: 32
+            }
+        )
+
+        column REF_AO (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Ref AO
+                alignment: center
+            }
+            layout {
+                sequence: 12
+            }
+        )
+
+    )
+
+)
+

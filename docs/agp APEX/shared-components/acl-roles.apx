@@ -1,0 +1,21 @@
+role ADMINISTRATOR (
+    name: Administrateur
+    description {
+        description: Rôle affecté aux administrateurs d'application.
+    }
+)
+
+role CONTRIBUTOR (
+    name: Contributeur
+    description {
+        description: Rôle affecté aux contributeurs d'application.
+    }
+)
+
+role READER (
+    name: Lecteur
+    description {
+        description: Rôle affecté aux lecteurs d'application.
+    }
+)
+

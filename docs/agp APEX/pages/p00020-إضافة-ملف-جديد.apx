@@ -1,0 +1,976 @@
+page 20 (
+    name: إضافة ملف جديد
+    alias: إضافة-ملف-جديد
+    title: إضافة ملف جديد
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        fileUrls: #APP_FILES#jquery.maskedinput.min.js
+        executeWhenPageLoads:
+            ```javascript-browser
+            $("#P20_NB").mask("A*.##.#.####");
+            //$("#P4_BUDGET").mask("## ###.###,###")
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 30
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region تحيين-المعطيات (
+        name: " تحيين المعطيات"
+        title: " "
+        type: form
+        source {
+            location: localDatabase
+            tableName: SP
+        }
+        layout {
+            sequence: 20
+            slot: contentBody
+            startNewRow: false
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    pageItem P20_EXP__INV (
+        type: selectList
+        label {
+            label: Exp  Inv
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:EXP;EXP,INV;INV
+            displayNullValue: false
+        }
+        layout {
+            sequence: 60
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            columnSpan: 2
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: EXP__INV
+            dataType: varchar2
+        }
+    )
+
+    pageItem P20_ID (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @تحيين-المعطيات
+            slot: regionBody
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: ID
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P20_NB (
+        type: textField
+        label {
+            label: "عدد الصفقة "
+            alignment: left
+        }
+        settings {
+            textCase: upper
+        }
+        layout {
+            sequence: 10
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            column: 1
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            formatMask: A#.##.####
+            width: 32
+        }
+        validation {
+            maxLength: 50
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: عدد
+            dataType: varchar2
+        }
+        help {
+            helpText: format par défaut est AX.XX.x.XXXX ou  X:est un chiffre
+        }
+    )
+
+    pageItem P20_التاريخ__للإعلان_عن_المنافسة (
+        type: datePicker
+        label {
+            label: التاريخ  للإعلان عن المنافسة
+            alignment: left
+        }
+        layout {
+            sequence: 190
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 6
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: التاريخ__للإعلان_عن_المنافسة
+            dataType: date
+        }
+    )
+
+    pageItem P20_الكلفة_التقديرية__MDT_ (
+        type: numberField
+        label {
+            label: "الكلفة التقديرية  Mdt "
+            alignment: left
+        }
+        layout {
+            sequence: 80
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 3
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: الكلفة_التقديرية__MDT_
+            dataType: number
+        }
+    )
+
+    pageItem P20_اللجنة_المختصة (
+        type: selectList
+        label {
+            label: اللجنة المختصة
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:CRA;CRA,CAE;CAE,CME;CME
+        }
+        layout {
+            sequence: 100
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            columnSpan: 3
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: اللجنة_المختصة
+            dataType: varchar2
+        }
+    )
+
+    pageItem P20_المكلف_بالملف (
+        type: selectOne
+        label {
+            label: المكلف بالملف
+            alignment: left
+        }
+        settings {
+            infiniteScroll: false
+        }
+        lov {
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select T_USER.NOM as NOM,
+                T_USER.NOM as N
+                 from T_USER 
+                 where T_USER.GROUPE = 'user'
+                ```
+        }
+        layout {
+            sequence: 290
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            column: 5
+            columnSpan: 4
+            columnAttributes: "background-color":"rgb37
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: المكلف_بالملف
+            dataType: varchar2
+        }
+    )
+
+    pageItem P20_تاريخ__لجنة_الصفقات (
+        type: datePicker
+        label {
+            label: تاريخ  لجنة الصفقات
+            alignment: left
+        }
+        layout {
+            sequence: 240
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ__لجنة_الصفقات
+            dataType: date
+        }
+    )
+
+    pageItem P20_تاريخ_ارجاع_الضمانات_الوقتية (
+        type: datePicker
+        label {
+            label: تاريخ ارجاع الضمانات الوقتية
+            alignment: left
+        }
+        layout {
+            sequence: 280
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ارجاع_الضمانات_الوقتية
+            dataType: varchar2
+        }
+    )
+
+    pageItem P20_تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر (
+        type: datePicker
+        label {
+            label: تاريخ ارجاع كراسات الشروط حسب المحضر
+            alignment: left
+        }
+        layout {
+            sequence: 170
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 6
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر
+            dataType: date
+        }
+    )
+
+    pageItem P20_تاريخ_ارسال_التقرير_للتقييم_الفني (
+        type: datePicker
+        label {
+            label: تاريخ ارسال التقرير للتقييم الفني
+            alignment: left
+        }
+        layout {
+            sequence: 210
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ارسال_التقرير_للتقييم_الفني
+            dataType: date
+        }
+    )
+
+    pageItem P20_تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم (
+        type: datePicker
+        label {
+            label: تاريخ ارسال مقترح تركيبة لجنة التقييم
+            alignment: left
+        }
+        layout {
+            sequence: 120
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم
+            dataType: date
+        }
+    )
+
+    pageItem P20_تاريخ_امضاء_تقرير_تقييم_العروض (
+        type: datePicker
+        label {
+            label: تاريخ امضاء تقرير تقييم العروض
+            alignment: left
+        }
+        layout {
+            sequence: 220
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_امضاء_تقرير_تقييم_العروض
+            dataType: date
+        }
+    )
+
+    pageItem P20_تاريخ_تبليغ_الصفقة (
+        type: datePicker
+        label {
+            label: تاريخ تبليغ الصفقة
+            alignment: left
+        }
+        layout {
+            sequence: 270
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_تبليغ_الصفقة
+            dataType: varchar2
+        }
+    )
+
+    pageItem P20_تاريخ_تقديم_الملف_للجنة_الشراءات (
+        type: datePicker
+        label {
+            label: تاريخ تقديم الملف للجنة الشراءات
+            alignment: left
+        }
+        layout {
+            sequence: 230
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_تقديم_الملف_للجنة_الشراءات
+            dataType: date
+        }
+    )
+
+    pageItem P20_تاريخ_تقديم_كراسات_الشروط_للمصادقة (
+        type: datePicker
+        label {
+            label: تاريخ تقديم كراسات الشروط للمصادقة
+            alignment: left
+        }
+        layout {
+            sequence: 140
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_تقديم_كراسات_الشروط_للمصادقة
+            dataType: date
+        }
+    )
+
+    pageItem P20_تاريخ_فتح_العروض (
+        type: datePicker
+        label {
+            label: تاريخ فتح العروض
+            alignment: left
+        }
+        layout {
+            sequence: 200
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_فتح_العروض
+            dataType: date
+        }
+    )
+
+    pageItem P20_تاريخ_قرار__لجنة_الصفقات (
+        type: datePicker
+        label {
+            label: تاريخ قرار  لجنة الصفقات
+            alignment: left
+        }
+        layout {
+            sequence: 250
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_قرار__لجنة_الصفقات
+            dataType: varchar2
+        }
+    )
+
+    pageItem P20_تاريخ_مصادقة_اللجنة_على_كراسات_الشروط (
+        type: datePicker
+        label {
+            label: تاريخ مصادقة اللجنة على كراسات الشروط
+            alignment: left
+        }
+        layout {
+            sequence: 150
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_مصادقة_اللجنة_على_كراسات_الشروط
+            dataType: date
+        }
+    )
+
+    pageItem P20_تاريخ_نشر_نتائج_المنافسة (
+        type: datePicker
+        label {
+            label: تاريخ نشر نتائج المنافسة
+            alignment: left
+        }
+        layout {
+            sequence: 260
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_نشر_نتائج_المنافسة
+            dataType: varchar2
+        }
+    )
+
+    pageItem P20_تاريخ_ورود_CPT_ممضاة (
+        type: datePicker
+        label {
+            label: تاريخ ورود Cpt ممضاة
+            alignment: left
+        }
+        layout {
+            sequence: 110
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ورود_CPT_ممضاة
+            dataType: date
+        }
+    )
+
+    pageItem P20_تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم (
+        type: datePicker
+        label {
+            label: تاريخ ورود تعيين تركيبة لجنة التقييم
+            alignment: left
+        }
+        layout {
+            sequence: 130
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم
+            dataType: date
+        }
+    )
+
+    pageItem P20_تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط (
+        type: datePicker
+        label {
+            label: تاريخ ورود محضر مصادقة اللجنة على كراسات الشروط
+            alignment: left
+        }
+        layout {
+            sequence: 160
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            columnSpan: 6
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط
+            dataType: date
+        }
+    )
+
+    pageItem P20_تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2 (
+        type: datePicker
+        label {
+            label: تاريخ ورود محضر مصادقة اللجنة على كراسات الشروط2
+            alignment: left
+        }
+        layout {
+            sequence: 180
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            columnSpan: 6
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2
+            dataType: date
+        }
+    )
+
+    pageItem P20_طريقة_ابرام_الصفقة (
+        type: selectList
+        label {
+            label: طريقة ابرام الصفقة
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:استشارة مفتوحة;استشارة مفتوحة,استشارة مضيقة;استشارة مضيقة,طلب عروض مفتوح;طلب عروض مفتوح,طلب عروض مفتوح/ بالتفاوض المباشر;طلب عروض مفتوح/ بالتفاوض المباشر
+        }
+        layout {
+            sequence: 70
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 3
+            columnAttributes: 90
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: طريقة_ابرام_الصفقة
+            dataType: varchar2
+        }
+    )
+
+    pageItem P20_موضوع_الصفقة (
+        type: textarea
+        label {
+            label: موضوع الصفقة
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+            height: 4
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: موضوع_الصفقة
+            dataType: varchar2
+        }
+    )
+
+    pageItem P20_نوعية_الطلب (
+        type: selectList
+        label {
+            label: نوعية الطلب
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:Service;Service,Display2;Etude
+        }
+        layout {
+            sequence: 90
+            region: @تحيين-المعطيات
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            columnSpan: 3
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @تحيين-المعطيات
+            column: نوعية_الطلب
+            dataType: varchar2
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Créer
+        layout {
+            sequence: 40
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+            icon: fa-lg fa-check-square
+        }
+        behavior {
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P20_ID
+        }
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 13500760742265889
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+    process fermer-la-boîte-de-dialogue (
+        name: Fermer la boîte de dialogue
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 70
+        }
+        advanced {
+            executionMappingIdentifier: 13510548637751028
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+    process initialize-form-تحيين-المعطيات (
+        name: Initialize form تحيين المعطيات
+        type: formInitialization
+        formRegion: @تحيين-المعطيات
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 13497897591265885
+        }
+    )
+
+    process process-form-تحيين-المعطيات (
+        name: Process form تحيين المعطيات
+        type: formAutoRowProcessing
+        formRegion: @تحيين-المعطيات
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 13498238882265887
+        }
+    )
+
+    process traiter-le-panneau (
+        name: Traiter le panneau
+        type: formAutoRowProcessing
+        execution {
+            sequence: 60
+        }
+        advanced {
+            executionMappingIdentifier: 13510260306747779
+        }
+    )
+
+)
+

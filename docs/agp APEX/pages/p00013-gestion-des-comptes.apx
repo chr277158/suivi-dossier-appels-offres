@@ -1,0 +1,210 @@
+page 13 (
+    name: Gestion des Comptes
+    alias: GESTION-DES-COMPTES
+    title: Gestion des Comptes
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region gestion-de-compte (
+        name: Gestion de Compte
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: T_USER
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+            ]
+        }
+        reportLayout {
+            numberOfRows: 50
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--staticRowColors
+                t-Report--rowHighlight
+                t-Report--inline
+                t-Report--hideNoPagination
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: aucune donnée n'a été trouvée
+        }
+
+        column FONCTION (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Fonction
+            }
+            layout {
+                sequence: 15
+            }
+        )
+
+        column GROUPE (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Groupe
+            }
+            layout {
+                sequence: 5
+            }
+            security {
+                authorizationScheme: @droits-d-administration
+            }
+        )
+
+        column ID_1 (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: link
+            heading {
+                alignment: center
+            }
+            layout {
+                sequence: 0
+                columnAlignment: center
+            }
+            link {
+                target: {
+                    page: 12
+                    items: {
+                        P12_ID_1: \#ID_1#\
+                    }
+                    action: resetPagination
+                }
+                linkText: <span aria-label="Modifier"><span class="fa fa-edit" aria-hidden="true" title="Modifier"></span></span>
+            }
+            sorting {
+                sortable: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column MATRICULE (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Matricule
+                alignment: end
+            }
+            layout {
+                sequence: 3
+                columnAlignment: end
+            }
+        )
+
+        column MDP (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Mdp
+            }
+            layout {
+                sequence: 4
+            }
+        )
+
+        column NOM (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Nom
+            }
+            layout {
+                sequence: 2
+            }
+        )
+
+        column TEL (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Tel
+            }
+            layout {
+                sequence: 25
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Créer
+        layout {
+            sequence: 10
+            region: @gestion-de-compte
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 12
+                clearCache: 12
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction modifier-un-état-boîte-de-dialogue-fermée (
+        name: Modifier un état - Boîte de dialogue fermée
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @gestion-de-compte
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @gestion-de-compte
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

@@ -1,0 +1,97 @@
+theme universal-theme (
+    name: Universal Theme
+    themeNumber: 42
+    baseTheme: ut-26.1
+    style {
+        currentThemeStyle: @/iris
+    }
+    javaScript {
+        fileUrls: [
+            #APEX_FILES#libraries/apex/#MIN_DIRECTORY#widget.stickyWidget#MIN#.js?v=#APEX_VERSION#
+            #THEME_FILES#js/theme42#MIN#.js?v=#APEX_VERSION#
+        ]
+    }
+    css {
+        fileUrls: #THEME_FILES#css/Core#MIN#.css?v=#APEX_VERSION#
+    }
+    componentDefaults {
+        page: @/standard
+        navigationBarList: @/navigation-bar
+        navigationMenuListPosition: side
+        navigationMenuListTop: @/top-navigation-menu
+        navigationMenuListSide: @/side-navigation-menu
+        loginPage: @/login
+        errorPage: @/login
+        printerFriendlyPage: @/standard
+        breadcrumb: @/breadcrumb
+        button: @/text
+        defaultLabel: @/optional-floating
+        optionalLabel: @/optional-floating
+        requiredLabel: @/required-floating
+        list: @/links-list
+        region: @/standard
+        classicReport: @/standard
+    }
+    regionDefaults {
+        breadcrumbs: @/title-bar
+        charts: @/standard
+        forms: @/standard
+        lists: @/standard
+        reports: @/standard
+        wizards: @/standard
+        interactiveReports: @/interactive-report
+    }
+    dialogDefaults {
+        dialogContentRegion: @/blank-with-attributes
+        dialogButtonRegion: @/buttons-container
+        dialogPage: @/modal-dialog
+    }
+    icons {
+        library: fontApex
+    }
+    advanced {
+        filePrefix: #APEX_FILES#themes/theme_42/26.1/
+        identifier: UNIVERSAL_THEME
+    }
+
+    style vita-copy (
+        name: Vita (copy_3)
+        themeRollerAttributes {
+            inputParameterFileUrls: #THEME_FILES#less/theme/Vita.less
+            outputCssFileUrl: #THEME_DB_FILES#19910155091278356.css
+            jsonConfig: "{\"classes\":[],\"vars\":{\"@g_Accent-OG\":\"#ccd0d9\",\"@irrBg\":\"#aebfd0\",\"@g_Region-BG\":\"#ffffff\",\"@g_Region-FG\":\"#262626\",\"@Nav-Exp\":\"250px\",\"@Actions-Exp\":\"210px\",\"@Side-Exp\":\"210px\",\"@Head-Height\":\"48px\",\"@g_Form-BorderRadius\":\"14px\",\"@g_Form-Item-BG\":\"#cac9c9\",\"@g_Form-Item-FG\":\"#000000\",\"@g_Button-BorderRadius\":\"20px\",\"@g_Nav-BG\":\"#545a5e\",\"@g_Nav-FG\":\"#ffffff\"},\"customCSS\":\"\",\"useCustomLess\":\"N\"}"
+        }
+        advanced {
+            endUserCanPick: true
+            accessibilityTested: true
+        }
+    )
+
+    style vita-copy-2 (
+        name: Vita (copy_2)
+        themeRollerAttributes {
+            inputParameterFileUrls: #THEME_FILES#less/theme/Vita.less
+            outputCssFileUrl: #THEME_DB_FILES#13336898900533079.css
+            jsonConfig: "{\"classes\":[],\"vars\":{\"@g_Container-BorderRadius\":\"6px\"},\"customCSS\":\"\",\"useCustomLess\":\"N\"}"
+        }
+        advanced {
+            endUserCanPick: true
+            accessibilityTested: true
+        }
+    )
+
+    style vita-copy-3 (
+        name: Vita (copy_1)
+        themeRollerAttributes {
+            inputParameterFileUrls: #THEME_FILES#less/theme/Vita.less
+            outputCssFileUrl: #THEME_DB_FILES#48359211659831803680.css
+            jsonConfig: "{\"classes\":[],\"vars\":{\"@g_Body-BG\":\"#e7dddd\",\"@g_Body-Text\":\"#000000\",\"@g_Region-Header-BG\":\"#de9898\",\"@g_Region-Header-FG\":\"#262626\"},\"customCSS\":\"\",\"useCustomLess\":\"N\"}"
+        }
+        advanced {
+            endUserCanPick: true
+            accessibilityTested: true
+        }
+    )
+
+)
+

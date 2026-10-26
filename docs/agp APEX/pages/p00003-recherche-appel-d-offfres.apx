@@ -1,0 +1,632 @@
+page 3 (
+    name: Recherche - DOSSIERS
+    alias: RECHERCHE-APPEL-D-OFFFRES
+    title: Recherche - DOSSIERS
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        authorizationScheme: @droits-de-lecteur
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region barre-de-boutons (
+        name: Barre de boutons
+        type: staticContent
+        source {
+            htmlCode: <div id="active_facets"></div>
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--noPadding
+                t-ButtonRegion--noUI
+            ]
+        }
+    )
+
+    region cc-sp-complet (
+        name: CC_SP_COMPLET
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: CC_SP_COMPLET
+        }
+        layout {
+            sequence: 40
+            slot: body
+            columnCssClasses: myClass
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        advanced {
+            htmlDomId: CC
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+
+        column BUDGET (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Budget
+                alignment: center
+            }
+            layout {
+                sequence: 70
+                columnAlignment: center
+            }
+        )
+
+        column DATE_CRÉATION (
+            reportColumnQueryId: 11
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 120
+            }
+        )
+
+        column DATE_DE_LANC (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 110
+            }
+        )
+
+        column DATE_LIMITE_PROPOSÉE (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 100
+            }
+        )
+
+        column DÉTAIL_DE_RÉPONSE (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Détail De Réponse
+                alignment: center
+            }
+            layout {
+                sequence: 80
+                columnAlignment: center
+            }
+        )
+
+        column ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 10
+            }
+        )
+
+        column ID_C (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 30
+            }
+        )
+
+        column ID_CC (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            type: link
+            heading {
+                heading: Id Cc
+                alignment: center
+            }
+            layout {
+                sequence: 20
+                columnAlignment: center
+            }
+            link {
+                target: {
+                    page: 10
+                    items: {
+                        P10_ID: #ID_CC#
+                        P10_REF: #REF_AO#
+                    }
+                }
+                linkText: <span aria-hidden="true" class="fa fa-list &P3_ANIM. fam-information fam-is-success fa-lg"></span>
+            }
+        )
+
+        column ID_S (
+            reportColumnQueryId: 12
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 230
+            }
+        )
+
+        column NATURE_DE_DEPENSE (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Nature De Depense
+                alignment: center
+            }
+            layout {
+                sequence: 90
+                columnAlignment: center
+            }
+        )
+
+        column OBJET_CCT (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Objet Cahier des Charges
+                alignment: center
+            }
+            layout {
+                sequence: 50
+            }
+        )
+
+        column P (
+            reportColumnQueryId: 17
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 280
+            }
+        )
+
+        column REF_AO (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Ref Ao
+                alignment: center
+            }
+            layout {
+                sequence: 40
+                columnAlignment: center
+            }
+        )
+
+        column VID (
+            reportColumnQueryId: 20
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 310
+            }
+        )
+
+        column VID1 (
+            reportColumnQueryId: 18
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 290
+            }
+        )
+
+        column VID2 (
+            reportColumnQueryId: 19
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 300
+            }
+        )
+
+        column linkh (
+            reportColumnQueryId: 38
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 490
+            }
+        )
+
+        column التاريخ__للإعلان_عن_المنافسة (
+            reportColumnQueryId: 29
+            derivedColumn: N
+            heading {
+                heading: التاريخ للإعلان عن المنافسة
+                alignment: center
+            }
+            layout {
+                sequence: 400
+                columnAlignment: center
+            }
+        )
+
+        column اللجنة_المختصة (
+            reportColumnQueryId: 16
+            derivedColumn: N
+            heading {
+                heading: اللجنة المختصة
+                alignment: center
+            }
+            layout {
+                sequence: 270
+                columnAlignment: center
+            }
+        )
+
+        column المكلف_بالملف (
+            reportColumnQueryId: 39
+            derivedColumn: N
+            heading {
+                heading: المكلف بالملف
+                alignment: center
+            }
+            layout {
+                sequence: 500
+            }
+        )
+
+        column تاريخ__لجنة_الصفقات (
+            reportColumnQueryId: 33
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 440
+            }
+        )
+
+        column تاريخ_ارجاع_الضمانات_الوقتية (
+            reportColumnQueryId: 37
+            derivedColumn: N
+            heading {
+                heading: تاريخ ارجاع الضمانات الوقتية
+                alignment: center
+            }
+            layout {
+                sequence: 480
+                columnAlignment: center
+            }
+        )
+
+        column تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر (
+            reportColumnQueryId: 27
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 380
+            }
+        )
+
+        column تاريخ_ارسال_التقرير_للتقييم_الفني (
+            reportColumnQueryId: 30
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 410
+            }
+        )
+
+        column تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم (
+            reportColumnQueryId: 22
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 330
+            }
+        )
+
+        column تاريخ_امضاء_تقرير_تقييم_العروض (
+            reportColumnQueryId: 31
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 420
+            }
+        )
+
+        column تاريخ_تبليغ_الصفقة (
+            reportColumnQueryId: 36
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 470
+            }
+        )
+
+        column تاريخ_تقديم_الملف_للجنة_الشراءات (
+            reportColumnQueryId: 32
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 430
+            }
+        )
+
+        column تاريخ_تقديم_كراسات_الشروط_للمصادقة (
+            reportColumnQueryId: 24
+            derivedColumn: N
+            heading {
+                heading: تاريخ تقديم كراسات الشروط للمصادقة
+                alignment: center
+            }
+            layout {
+                sequence: 350
+                columnAlignment: center
+            }
+        )
+
+        column تاريخ_قرار__لجنة_الصفقات (
+            reportColumnQueryId: 34
+            derivedColumn: N
+            heading {
+                heading: تاريخ قرار لجنة الصفقات
+                alignment: center
+            }
+            layout {
+                sequence: 450
+                columnAlignment: center
+            }
+        )
+
+        column تاريخ_مصادقة_اللجنة_على_كراسات_الشروط (
+            reportColumnQueryId: 25
+            derivedColumn: N
+            heading {
+                heading: تاريخ مصادقة اللجنة على كراسات الشروط
+                alignment: center
+            }
+            layout {
+                sequence: 360
+                columnAlignment: center
+            }
+        )
+
+        column تاريخ_نشر_نتائج_المنافسة (
+            reportColumnQueryId: 35
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 460
+            }
+        )
+
+        column تاريخ_ورود_CPT_ممضاة (
+            reportColumnQueryId: 21
+            derivedColumn: N
+            heading {
+                heading: تاريخ ورود Cpt ممضاة
+                alignment: center
+            }
+            layout {
+                sequence: 320
+                columnAlignment: center
+            }
+        )
+
+        column تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم (
+            reportColumnQueryId: 23
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 340
+            }
+        )
+
+        column تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط (
+            reportColumnQueryId: 26
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 370
+            }
+        )
+
+        column تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2 (
+            reportColumnQueryId: 28
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 390
+            }
+        )
+
+        column طريقة_ابرام_الصفقة (
+            reportColumnQueryId: 14
+            derivedColumn: N
+            heading {
+                heading: طريقة ابرام الصفقة
+                alignment: center
+            }
+            layout {
+                sequence: 250
+                columnAlignment: center
+            }
+        )
+
+        column عدد (
+            reportColumnQueryId: 13
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 240
+            }
+        )
+
+        column نوعية_الطلب (
+            reportColumnQueryId: 15
+            derivedColumn: N
+            heading {
+                heading: نوعية الطلب
+                alignment: center
+            }
+            layout {
+                sequence: 260
+                columnAlignment: center
+            }
+        )
+
+    )
+
+    region chemin-de-navigation (
+        name: Chemin de navigation
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 20
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region rechercher (
+        name: Rechercher
+        type: facetedSearch
+        source {
+            filteredRegion: @cc-sp-complet
+        }
+        layout {
+            sequence: 10
+            slot: fullWidthContent
+            column: 1
+            columnSpan: 3
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                js-showMaximizeButton
+                t-Region--showIcon
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Region--scrollBody
+            ]
+        }
+        settings {
+            compactNosThreshold: 10000
+            showCurrentFacets: selector
+            currentFacetsSelector: #active_facets
+            showTotalRowCount: true
+            displayChartForTopNValues: 10
+        }
+
+        facet P3_SEARCH (
+            type: search
+            label {
+                label: Rechercher
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dbColumns: REF_AO,OBJET_CCT,APPROBATION,BUDGET,DÉTAIL_DE_RÉPONSE,NATURE_DE_DEPENSE,PV_CCT
+            }
+        )
+
+    )
+
+    pageItem P3_ANIM (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @cc-sp-complet
+            slot: regionBody
+        }
+    )
+
+    button reset (
+        buttonName: RESET
+        label: Réinitialiser
+        layout {
+            sequence: 10
+            region: @barre-de-boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--noUI
+                t-Button--iconLeft
+            ]
+            icon: fa-undo
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 3
+                clearCache: 3
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction new (
+        name: New
+        execution {
+            sequence: 10
+        }
+        when {
+            event: focusin
+            selectionType: region
+            region: @barre-de-boutons
+        }
+
+        action native-set-value (
+            action: setValue
+            settings {
+                value: fa-anim-spin-step
+            }
+            affectedElements {
+                selectionType: items
+                items: P3_ANIM
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+)
+

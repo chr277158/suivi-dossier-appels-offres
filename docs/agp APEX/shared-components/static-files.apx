@@ -1,0 +1,130 @@
+file "APEX$DATA$PKG/AUDIT_LOG$942677.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/CC$928211.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/CONTRATS$317056.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/DEMANDE_CLARIFICATION$37218.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/FICHIER_LNCEMENT$756630.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/HEUR_SPP$308379.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/HTMLDB_PLAN_TABLE$923485.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/MEMBRE$860256.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/NOTE_COMMISSION$414655.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/PREVIS_ANNUEL$953021.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/REMARQUE$395.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/SOLDE_CONGE$378320.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/SP$824909.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/SUIVI$801419.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/SUIVI_MODIF$744806.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/T_CONGE$51681.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/T_USER$910132.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "APEX$DATA$PKG/USER_NOTES$655469.zip" (
+    mimeType: application/x-zip
+    charSet: utf-8
+)
+
+file "icons/app-icon-144-rounded.png" (
+    mimeType: image/png
+    charSet: utf-8
+)
+
+file "icons/app-icon-192.png" (
+    mimeType: image/png
+    charSet: utf-8
+)
+
+file "icons/app-icon-256-rounded.png" (
+    mimeType: image/png
+    charSet: utf-8
+)
+
+file "icons/app-icon-32.png" (
+    mimeType: image/png
+    charSet: utf-8
+)
+
+file "icons/app-icon-512.png" (
+    mimeType: image/png
+    charSet: utf-8
+)
+
+file jquery.maskedinput.min.js (
+    mimeType: text/javascript
+    charSet: utf-8
+)
+
+file "logo/chiraz-designstyle-diesel-l.png" (
+    mimeType: image/png
+    charSet: utf-8
+)
+
+file "pwa/shortcut-icon-10.png" (
+    mimeType: image/png
+    charSet: utf-8
+)
+

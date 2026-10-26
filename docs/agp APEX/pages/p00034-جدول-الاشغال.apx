@@ -1,0 +1,1393 @@
+page 34 (
+    name: جدول الاشغال
+    alias: جدول-الاشغال
+    title: جدول الاشغال
+    appearance {
+        pageTemplate: @/right-side-column
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    css {
+        inline:
+            ```css
+            /* 1) Donne une hauteur plus grande à la zone header (optionnel) */
+            .myClass .a-GV-header{
+              height: 60px;         /* Ajuste selon ton besoin */
+              line-height: 50px;     /* Optionnel: vertical align/centrage */
+              padding: 5px;
+              white-space: normal;   /* Autorise le retour à la ligne */
+              overflow-wrap: break-word;
+              word-wrap: break-word;
+            }
+            
+            /* 2) Force le texte du libellé à se wrapper */
+            .myClass .a-GV-header .a-GV-headerLabel{
+              white-space: normal;
+              overflow-wrap: break-word;
+              word-wrap: break-word;
+              height: auto;
+              line-height: 1.2;      /* Plus naturel pour du multi-ligne */
+              padding: 5px;
+            }
+            .a-GV-header{ 
+                pointer-events: none;
+            }
+            $("#P6_REF_AO").mask("A*.##.#.####");
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region enregistrements-maître (
+        name: Enregistrements maître
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select DISTINCT
+                    "ANNEE",
+                    null LINK_CLASS,
+                    apex_page.get_url(p_items => 'P34_ANNEE', p_values => "ANNEE") LINK,
+                    null ICON_CLASS,
+                    null LINK_ATTR,
+                    null ICON_COLOR_CLASS,
+                    case when coalesce(:P34_ANNEE,'0') = "ANNEE"
+                      then 'is-active' 
+                      else ' '
+                    end LIST_CLASS,
+                    "ANNEE" LIST_TITLE, -- Puisque c'est groupé, on affiche juste l'année
+                    null LIST_TEXT,     -- On met NULL ici car on ne peut pas afficher un texte spécifique si plusieurs lignes sont combinées
+                    null LIST_BADGE
+                from "SUIVI" x
+                where (
+                        upper(x."ANNEE") like '%'||upper(:P34_SEARCH)||'%'
+                        
+                      )
+                order by "ANNEE"
+                ```
+            pageItemsToSubmit: :P34_SEARCH
+        }
+        layout {
+            sequence: 20
+            slot: rightColumn
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+            cssClasses: search-results
+        }
+        reportLayout {
+            numberOfRows: 1000
+        }
+        componentAppearance {
+            template: @/media-list
+            templateOptions: [
+                t-MediaList--showDesc
+                t-MediaList--stack
+            ]
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: <div class="u-tC">Aucune donnée n'a été trouvée.</div>
+        }
+
+        column ANNEE (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Annee
+            }
+            layout {
+                sequence: 20
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ICON_CLASS (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: ICON_CLASS
+                alignment: center
+            }
+            layout {
+                sequence: 4
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ICON_COLOR_CLASS (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: ICON_COLOR_CLASS
+                alignment: center
+            }
+            layout {
+                sequence: 6
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LINK (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: LINK
+                alignment: center
+            }
+            layout {
+                sequence: 3
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LINK_ATTR (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: LINK_ATTR
+                alignment: center
+            }
+            layout {
+                sequence: 5
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LINK_CLASS (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: LINK_CLASS
+                alignment: center
+            }
+            layout {
+                sequence: 2
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_BADGE (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: LIST_BADGE
+                alignment: center
+            }
+            layout {
+                sequence: 10
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_CLASS (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: LIST_CLASS
+                alignment: center
+            }
+            layout {
+                sequence: 7
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_TEXT (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: LIST_TEXT
+                alignment: center
+            }
+            layout {
+                sequence: 9
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_TITLE (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: LIST_TITLE
+                alignment: center
+            }
+            layout {
+                sequence: 8
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region rechercher (
+        name: Rechercher
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: rightColumn
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+            cssClasses: [
+                search-region
+                padding-md
+            ]
+        }
+    )
+
+    region جدول-الاشغال (
+        name: جدول الاشغال
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                SELECT s.ID,
+                       s."الكلفة_التقديرية",
+                       s."نوعية_الطلب",
+                       s."اللجنة_المختصة",
+                       s."الاجراءات",
+                       s."طريقة_ابرام_الصفقة",
+                       s."آجال_الانجاز",
+                       s."المكلف_بالملف",
+                       s."رقم_الاستشارة",
+                       s."تاريخ_بداية_معالجة_الملف_الجديد",
+                       CASE 
+                         WHEN c.REF_AO IS NOT NULL  THEN 'OK'
+                         WHEN  c.REF_AO IS  NULL  AND s."تاريخ_بداية_معالجة_الملف_الجديد" < SYSDATE THEN 'WAIT'
+                        
+                         ELSE 'KO'
+                       END AS ETAT,
+                       s."التاريخ_نهاية_العقد_الجاري",
+                       s."موضوع_الصفقة",
+                       s.ANNEE
+                FROM SUIVI s
+                LEFT JOIN CC c
+                       ON c.REF_AO = s."رقم_الاستشارة"
+                    WHERE s.ANNEE = :P34_ANNEE   ;
+                
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: body
+            columnCssClasses: myClass
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+            addRowIfEmpty: false
+        }
+        messages {
+            whenNoDataFound: الرجاء تحديد السنة لعرض المعطيات
+        }
+        toolbar {
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                resetButton
+                saveButton
+            ]
+            addButtonLabel: إضافة ملف جديد
+        }
+        enableUsersTo {
+            savePublicReport: true
+            savePublicReportAuthorization: @droits-de-contribution
+        }
+        download {
+            formats: [
+                csv
+                html
+                pdf
+                excel
+            ]
+        }
+        advanced {
+            savedReportMappingIdentifier: 20919554562709856
+        }
+
+        savedReport 209200 (
+            visibility: primary
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    frozen: true
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @ID
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @الكلفة_التقديرية
+                layout {
+                    width: 80.26599999999999
+                    sequence: 10
+                }
+            )
+
+            displayColumn (
+                column: @نوعية_الطلب
+                layout {
+                    width: 61.515600000000006
+                    sequence: 9
+                }
+            )
+
+            displayColumn (
+                column: @اللجنة_المختصة
+                layout {
+                    width: 71.438
+                    sequence: 8
+                }
+            )
+
+            displayColumn (
+                column: @الاجراءات
+                layout {
+                    width: 111.266
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @طريقة_ابرام_الصفقة
+                layout {
+                    width: 119.438
+                    sequence: 7
+                }
+            )
+
+            displayColumn (
+                column: @آجال_الانجاز
+                layout {
+                    width: 51.4375
+                    sequence: 11
+                }
+            )
+
+            displayColumn (
+                column: @المكلف_بالملف
+                layout {
+                    width: 102.516
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @رقم_الاستشارة
+                layout {
+                    width: 115.156
+                    sequence: 13
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_بداية_معالجة_الملف_الجديد
+                layout {
+                    width: 94.2656
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @التاريخ_نهاية_العقد_الجاري
+                layout {
+                    width: 84.25
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @موضوع_الصفقة
+                layout {
+                    width: 449.469
+                    sequence: 12
+                }
+            )
+
+            displayColumn (
+                column: @ETAT
+                layout {
+                    sequence: 14
+                }
+            )
+
+            displayColumn (
+                column: @GT
+                layout {
+                    width: 55.890600000000006
+                    sequence: 15
+                }
+            )
+
+            displayColumn (
+                column: @s
+                layout {
+                    sequence: 16
+                }
+            )
+
+            displayColumn (
+                column: @e
+                layout {
+                    sequence: 17
+                }
+            )
+
+            displayColumn (
+                column: @ANNEE
+                layout {
+                    width: 52.078
+                    sequence: 18
+                }
+            )
+
+        )
+
+        savedReport 211621 (
+            visibility: alternative
+            name: CHIRAZ
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+            security {
+                authorizationScheme: @droits-de-contribution
+            }
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    frozen: true
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @ID
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @الكلفة_التقديرية
+                layout {
+                    width: 67
+                    sequence: 10
+                }
+            )
+
+            displayColumn (
+                column: @نوعية_الطلب
+                layout {
+                    width: 56
+                    sequence: 9
+                }
+            )
+
+            displayColumn (
+                column: @اللجنة_المختصة
+                layout {
+                    width: 56.438
+                    sequence: 8
+                }
+            )
+
+            displayColumn (
+                column: @الاجراءات
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @طريقة_ابرام_الصفقة
+                layout {
+                    width: 108.43799999999999
+                    sequence: 7
+                }
+            )
+
+            displayColumn (
+                column: @آجال_الانجاز
+                layout {
+                    width: 40
+                    sequence: 11
+                }
+            )
+
+            displayColumn (
+                column: @المكلف_بالملف
+                layout {
+                    width: 100
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @رقم_الاستشارة
+                layout {
+                    width: 87.516
+                    sequence: 13
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_بداية_معالجة_الملف_الجديد
+                layout {
+                    width: 123
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @التاريخ_نهاية_العقد_الجاري
+                layout {
+                    width: 100
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @موضوع_الصفقة
+                layout {
+                    width: 557.469
+                    sequence: 12
+                }
+            )
+
+            displayColumn (
+                column: @ETAT
+                layout {
+                    sequence: 14
+                }
+            )
+
+            displayColumn (
+                column: @GT
+                layout {
+                    width: 40
+                    sequence: 15
+                }
+            )
+
+            displayColumn (
+                column: @s
+                layout {
+                    sequence: 16
+                }
+            )
+
+            displayColumn (
+                column: @e
+                layout {
+                    sequence: 17
+                }
+            )
+
+            displayColumn (
+                column: @ANNEE
+                layout {
+                    width: 55.125
+                    sequence: 18
+                }
+            )
+
+        )
+
+        savedReport 211763 (
+            visibility: alternative
+            name: CHIRAZ1
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+            security {
+                authorizationScheme: @droits-de-lecteur
+            }
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    frozen: true
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @ID
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @الكلفة_التقديرية
+                layout {
+                    width: 67
+                    sequence: 10
+                }
+            )
+
+            displayColumn (
+                column: @نوعية_الطلب
+                layout {
+                    width: 56
+                    sequence: 9
+                }
+            )
+
+            displayColumn (
+                column: @اللجنة_المختصة
+                layout {
+                    width: 56.438
+                    sequence: 8
+                }
+            )
+
+            displayColumn (
+                column: @الاجراءات
+                layout {
+                    width: 92.01599999999999
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @طريقة_ابرام_الصفقة
+                layout {
+                    width: 108.43799999999999
+                    sequence: 7
+                }
+            )
+
+            displayColumn (
+                column: @آجال_الانجاز
+                layout {
+                    width: 40
+                    sequence: 11
+                }
+            )
+
+            displayColumn (
+                column: @المكلف_بالملف
+                layout {
+                    width: 100
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @رقم_الاستشارة
+                layout {
+                    width: 87.516
+                    sequence: 13
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_بداية_معالجة_الملف_الجديد
+                layout {
+                    width: 123
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @التاريخ_نهاية_العقد_الجاري
+                layout {
+                    width: 100
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @موضوع_الصفقة
+                layout {
+                    width: 557.469
+                    sequence: 12
+                }
+            )
+
+            displayColumn (
+                column: @ETAT
+                layout {
+                    sequence: 14
+                }
+            )
+
+            displayColumn (
+                column: @GT
+                layout {
+                    width: 40
+                    sequence: 15
+                }
+            )
+
+            displayColumn (
+                column: @s
+                layout {
+                    sequence: 16
+                }
+            )
+
+            displayColumn (
+                column: @e
+                layout {
+                    sequence: 17
+                }
+            )
+
+            displayColumn (
+                column: @ANNEE
+                layout {
+                    width: 55.125
+                    sequence: 18
+                }
+            )
+
+        )
+
+        column ANNEE (
+            type: numberField
+            heading {
+                heading: Annee
+                alignment: center
+            }
+            layout {
+                sequence: 200
+                columnAlignment: center
+                stretch: never
+            }
+            appearance {
+                width: 4
+            }
+            source {
+                databaseColumn: ANNEE
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 20
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 10
+            }
+        )
+
+        column ETAT (
+            type: hidden
+            layout {
+                sequence: 170
+            }
+            source {
+                type: none
+            }
+        )
+
+        column GT (
+            type: displayOnly
+            heading {
+                alignment: center
+            }
+            settings {
+                format: html
+            }
+            layout {
+                sequence: 160
+                columnAlignment: center
+                stretch: never
+            }
+            source {
+                type: sqlExpression
+                sqlExpression:
+                    ```sql
+                    CASE WHEN ETAT = 'OK' THEN 
+                         '<span class="fa fa-check-circle fa-2x" style="color:green"></span>'
+                    WHEN ETAT = 'KO' THEN 
+                         '<span class="fa fa-times-circle  fa-2x fa-anim-flash" style="color:red"></span>'
+                    WHEN ETAT = 'WAIT' THEN 
+                         '<span class="fa fa-circle-o-notch fa-anim-spin fa-lg" style="color:orange"></span>'
+                    ELSE 
+                         '<span class="fa fa-question-circle" style="color:gray"></span>'
+                    END
+                    
+                    ```
+                dataType: varchar2
+            }
+            columnFilter {
+                enabled: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+        column ID (
+            type: hidden
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: ID
+                dataType: number
+                queryOnly: true
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column e (
+            type: hidden
+            layout {
+                sequence: 190
+            }
+            source {
+                databaseColumn: ETAT
+                dataType: varchar2
+                queryOnly: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column s (
+            type: hidden
+            layout {
+                sequence: 180
+            }
+            source {
+                databaseColumn: الاجراءات
+                dataType: varchar2
+                queryOnly: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column آجال_الانجاز (
+            type: numberField
+            heading {
+                heading: آجال الانجاز
+                alignment: center
+            }
+            layout {
+                sequence: 90
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: آجال_الانجاز
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column الاجراءات (
+            type: displayOnly
+            heading {
+                alignment: center
+            }
+            settings {
+                format: html
+            }
+            layout {
+                sequence: 150
+                columnAlignment: center
+            }
+            link {
+                target: {
+                    page: 42
+                    items: {
+                        P42_T: &ID.
+                        P42_ID_3: &ID.
+                        P42_ETAT: &"e".
+                    }
+                }
+                linkText: &"الاجراءات".
+            }
+            source {
+                type: sqlExpression
+                sqlExpression:
+                    ```sql
+                    CASE WHEN ETAT = 'OK' THEN 
+                         '<span style="color:green">في طور الإنجاز </span>'
+                    WHEN ETAT = 'KO' THEN 
+                         ' <button >بداية الإجراءات</button>'
+                    WHEN ETAT = 'WAIT' THEN 
+                         ' <button type="submit">بداية الإجراءات</button>'
+                    ELSE 
+                         '<span class="fa fa-question-circle" style="color:gray"></span>'
+                    END
+                    
+                    ```
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                exactMatch: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+        column التاريخ_نهاية_العقد_الجاري (
+            type: datePicker
+            heading {
+                heading: التاريخ نهاية العقد الجاري
+                alignment: center
+            }
+            layout {
+                sequence: 130
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: التاريخ_نهاية_العقد_الجاري
+                dataType: date
+            }
+        )
+
+        column الكلفة_التقديرية (
+            type: numberField
+            heading {
+                heading: الكلفة التقديرية
+                alignment: center
+            }
+            layout {
+                sequence: 50
+                columnAlignment: center
+                stretch: never
+            }
+            appearance {
+                formatMask: 999G999G999G999G990D000
+            }
+            source {
+                databaseColumn: الكلفة_التقديرية
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column اللجنة_المختصة (
+            type: selectList
+            heading {
+                heading: اللجنة المختصة
+                alignment: center
+            }
+            lov {
+                type: staticValues
+                staticValues: STATIC:CRA;CRA,CME;CME,CAE;CAE,CSM;CSM
+            }
+            layout {
+                sequence: 70
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: اللجنة_المختصة
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+        )
+
+        column المكلف_بالملف (
+            type: selectList
+            heading {
+                heading: المكلف بالملف
+                alignment: center
+            }
+            lov {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select T_USER.NOM as NOM,
+                    T_USER.NOM as N
+                     from T_USER 
+                    
+                    ```
+            }
+            layout {
+                sequence: 140
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: المكلف_بالملف
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+        )
+
+        column تاريخ_بداية_معالجة_الملف_الجديد (
+            type: datePicker
+            heading {
+                heading: تاريخ بداية الإجراءات الملف الجديد
+                alignment: center
+            }
+            layout {
+                sequence: 120
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: تاريخ_بداية_معالجة_الملف_الجديد
+                dataType: date
+            }
+        )
+
+        column رقم_الاستشارة (
+            type: textField
+            heading {
+                heading: رقم الملف
+                alignment: center
+            }
+            layout {
+                sequence: 110
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: A*.##.#.####
+            }
+            validation {
+                maxLength: 50
+            }
+            source {
+                databaseColumn: رقم_الاستشارة
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column طريقة_ابرام_الصفقة (
+            type: selectList
+            heading {
+                heading: طريقة ابرام الصفقة
+                alignment: center
+            }
+            lov {
+                type: staticValues
+                staticValues: STATIC:استشارة مفتوحة;استشارة مفتوحة,استشارة مضيقة;استشارة مضيقة,طلب عروض مفتوح;طلب عروض مفتوح,استشارة بالتفاوض المباشر;استشارة بالتفاوض المباشر
+            }
+            layout {
+                sequence: 80
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: طريقة_ابرام_الصفقة
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+        )
+
+        column موضوع_الصفقة (
+            type: textarea
+            heading {
+                heading: موضوع الصفقة
+                alignment: center
+            }
+            settings {
+                resizable: false
+            }
+            layout {
+                sequence: 40
+                columnAlignment: center
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: موضوع_الصفقة
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+        column نوعية_الطلب (
+            type: selectList
+            heading {
+                heading: نوعية الطلب
+                alignment: center
+            }
+            lov {
+                type: staticValues
+                staticValues: STATIC:Service;Service,Etude;Etude
+            }
+            layout {
+                sequence: 60
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: نوعية_الطلب
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+        )
+
+        page {
+            size: a4
+            units: millimeters
+            width: 297
+            height: 210
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            fontSize: 16
+            pageHeaderText: جدول الاشغال
+        }
+    )
+
+    pageItem P34_ANNEE (
+        type: textField
+        label {
+            label: Année
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @breadcrumb
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+    )
+
+    pageItem P34_SEARCH (
+        type: textField
+        label {
+            label: Rechercher
+            alignment: left
+        }
+        settings {
+            submitWhenEnterPressed: true
+        }
+        layout {
+            sequence: 10
+            region: @rechercher
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--large
+                t-Form-fieldContainer--postTextBlock
+            ]
+            icon: fa-search
+            width: 30
+            valuePlaceholder: Rechercher...
+        }
+    )
+
+    dynamicAction new (
+        name: New
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @جدول-الاشغال
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @جدول-الاشغال
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process جدول-الاشغال-save-interactive-grid-data (
+        name: جدول الاشغال - Save Interactive Grid Data
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @جدول-الاشغال
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 20933871850709868
+        }
+    )
+
+)
+

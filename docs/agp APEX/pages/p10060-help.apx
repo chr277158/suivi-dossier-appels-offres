@@ -1,0 +1,46 @@
+page 10060 (
+    name: A propos de
+    alias: HELP
+    title: A propos de
+    pageGroup: @administration
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        warnOnUnsavedChanges: false
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText: L'ensemble du texte d'aide de l'application est accessible à partir de cette page. Les liens figurant dans la région "Documentation" fournissent une explication bien plus approfondie des fonctions et fonctionnalités de l'application.
+    }
+    config {
+        buildOption: @fonctionnalité-a-propos-de-la-page
+    }
+
+    region a-propos-de-la-page (
+        name: A propos de la page
+        type: staticContent
+        source {
+            htmlCode: " Cette application à été crée pour des fins professionnels et NON COMMERCIALE par Mr Chiraz Ghodhben"
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/content-block
+            templateOptions: [
+                #DEFAULT#
+                t-ContentBlock--padded
+                t-ContentBlock--h1
+                t-ContentBlock--lightBG
+            ]
+        }
+    )
+
+)
+

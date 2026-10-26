@@ -1,0 +1,310 @@
+breadcrumb chemin-de-navigation (
+    name: Chemin de navigation
+
+    entry administration (
+        name: Administration
+        pageNumber: 10000
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10000
+            }
+        }
+        security {
+            authorizationScheme: @droits-d-administration
+        }
+    )
+
+    entry calendrier (
+        name: Calendrier
+        pageNumber: 5
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 5
+            }
+        }
+    )
+
+    entry classement (
+        name: classement
+        pageNumber: 53
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 53
+            }
+        }
+    )
+
+    entry contrats (
+        name: Contrats
+        pageNumber: 35
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 35
+            }
+        }
+    )
+
+    entry dossiers-en-attente (
+        name: Dossiers En Attente
+        pageNumber: 39
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 39
+            }
+        }
+    )
+
+    entry etat-appel-d-offfres (
+        name: Etat - APPEL D’OFFFRES
+        pageNumber: 2
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 2
+            }
+        }
+    )
+
+    entry gestion-de-compte (
+        name: Gestion de Compte
+        pageNumber: 11
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 11
+            }
+        }
+    )
+
+    entry gestion-des-rappels (
+        name: Gestion des Rappels
+        pageNumber: 32
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 32
+            }
+        }
+    )
+
+    entry heur (
+        name: heur
+        pageNumber: 47
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 47
+            }
+        }
+    )
+
+    entry heur-sup (
+        name: heur sup
+        pageNumber: 48
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 48
+            }
+        }
+    )
+
+    entry mes-congés (
+        name: Mes Congés
+        pageNumber: 51
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 51
+            }
+        }
+    )
+
+    entry page-d-x27-accueil (
+        name: Page d&#x27;accueil
+        pageNumber: 1
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+    entry recherche-appel-d-offfres (
+        name: Recherche - APPEL D’OFFFRES
+        pageNumber: 3
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 3
+            }
+        }
+    )
+
+    entry suivi-des-contrats (
+        name: suivi des contrats
+        pageNumber: 30
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 30
+            }
+        }
+    )
+
+    entry suivi-modification (
+        name: suivi modification
+        pageNumber: 7
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 7
+            }
+        }
+    )
+
+    entry tableau-de-bord-des-dossiers (
+        name: Tableau de bord des Dossiers
+        pageNumber: 44
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 44
+            }
+        }
+    )
+
+    entry test (
+        name: test
+        pageNumber: 10002
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10002
+            }
+        }
+    )
+
+    entry test-install (
+        name: test install
+        pageNumber: 38
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 38
+            }
+        }
+    )
+
+    entry testee (
+        name: testee
+        pageNumber: 22
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 22
+            }
+        }
+    )
+
+    entry جدول-الاشغال (
+        name: جدول الاشغال
+        pageNumber: 34
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 34
+            }
+        }
+    )
+
+    entry قائمة-الصفقات-المبرمجة (
+        name: قائمة الصفقات المبرمجة
+        pageNumber: 41
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 41
+            }
+        }
+    )
+
+    entry متابع-التغيرات (
+        name: متابع التغيرات
+        pageNumber: 26
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 26
+            }
+        }
+    )
+
+    entry مراحل-التقدم (
+        name: مراحل التقدم
+        pageNumber: 21
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 21
+            }
+        }
+        security {
+            authorizationScheme: @droits-de-lecteur
+        }
+    )
+
+)
+

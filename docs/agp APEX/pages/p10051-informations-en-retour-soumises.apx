@@ -1,0 +1,71 @@
+page 10051 (
+    name: Informations en retour soumises
+    alias: INFORMATIONS-EN-RETOUR-SOUMISES
+    title: Informations en retour soumises
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    config {
+        buildOption: @fonctionnalité-informations-en-retour
+    }
+
+    region informations-en-retour-soumises (
+        name: Informations en retour soumises
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--wizard
+                t-Alert--customIcons
+                t-Alert--success
+            ]
+            icon: fa-check-circle
+        }
+    )
+
+    button close (
+        buttonName: CLOSE
+        label: Fermer
+        layout {
+            sequence: 20
+            region: @informations-en-retour-soumises
+            slot: EDIT
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            cssClasses: w40p
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+)
+

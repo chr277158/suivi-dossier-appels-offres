@@ -1,0 +1,1090 @@
+page 41 (
+    name: قائمة الصفقات المبرمجة
+    alias: قائمة-الصفقات-المبرمجة
+    title: قائمة الصفقات المبرمجة
+    appearance {
+        pageTemplate: @/right-side-column
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    css {
+        inline:
+            ```css
+            /* 1) Donne une hauteur plus grande à la zone header (optionnel) */
+            .myClass .a-GV-header{
+              height: 100px;         /* Ajuste selon ton besoin */
+              line-height: 50px;     /* Optionnel: vertical align/centrage */
+              padding: 5px;
+              white-space: normal;   /* Autorise le retour à la ligne */
+              overflow-wrap: break-word;
+              word-wrap: break-word;
+            }
+            
+            /* 2) Force le texte du libellé à se wrapper */
+            .myClass .a-GV-header .a-GV-headerLabel{
+              white-space: normal;
+              overflow-wrap: break-word;
+              word-wrap: break-word;
+              height: auto;
+              line-height: 1.2;      /* Plus naturel pour du multi-ligne */
+              padding: 5px;
+            }
+            /* Appliquer RTL uniquement sur la vue Monoligne (Single Row View) */
+            .a-RV {
+                direction: rtl;
+                text-align: right;
+            }
+            
+            /* Aligner le contenu des champs et les libellés */
+            .a-RV .u-Form-labelContainer,
+            .a-RV .u-Form-inputContainer,
+            .a-RV-fieldValue,
+            .a-RV-readonly {
+                direction: rtl;
+                text-align: right;
+            }
+            
+            /* Inverser l'icône des groupes extensibles pour le RTL */
+            .a-RV .a-Collapsible-icon {
+                margin-left: 8px; /* Espace à gauche au lieu de droite */
+                margin-right: 0;
+            }
+            
+            /* Toolbar spécifique quand on est en mode édition monoligne */
+            .a-IG-toolbar {
+                /* Si vous voulez que la toolbar reste RTL même en mode grille, gardez ceci. 
+                   Sinon, on peut la rendre conditionnelle via JS si nécessaire. */
+                direction: rtl;
+            }
+            /* 2 colonnes pour la Single Row View */
+            .u-Form {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr  ;
+                gap: 10px;
+            }
+            
+            .a-RV .u-Form-inputContainer {
+                align-items: baseline;
+                background-color: #dddde6;
+            }
+            
+            /* Style général */
+            .a-IG-recordView {
+                background-color: #f0f4ff;
+            }
+            
+            .u-Form-label {
+                font-size: 13px !important;
+                font-weight: bold;
+            
+            }
+            
+            .apex-item-text,
+            .apex-item-select,
+            .apex-item-textarea {
+                font-size: 13px !important;
+                font-weight: bold;
+                border-radius: 10px !important;
+            }
+            
+            
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region enregistrements-maître (
+        name: Enregistrements maître
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select DISTINCT
+                    "ANNEE",
+                    null LINK_CLASS,
+                    apex_page.get_url(p_items => 'P41_ANNE', p_values => "ANNEE") LINK,
+                    null ICON_CLASS,
+                    null LINK_ATTR,
+                    null ICON_COLOR_CLASS,
+                    case when coalesce(:P41_ANNE,'0') = "ANNEE"
+                      then 'is-active' 
+                      else ' '
+                    end LIST_CLASS,
+                    "ANNEE" LIST_TITLE, -- Puisque c'est groupé, on affiche juste l'année
+                    null LIST_TEXT,     -- On met NULL ici car on ne peut pas afficher un texte spécifique si plusieurs lignes sont combinées
+                    null LIST_BADGE
+                from "PREVIS_ANNUEL" x
+                where (:P41_SEARCH is null
+                        or upper(x."ANNEE") like '%'||upper(:P41_SEARCH)||'%'
+                      )
+                order by "ANNEE"
+                ```
+            pageItemsToSubmit: P41_SEARCH
+        }
+        layout {
+            sequence: 40
+            slot: rightColumn
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+            cssClasses: search-results
+        }
+        reportLayout {
+            numberOfRows: 1000
+        }
+        componentAppearance {
+            template: @/media-list
+            templateOptions: [
+                t-MediaList--showDesc
+                t-MediaList--stack
+            ]
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: <div class="u-tC">Aucune donnée n'a été trouvée.</div>
+        }
+
+        column ANNEE (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Annee
+            }
+            layout {
+                sequence: 20
+            }
+        )
+
+        column ICON_CLASS (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: ICON_CLASS
+                alignment: center
+            }
+            layout {
+                sequence: 4
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ICON_COLOR_CLASS (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: ICON_COLOR_CLASS
+                alignment: center
+            }
+            layout {
+                sequence: 6
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LINK (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: LINK
+                alignment: center
+            }
+            layout {
+                sequence: 3
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LINK_ATTR (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: LINK_ATTR
+                alignment: center
+            }
+            layout {
+                sequence: 5
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LINK_CLASS (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: LINK_CLASS
+                alignment: center
+            }
+            layout {
+                sequence: 2
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_BADGE (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: LIST_BADGE
+                alignment: center
+            }
+            layout {
+                sequence: 10
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_CLASS (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: LIST_CLASS
+                alignment: center
+            }
+            layout {
+                sequence: 7
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_TEXT (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: LIST_TEXT
+                alignment: center
+            }
+            layout {
+                sequence: 9
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_TITLE (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: LIST_TITLE
+                alignment: center
+            }
+            layout {
+                sequence: 8
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region rechercher (
+        name: Rechercher
+        type: staticContent
+        layout {
+            sequence: 30
+            slot: rightColumn
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+            cssClasses: [
+                search-region
+                padding-md
+            ]
+        }
+    )
+
+    region search-results (
+        name: Search Results
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            tableName: PREVIS_ANNUEL
+            whereClause: "ANNEE" = :P41_ANNE
+        }
+        layout {
+            sequence: 20
+            slot: body
+            columnCssClasses: myClass
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Form--stretchInputs
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+        editAuthorization {
+            add: @droits-de-contribution
+            update: @droits-de-contribution
+            delete: @droits-de-contribution
+        }
+        componentAppearance {
+            selectFirstRow: false
+            fixedRowHeight: false
+        }
+        toolbar {
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                resetButton
+                saveButton
+            ]
+            addButtonLabel: "إضافة صفقة جديدة "
+        }
+        enableUsersTo {
+            savePublicReport: true
+            savePublicReportAuthorization: @droits-de-contribution
+        }
+        download {
+            authorization: @droits-de-contribution
+            formats: [
+                csv
+                html
+                excel
+                pdf
+            ]
+        }
+        advanced {
+            savedReportMappingIdentifier: 19745336017171317
+        }
+
+        savedReport 197637 (
+            visibility: primary
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @ID
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @التاريخ_التقديري_لبداية_إنجاز_الصفقة
+                layout {
+                    width: 86
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @التاريخ_التقديري_لتبليغ_الصفقة
+                layout {
+                    show: false
+                    width: 97
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @التاريخ_التقديري_لنشر_نتائج_المنافسة_
+                layout {
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @التاريخ_التقديري_لإجابة_لجنة_الصفقات__
+                layout {
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @التاريخ_التقديري_لإحالة_الملف_على_لجنة_الصفقات__
+                layout {
+                    sequence: 7
+                }
+            )
+
+            displayColumn (
+                column: @التاريخ_التقديري_لتعهد_لجنة_الشراءات_بالملف
+                layout {
+                    sequence: 8
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_فتح_العروض
+                layout {
+                    sequence: 9
+                }
+            )
+
+            displayColumn (
+                column: @التاريخ_التقديري_للإعلان_عن_المنافسة
+                layout {
+                    sequence: 10
+                }
+            )
+
+            displayColumn (
+                column: @التاريخ_التقديري_لإعداد_كراسات_الشروط
+                layout {
+                    sequence: 11
+                }
+            )
+
+            displayColumn (
+                column: @مصدر_التمويل
+                layout {
+                    width: 46
+                    sequence: 12
+                }
+            )
+
+            displayColumn (
+                column: @الكلفة_التقديرية__MDT_
+                layout {
+                    sequence: 13
+                }
+            )
+
+            displayColumn (
+                column: @نوعية_الطلب
+                layout {
+                    width: 63.9915
+                    sequence: 14
+                }
+            )
+
+            displayColumn (
+                column: @اللجنة_المختصة
+                layout {
+                    sequence: 15
+                }
+            )
+
+            displayColumn (
+                column: @الاجراءات
+                layout {
+                    sequence: 16
+                }
+            )
+
+            displayColumn (
+                column: @طريقة_ابرام_الصفقة
+                layout {
+                    width: 83.98859999999999
+                    sequence: 17
+                }
+            )
+
+            displayColumn (
+                column: @آجال_الانجاز__باليوم__
+                layout {
+                    width: 50
+                    sequence: 18
+                }
+            )
+
+            displayColumn (
+                column: @EXP__INV
+                layout {
+                    width: 66
+                    sequence: 19
+                }
+            )
+
+            displayColumn (
+                column: @موضوع_الصفقة
+                layout {
+                    width: 253
+                    sequence: 20
+                }
+            )
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    frozen: true
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @ANNEE
+                layout {
+                    width: 45
+                    sequence: 21
+                }
+            )
+
+        )
+
+        column ANNEE (
+            type: numberField
+            heading {
+                heading: Annee
+                alignment: center
+            }
+            layout {
+                sequence: 220
+                columnAlignment: end
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: ANNEE
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 20
+            }
+        )
+
+        column EXP__INV (
+            type: selectList
+            heading {
+                heading: Exp Inv
+            }
+            lov {
+                type: staticValues
+                staticValues: "STATIC:Exploitation;Exploitation,Investissement ;Investissement "
+            }
+            layout {
+                sequence: 200
+            }
+            source {
+                databaseColumn: EXP__INV
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+        )
+
+        column ID (
+            type: hidden
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: ID
+                dataType: number
+                queryOnly: true
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column آجال_الانجاز__باليوم__ (
+            type: numberField
+            heading {
+                heading: آجال الانجاز باليوم
+                alignment: center
+            }
+            layout {
+                sequence: 190
+                columnAlignment: end
+            }
+            source {
+                databaseColumn: آجال_الانجاز__باليوم__
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column الاجراءات (
+            type: hidden
+            layout {
+                sequence: 170
+            }
+            source {
+                databaseColumn: الاجراءات
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column التاريخ_التقديري_لإجابة_لجنة_الصفقات__ (
+            type: datePicker
+            heading {
+                heading: التاريخ التقديري لإجابة لجنة الصفقات
+                alignment: center
+            }
+            layout {
+                sequence: 70
+            }
+            source {
+                databaseColumn: التاريخ_التقديري_لإجابة_لجنة_الصفقات__
+                dataType: date
+            }
+        )
+
+        column التاريخ_التقديري_لإحالة_الملف_على_لجنة_الصفقات__ (
+            type: datePicker
+            heading {
+                heading: التاريخ التقديري لإحالة الملف على لجنة الصفقات
+                alignment: center
+            }
+            layout {
+                sequence: 80
+            }
+            source {
+                databaseColumn: التاريخ_التقديري_لإحالة_الملف_على_لجنة_الصفقات__
+                dataType: date
+            }
+        )
+
+        column التاريخ_التقديري_لإعداد_كراسات_الشروط (
+            type: datePicker
+            heading {
+                heading: التاريخ التقديري لإعداد كراسات الشروط
+                alignment: center
+            }
+            layout {
+                sequence: 120
+            }
+            source {
+                databaseColumn: التاريخ_التقديري_لإعداد_كراسات_الشروط
+                dataType: date
+            }
+        )
+
+        column التاريخ_التقديري_لبداية_إنجاز_الصفقة (
+            type: datePicker
+            heading {
+                heading: التاريخ التقديري لبداية إنجاز الصفقة
+                alignment: center
+            }
+            settings {
+                displayAs: nativeHtml
+            }
+            layout {
+                sequence: 40
+            }
+            appearance {
+                formatMask: YYYY-MM-DD
+            }
+            validation {
+                maxLength: 50
+            }
+            source {
+                databaseColumn: التاريخ_التقديري_لبداية_إنجاز_الصفقة
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column التاريخ_التقديري_لتبليغ_الصفقة (
+            type: datePicker
+            heading {
+                heading: التاريخ التقديري لتبليغ الصفقة
+                alignment: center
+            }
+            layout {
+                sequence: 50
+            }
+            source {
+                databaseColumn: التاريخ_التقديري_لتبليغ_الصفقة
+                dataType: date
+            }
+        )
+
+        column التاريخ_التقديري_لتعهد_لجنة_الشراءات_بالملف (
+            type: datePicker
+            heading {
+                heading: التاريخ التقديري لتعهد لجنة الشراءات بالملف
+                alignment: center
+            }
+            layout {
+                sequence: 90
+            }
+            source {
+                databaseColumn: التاريخ_التقديري_لتعهد_لجنة_الشراءات_بالملف
+                dataType: date
+            }
+        )
+
+        column التاريخ_التقديري_للإعلان_عن_المنافسة (
+            type: datePicker
+            heading {
+                heading: التاريخ التقديري للإعلان عن المنافسة
+                alignment: center
+            }
+            layout {
+                sequence: 110
+            }
+            source {
+                databaseColumn: التاريخ_التقديري_للإعلان_عن_المنافسة
+                dataType: date
+            }
+        )
+
+        column التاريخ_التقديري_لنشر_نتائج_المنافسة_ (
+            type: datePicker
+            heading {
+                heading: التاريخ التقديري لنشر نتائج المنافسة
+                alignment: center
+            }
+            layout {
+                sequence: 60
+            }
+            source {
+                databaseColumn: التاريخ_التقديري_لنشر_نتائج_المنافسة_
+                dataType: date
+            }
+        )
+
+        column الكلفة_التقديرية__MDT_ (
+            type: textField
+            heading {
+                heading: "الكلفة التقديرية "
+                alignment: center
+            }
+            layout {
+                sequence: 140
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: 999G999G999G999G990D000
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: الكلفة_التقديرية__MDT_
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column اللجنة_المختصة (
+            type: selectList
+            heading {
+                heading: اللجنة المختصة
+                alignment: center
+            }
+            lov {
+                type: staticValues
+                staticValues: STATIC:CRA;CRA,CME;CME,CAE;CAE,CSM;CSM
+                displayNullValue: false
+            }
+            layout {
+                sequence: 160
+            }
+            source {
+                databaseColumn: اللجنة_المختصة
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column تاريخ_فتح_العروض (
+            type: datePicker
+            heading {
+                heading: تاريخ فتح العروض
+                alignment: center
+            }
+            layout {
+                sequence: 100
+            }
+            source {
+                databaseColumn: تاريخ_فتح_العروض
+                dataType: date
+            }
+        )
+
+        column طريقة_ابرام_الصفقة (
+            type: selectList
+            heading {
+                heading: طريقة ابرام الصفقة
+            }
+            lov {
+                type: staticValues
+                staticValues: STATIC2:استشارة مفتوحة;استشارة مفتوحة,استشارة مضيقة;استشارة مضيقة,استشارة بالتفاوض المباشر;استشارة بالتفاوض المباشر,طلب عروض مفتوح;طلب عروض مفتوح
+            }
+            layout {
+                sequence: 180
+            }
+            source {
+                databaseColumn: طريقة_ابرام_الصفقة
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+        )
+
+        column مصدر_التمويل (
+            type: selectList
+            heading {
+                heading: مصدر التمويل
+                alignment: end
+            }
+            lov {
+                type: staticValues
+                staticValues: STATIC2:ذاتي;ذاتي,مزدوج;مزدوج,هبة;هبة
+                displayExtraValues: false
+            }
+            layout {
+                sequence: 130
+            }
+            source {
+                databaseColumn: مصدر_التمويل
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+        )
+
+        column موضوع_الصفقة (
+            type: textField
+            heading {
+                heading: موضوع الصفقة
+                alignment: end
+            }
+            layout {
+                sequence: 210
+                columnAlignment: end
+            }
+            validation {
+                maxLength: 255
+            }
+            source {
+                databaseColumn: موضوع_الصفقة
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column نوعية_الطلب (
+            type: selectList
+            heading {
+                heading: نوعية الطلب
+                alignment: center
+            }
+            lov {
+                type: staticValues
+                staticValues: STATIC:Etudes;Etude,Services;Service
+                displayNullValue: false
+            }
+            layout {
+                sequence: 150
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: نوعية_الطلب
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+        )
+
+        page {
+            size: a4
+            units: millimeters
+            width: 297
+            height: 210
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+    )
+
+    pageItem P41_ANNE (
+        type: textField
+        label {
+            label: Plan Prévisionnelle pour L'Année
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--xlarge
+                t-Form-fieldContainer--boldDisplay
+            ]
+            width: 30
+        }
+    )
+
+    pageItem P41_SEARCH (
+        type: textField
+        label {
+            label: Rechercher
+            alignment: left
+        }
+        settings {
+            submitWhenEnterPressed: true
+        }
+        layout {
+            sequence: 10
+            region: @rechercher
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--large
+                t-Form-fieldContainer--postTextBlock
+            ]
+            icon: fa-search
+            width: 30
+            valuePlaceholder: Rechercher...
+        }
+    )
+
+    process search-results-save-interactive-grid-data (
+        name: Search Results - Save Interactive Grid Data
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @search-results
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 19747552226171339
+        }
+    )
+
+)
+

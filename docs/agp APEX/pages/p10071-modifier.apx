@@ -1,0 +1,203 @@
+page 10071 (
+    name: Modifier Mot de passe
+    alias: MODIFIER
+    title: Modification du mot de passe
+    appearance {
+        pageTemplate: @/login
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authentication: public
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region cc-connexion (
+        name: Cc - Connexion
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/login
+            templateOptions: #DEFAULT#
+        }
+        image {
+            fileUrl: #APP_FILES#icons/app-icon-512.png
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    pageItem P10071_PASSWORD (
+        type: password
+        label {
+            label: Mot de passe
+            alignment: right
+        }
+        layout {
+            sequence: 20
+            region: @cc-connexion
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: #DEFAULT#
+            icon: fa-key
+            width: 40
+            valuePlaceholder: Mot de passe
+        }
+        validation {
+            maxLength: 100
+        }
+        sessionState {
+            storage: request
+        }
+    )
+
+    pageItem P10071_REMEMBER (
+        type: checkbox
+        label {
+            label: Mémoriser le nom utilisateur
+            alignment: right
+        }
+        layout {
+            sequence: 30
+            region: @cc-connexion
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: #DEFAULT#
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: apex_authentication.persistent_cookies_enabled
+        }
+    )
+
+    pageItem P10071_USERNAME (
+        type: textField
+        label {
+            label: Nom utilisateur
+            alignment: right
+        }
+        settings {
+            trimSpaces: none
+        }
+        layout {
+            sequence: 10
+            region: @cc-connexion
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: #DEFAULT#
+            icon: fa-user
+            width: 40
+            valuePlaceholder: Nom utilisateur
+        }
+        validation {
+            maxLength: 100
+        }
+        sessionState {
+            storage: request
+        }
+    )
+
+    button login (
+        buttonName: LOGIN
+        label: Ouvrir une session
+        layout {
+            sequence: 40
+            region: @cc-connexion
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    process définir-le-cookie-de-nom-utilisateur (
+        name: Définir le cookie de nom utilisateur
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                apex_authentication.send_login_username_cookie (
+                    p_username => lower(:P10071_USERNAME),
+                    p_consent  => :P10071_REMEMBER = 'Y' );
+                ```
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 61969691016587643354
+        }
+    )
+
+    process effacer-le-cache-des-pages (
+        name: Effacer le cache des pages
+        type: clearSessionState
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 61969691898520643355
+        }
+    )
+
+    process login (
+        name: Login
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                apex_authentication.login(
+                    p_username => :P10071_USERNAME,
+                    p_password => :P10071_PASSWORD );
+                ```
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 61969690617057643354
+        }
+    )
+
+    process obtenir-le-cookie-de-nom-utilisateur (
+        name: Obtenir le cookie de nom utilisateur
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                :P10071_USERNAME := apex_authentication.get_login_username_cookie;
+                :P10071_REMEMBER := case when :P10071_USERNAME is not null then 'Y' end;
+                ```
+        }
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 61969691479454643354
+        }
+    )
+
+)
+

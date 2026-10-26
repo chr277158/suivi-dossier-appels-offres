@@ -1,0 +1,1231 @@
+page 10 (
+    name: cc
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+            t-DeferredRendering
+        ]
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    css {
+        inline:
+            ```css
+             /* Styles RTL pour la région arabe */
+            #MA_REGION_ARABE .t-Report-report, 
+            #MA_REGION_ARABE table {
+                direction: rtl;
+                text-align: right;
+                width: 100% !important;
+            }
+            
+            #MA_REGION_ARABE td, 
+            #MA_REGION_ARABE th {
+                text-align: right !important;
+            }
+            
+            /* Lignes alternées - SCOPÉ à la région */
+            #MA_REGION_ARABE tr:nth-child(even) {
+                background-color: #ebe9e9;
+            }*
+            
+            /* Styles d'impression */
+            @media print {
+                /* --- MASQUER LES BOUTONS --- */
+                
+                /* 1. Masquer la zone standard des boutons de page */
+                .t-ButtonRegion, 
+                .t-Region-buttons,
+                .t-Dialog-footer {
+                    display: none !important;
+                }
+            /* la région de droite : ligne verticale + espace */
+              .print-sep-left {
+                border-left: 1px solid #999;
+                padding-left: 12px;
+              }
+                /* 2. Masquer la barre de boutons spécifique aux modales jQuery UI (très fréquent) */
+                .ui-dialog-buttonpane, 
+                .ui-dialog-titlebar {
+                    display: none !important;
+                }
+                
+                /* 3. Masquer TOUS les boutons de la page (Solution radicale mais sûre pour un rapport) */
+                button, 
+                input[type="button"], 
+                .t-Button {
+                    display: none !important;
+                }
+            
+                /* --- GESTION DU TITRE ET MISE EN PAGE --- */
+                body::before {
+                    content: attr(data-page-title);
+                    display: block;
+                    text-align: center;
+                    font-size: 24pt;
+                    font-weight: bold;
+                    margin-bottom: 20px;
+                    padding-bottom: 10px;
+                    border-bottom: 1px solid #ccc;
+                    width: 100%;
+                }
+            
+                /* Réinitialiser le fond et les marges pour éviter les pages blanches */
+                body, .t-Dialog-page {
+                    background-color: white !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    overflow: visible !important;
+                    height: auto !important;
+                }
+            }
+            
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 30
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        accessibility {
+            useLandmark: false
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region c (
+        name: C
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: CC
+            whereClause: ID = :P10_ID
+        }
+        layout {
+            sequence: 43
+            slot: contentBody
+            columnSpan: 5
+        }
+        appearance {
+            template: @/item-container
+            templateOptions: #DEFAULT#
+            renderComponents: belowContent
+        }
+        accessibility {
+            useLandmark: false
+        }
+        reportLayout {
+            numberOfRows: 20
+        }
+        componentAppearance {
+            templateType: predefined
+            template: verticalReport
+        }
+        componentAdvanced {
+            stripHtml: true
+        }
+
+        column BUDGET (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Budget
+            }
+            layout {
+                sequence: 50
+            }
+        )
+
+        column CREER_PAR (
+            reportColumnQueryId: 14
+            derivedColumn: N
+            heading {
+                heading: Creer Par
+            }
+            layout {
+                sequence: 130
+            }
+        )
+
+        column DATE_CRÉATION (
+            reportColumnQueryId: 15
+            derivedColumn: N
+            heading {
+                heading: Date Création
+            }
+            layout {
+                sequence: 140
+            }
+        )
+
+        column DATE_DE_LANC (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Date De Lanc
+            }
+            layout {
+                sequence: 90
+            }
+        )
+
+        column DATE_LIMITE_PROPOSÉE (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Date Limite Proposée
+            }
+            layout {
+                sequence: 100
+            }
+        )
+
+        column DATE_OUVERTURE_DES_PLIS (
+            reportColumnQueryId: 12
+            derivedColumn: N
+            heading {
+                heading: Date Ouverture Des Plis
+            }
+            layout {
+                sequence: 110
+            }
+        )
+
+        column DÉTAIL_DE_RÉPONSE (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Détail De Réponse
+            }
+            layout {
+                sequence: 60
+            }
+        )
+
+        column ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 20
+            }
+        )
+
+        column NATURE_DE_DEPENSE (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Nature De Depense
+            }
+            layout {
+                sequence: 70
+            }
+        )
+
+        column OBJET_CCT (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Objet Cct
+            }
+            layout {
+                sequence: 40
+                columnAlignment: end
+            }
+        )
+
+        column REF_AO (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Ref Ao
+            }
+            layout {
+                sequence: 30
+            }
+        )
+
+        column STATUS (
+            reportColumnQueryId: 13
+            derivedColumn: N
+            heading {
+                heading: Status
+            }
+            layout {
+                sequence: 120
+            }
+            columnFormatting {
+                htmlExpression:
+                    ```html
+                    <script>
+                        var STATUS;
+                        var C;
+                        
+                        if (STATUS = 1) {
+                          C = "En Cours"
+                        } else if (STATUS = 2) C = "Abouti"
+                        else  {
+                        C = "Infructueux"
+                          ;
+                        }
+                        document.write(C)
+                      </script>
+                    ```
+            }
+        )
+
+    )
+
+    region demande-de-clarification (
+        name: Demande de clarification
+        title: Demande de clarification
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: DEMANDE_CLARIFICATION
+            whereClause: REF_AE = :P10_REF
+        }
+        layout {
+            sequence: 10
+            parentRegion: @c
+            slot: subRegions
+        }
+        appearance {
+            template: @/cards-container
+            templateOptions: [
+                #DEFAULT#
+                t-CardsRegion--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+
+        column EFFECTUER (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 30
+            }
+        )
+
+        column EFFECTUÉ_LE (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Reçu Le
+            }
+            layout {
+                sequence: 40
+            }
+        )
+
+        column ENVOYER (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 50
+            }
+        )
+
+        column ENVOYÉ_LE (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Réponse Envoyé Le
+            }
+            layout {
+                sequence: 60
+            }
+        )
+
+        column ID_AVIS (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 10
+            }
+        )
+
+        column REF_AE (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 20
+            }
+        )
+
+        column REMARQUES (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Remarques
+            }
+            layout {
+                sequence: 70
+            }
+        )
+
+    )
+
+    region fichiers-pour-lancement (
+        name: "Fichiers pour Lancement "
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: FICHIER_LNCEMENT
+            whereClause: ID_CC = :P10_ID
+        }
+        layout {
+            sequence: 10
+            parentRegion: @c
+            slot: subRegions
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        componentAppearance {
+            templateType: predefined
+            template: verticalReport
+        }
+
+        column AVIS_DE_PRESSE (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 170
+            }
+        )
+
+        column CAUTION_P (
+            reportColumnQueryId: 21
+            derivedColumn: N
+            heading {
+                heading: Caution P
+            }
+            layout {
+                sequence: 100
+            }
+        )
+
+        column CC_POUR_LANCEMENT (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 150
+            }
+        )
+
+        column CRITERES_EVALUATION (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 160
+            }
+        )
+
+        column DATE_AVIS (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: Date Avis
+            }
+            layout {
+                sequence: 40
+            }
+        )
+
+        column DATE_CC (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Date Cahier des Charges
+            }
+            layout {
+                sequence: 20
+            }
+        )
+
+        column DATE_CRITERES (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Date Criteres
+            }
+            layout {
+                sequence: 30
+            }
+        )
+
+        column DATE_DESIGNATION (
+            reportColumnQueryId: 12
+            derivedColumn: N
+            heading {
+                heading: Date Designation
+            }
+            layout {
+                sequence: 50
+            }
+        )
+
+        column DATE_MAIL (
+            reportColumnQueryId: 16
+            derivedColumn: N
+            heading {
+                heading: "Date Mail Prestataires "
+            }
+            layout {
+                sequence: 70
+            }
+        )
+
+        column DATE_NOTE_OP (
+            reportColumnQueryId: 20
+            derivedColumn: N
+            heading {
+                heading: Date Note Ouverture
+            }
+            layout {
+                sequence: 90
+            }
+        )
+
+        column DATE_PROGRAM_LANC (
+            reportColumnQueryId: 14
+            derivedColumn: N
+            heading {
+                heading: Date Program Lancement
+            }
+            layout {
+                sequence: 60
+            }
+        )
+
+        column DATE_PROGRAM_OUVERTURE (
+            reportColumnQueryId: 18
+            derivedColumn: N
+            heading {
+                heading: Date Program Ouverture
+            }
+            layout {
+                sequence: 80
+            }
+        )
+
+        column DATE_PROPOSITION (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Date Proposition
+            }
+            layout {
+                sequence: 10
+            }
+        )
+
+        column DESIGNATION_DE_LA_COMMISSION (
+            reportColumnQueryId: 11
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 180
+            }
+        )
+
+        column ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 110
+            }
+        )
+
+        column ID_CC (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 130
+            }
+        )
+
+        column MAIL_PRESTATAIRE (
+            reportColumnQueryId: 15
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 200
+            }
+        )
+
+        column NOTE_OUVERTURE_PLIS (
+            reportColumnQueryId: 19
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 220
+            }
+        )
+
+        column PROGRAMME_OUVERTURE_DE_PLIS (
+            reportColumnQueryId: 17
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 210
+            }
+        )
+
+        column PROGRAM_LANC (
+            reportColumnQueryId: 13
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 190
+            }
+        )
+
+        column PROPOSITION_COMMISSION (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 140
+            }
+        )
+
+    )
+
+    region new (
+        name: New
+        title: Référence Dossier  : &P10_REF.
+        type: staticContent
+        layout {
+            sequence: 35
+            slot: contentBody
+        }
+        appearance {
+            template: @/hero
+            templateOptions: [
+                #DEFAULT#
+                t-HeroRegion--iconsCircle
+                t-Region-orderBy--center
+            ]
+            icon: fa-calendar-day
+        }
+    )
+
+    region الملاحظات (
+        name: الملاحظات
+        title: الملاحظات
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: REMARQUE
+            whereClause: ID_CC=:P10_ID
+        }
+        layout {
+            sequence: 60
+            parentRegion: @مزيد-من-التفاصيل-عن-الصفقة
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+        messages {
+            whenNoDataFound: لا توجد ملاحظات
+        }
+        heading {
+            type: none
+        }
+
+        column ID_CC (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 20
+            }
+        )
+
+        column ID_REM (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 10
+            }
+        )
+
+        column REF_DOS (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 30
+            }
+        )
+
+        column REMARQUE (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Remarque
+            }
+            layout {
+                sequence: 40
+            }
+        )
+
+    )
+
+    region مزيد-من-التفاصيل-عن-الصفقة (
+        name: مزيد من التفاصيل عن الصفقة
+        title: مزيد من التفاصيل عن الصفقة
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: SP
+            whereClause: ID = :P10_ID
+        }
+        layout {
+            sequence: 53
+            slot: contentBody
+            startNewRow: false
+            column: 7
+        }
+        appearance {
+            template: @/tabs-container
+            templateOptions: [
+                #DEFAULT#
+                t-TabsRegion-mod--pill
+                t-TabsRegion-mod--large
+                margin-bottom-sm
+                margin-left-sm
+                margin-right-sm
+            ]
+            renderComponents: belowContent
+        }
+        advanced {
+            htmlDomId: MA_REGION_ARABE
+        }
+        reportLayout {
+            numberOfRows: 30
+        }
+        componentAppearance {
+            templateType: predefined
+            template: verticalReport
+        }
+
+        column ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 10
+            }
+        )
+
+        column التاريخ__للإعلان_عن_المنافسة (
+            reportColumnQueryId: 14
+            derivedColumn: N
+            heading {
+                heading: التاريخ للإعلان عن المنافسة
+                alignment: end
+            }
+            layout {
+                sequence: 130
+                columnAlignment: end
+            }
+        )
+
+        column اللجنة_المختصة (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: اللجنة المختصة
+                alignment: end
+            }
+            layout {
+                sequence: 40
+                columnAlignment: end
+            }
+        )
+
+        column المكلف_بالملف (
+            reportColumnQueryId: 23
+            derivedColumn: N
+            heading {
+                heading: المكلف بالملف
+                alignment: end
+            }
+            layout {
+                sequence: 220
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ__لجنة_الصفقات (
+            reportColumnQueryId: 18
+            derivedColumn: N
+            heading {
+                heading: تاريخ لجنة الصفقات
+                alignment: end
+            }
+            layout {
+                sequence: 170
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ارجاع_الضمانات_الوقتية (
+            reportColumnQueryId: 22
+            derivedColumn: N
+            heading {
+                heading: تاريخ ارجاع الضمانات الوقتية
+                alignment: end
+            }
+            layout {
+                sequence: 210
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر (
+            reportColumnQueryId: 12
+            derivedColumn: N
+            heading {
+                heading: تاريخ ارجاع كراسات الشروط حسب المحضر
+                alignment: end
+            }
+            layout {
+                sequence: 110
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ارسال_التقرير_للتقييم_الفني (
+            reportColumnQueryId: 15
+            derivedColumn: N
+            heading {
+                heading: تاريخ ارسال التقرير للتقييم الفني
+                alignment: end
+            }
+            layout {
+                sequence: 140
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: تاريخ ارسال مقترح تركيبة لجنة التقييم
+                alignment: end
+            }
+            layout {
+                sequence: 60
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_امضاء_تقرير_تقييم_العروض (
+            reportColumnQueryId: 16
+            derivedColumn: N
+            heading {
+                heading: تاريخ امضاء تقرير تقييم العروض
+                alignment: end
+            }
+            layout {
+                sequence: 150
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_تبليغ_الصفقة (
+            reportColumnQueryId: 21
+            derivedColumn: N
+            heading {
+                heading: تاريخ تبليغ الصفقة
+                alignment: end
+            }
+            layout {
+                sequence: 200
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_تقديم_الملف_للجنة_الشراءات (
+            reportColumnQueryId: 17
+            derivedColumn: N
+            heading {
+                heading: تاريخ تقديم الملف للجنة الشراءات
+                alignment: end
+            }
+            layout {
+                sequence: 160
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_تقديم_كراسات_الشروط_للمصادقة (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: تاريخ تقديم كراسات الشروط للمصادقة
+                alignment: end
+            }
+            layout {
+                sequence: 80
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_قرار__لجنة_الصفقات (
+            reportColumnQueryId: 19
+            derivedColumn: N
+            heading {
+                heading: تاريخ قرار لجنة الصفقات
+                alignment: end
+            }
+            layout {
+                sequence: 180
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_مصادقة_اللجنة_على_كراسات_الشروط (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: تاريخ مصادقة اللجنة على كراسات الشروط
+                alignment: end
+            }
+            layout {
+                sequence: 90
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_نشر_نتائج_المنافسة (
+            reportColumnQueryId: 20
+            derivedColumn: N
+            heading {
+                heading: تاريخ نشر نتائج المنافسة
+                alignment: end
+            }
+            layout {
+                sequence: 190
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ورود_CPT_ممضاة (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: تاريخ ورود Cpt ممضاة
+                alignment: end
+            }
+            layout {
+                sequence: 50
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: تاريخ ورود تعيين تركيبة لجنة التقييم
+                alignment: end
+            }
+            layout {
+                sequence: 70
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط (
+            reportColumnQueryId: 11
+            derivedColumn: N
+            heading {
+                heading: تاريخ ورود محضر مصادقة اللجنة على كراسات الشروط
+                alignment: end
+            }
+            layout {
+                sequence: 100
+                columnAlignment: end
+            }
+        )
+
+        column تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2 (
+            reportColumnQueryId: 13
+            derivedColumn: N
+            heading {
+                heading: تاريخ ورود محضر مصادقة اللجنة على كراسات الشروط2
+                alignment: end
+            }
+            layout {
+                sequence: 120
+                columnAlignment: end
+            }
+        )
+
+        column طريقة_ابرام_الصفقة (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: طريقة ابرام الصفقة
+                alignment: end
+            }
+            layout {
+                sequence: 20
+                columnAlignment: end
+            }
+        )
+
+        column عدد (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 240
+            }
+        )
+
+        column نوعية_الطلب (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: نوعية الطلب
+                alignment: end
+            }
+            layout {
+                sequence: 30
+                columnAlignment: end
+            }
+        )
+
+    )
+
+    pageItem P10_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @new
+            slot: regionBody
+        }
+    )
+
+    pageItem P10_REF (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @new
+            slot: regionBody
+        }
+        security {
+            encryptSessionState: false
+        }
+    )
+
+    button btn-imprimer (
+        buttonName: BTN_IMPRIMER
+        label: Imprimer
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                t-Button--iconLeft
+                t-Button--hoverIconPush
+            ]
+            cssClasses: print-hide
+            icon: fa-print
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+        advanced {
+            customAttributes: no-print
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            cssClasses: print-hide
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction new (
+        name: New
+        execution {
+            sequence: 20
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @btn-imprimer
+        }
+
+        action native-hide (
+            action: hide
+            affectedElements {
+                selectionType: region
+                region: @boutons
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    // 1. Récupère la valeur de l'item P10_REF (ou le titre de la page)
+                    //var pageTitle = $v('P10_REF'); 
+                    
+                    // 2. Injecte cette valeur dans un attribut de la balise <body>
+                    // Cela permet de la récupérer ensuite via le CSS :before
+                    //document.body.setAttribute('data-page-title', 'Dossier : ' + pageTitle);
+                    //apex.util.getTopApex().jQuery(".ui-dialog-content").dialog("option", "title", $v("P10_REF"));
+                    // 3. Lance l'impression
+                    //window.print();
+                    // Code pour récupération du titre en page load opérationnel
+                    /*/ Change le titre de la fenêtre modale elle-même
+                    apex.util.getTopApex().jQuery(".ui-dialog-content").dialog("option", "title", "Référence Dossier  " + $v("P10_REF") );
+                    */
+                    // 1. Récupérer la valeur de l'item P10_REF
+                    /*var refValue = $v("P10_REF");
+                    var titreComplet = "DOSSIER : " + refValue;
+                    
+                    // 2. FORCER l'attribut sur le body (C'est l'étape qui manquait dans votre HTML)
+                    $("body").attr("data-page-title", titreComplet);
+                    
+                    // 3. (Optionnel) Vérification console pour être sûr
+                    console.log("Titre injecté pour impression : " + titreComplet);*/
+                    
+                    // 4. Lancer l'impression
+                    window.print();
+                    
+                    ```
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+        action native-show (
+            action: show
+            affectedElements {
+                selectionType: region
+                region: @boutons
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+    )
+
+    process fermer-la-boîte-de-dialogue (
+        name: Fermer la boîte de dialogue
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 20326435549505571032
+        }
+    )
+
+)
+

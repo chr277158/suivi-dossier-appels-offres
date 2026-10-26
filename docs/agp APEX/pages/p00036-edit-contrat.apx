@@ -1,0 +1,1322 @@
+page 36 (
+    name: edit_contrat
+    alias: EDIT_CONTRAT
+    title: edit_contrat &P36_N_CONTRAT_BC.
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region edit-contrat (
+        name: edit-contrat
+        title: &P36_N_CONTRAT_BC.
+        type: form
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select CONTRATS.ID as ID,
+                    CONTRATS.ID_CC as ID_CC,
+                    CONTRATS.N_CONTRAT_BC as N_CONTRAT_BC,
+                    CONTRATS."TITULAIRE_DU_MARCHÉ" as "TITULAIRE_DU_MARCHÉ",
+                    CONTRATS.REF_AO as REF_AO,
+                    CONTRATS.OBJET as OBJET,
+                    CONTRATS.CADRE__PONCTUEL as CADRE__PONCTUEL,
+                    CONTRATS.MONTANT as MONTANT,
+                    CONTRATS.DEVISE as DEVISE,
+                    CONTRATS.DATE_DE_MISE_VIGUEUR as DATE_DE_MISE_VIGUEUR,
+                    CONTRATS."DATE_FIN_DU_MARCHÉ" as "DATE_FIN_DU_MARCHÉ",
+                    CONTRATS.MONTANT_DE_LA_CAUTION as MONTANT_DE_LA_CAUTION,
+                    CONTRATS."DATE_DE_MAIN_LEVÉE" as "DATE_DE_MAIN_LEVÉE",
+                    CONTRATS.N__COMMISSION as N__COMMISSION,
+                    CONTRATS.ETAT as ETAT,
+                    CONTRATS.OBSERVATION_ as OBSERVATION_,
+                    CONTRATS.COL016 as COL016,
+                    CONTRATS.DEMANDEUR as DEMANDEUR,
+                    CONTRATS.RESPONSABLE as RESPONSABLE,
+                    CONTRATS."DATE_DE_LA_PREMIÈRE_PIÈCE_LÉGALE" as "DATE_DE_LA_PREMIÈRE_PIÈCE_LÉGALE",
+                    CONTRATS."DATE_DE_LA_DERNIÈRE_PIÈCE_LÉGALE" as "DATE_DE_LA_DERNIÈRE_PIÈCE_LÉGALE",
+                    CONTRATS.N__ARCHIVAGE as N__ARCHIVAGE,
+                    CONTRATS.DATE_DE_L_ARCHIVAGE as DATE_DE_L_ARCHIVAGE,
+                    CONTRATS.N__RANG_ARCHIVAGE as N__RANG_ARCHIVAGE,
+                    CONTRATS.OBSERVATION as OBSERVATION,
+                    CONTRATS.DATE_LIVRAISON_JURIDIQUE as DATE_LIVRAISON_JURIDIQUE,
+                    CONTRATS.DATE_AVIS_JURIDIQUE as DATE_AVIS_JURIDIQUE,
+                    CONTRATS.DATE_ENVOI_CLIENT_SIGNATURE as DATE_ENVOI_CLIENT_SIGNATURE,
+                    CONTRATS.DATE_RETOUR_CLIENT_SIGNE as DATE_RETOUR_CLIENT_SIGNE,
+                    CONTRATS.DATE_ENVOI_ADMIN_SIGNATURE as DATE_ENVOI_ADMIN_SIGNATURE,
+                    CONTRATS.DATE_RETOUR_ADMIN_SIGNE as DATE_RETOUR_ADMIN_SIGNE,
+                    CONTRATS.DATE_ENVOI_CLIENT_ENREGISTREMENT as DATE_ENVOI_CLIENT_ENREGISTREMENT,
+                    CONTRATS.DATE_RETOUR_ENREGISTRE as DATE_RETOUR_ENREGISTRE,
+                    CONTRATS.DATE_GARANTIE_FINALE as DATE_GARANTIE_FINALE,
+                    CASE
+                      WHEN DATE_FIN_DU_MARCHÉ IS NOT NULL 
+                         AND DATE_FIN_DU_MARCHÉ < SYSDATE
+                    THEN 'Clôturé'   
+                     WHEN DATE_DE_MISE_VIGUEUR <=  SYSDATE
+                         AND (DATE_FIN_DU_MARCHÉ IS NULL 
+                              OR DATE_FIN_DU_MARCHÉ <= SYSDATE)
+                               THEN 'En exécution'
+                    WHEN DATE_GARANTIE_FINALE IS NOT NULL THEN 'Cautionnement Définitif reçue'
+                    WHEN DATE_RETOUR_ENREGISTRE IS NOT NULL THEN 'Contrat enregistré'
+                    WHEN DATE_ENVOI_CLIENT_ENREGISTREMENT IS NOT NULL THEN 'Enregistrement en cours'
+                    WHEN DATE_RETOUR_ADMIN_SIGNE IS NOT NULL THEN 'Signé par administration'
+                    WHEN DATE_ENVOI_ADMIN_SIGNATURE IS NOT NULL THEN 'En attente signature administration'
+                    WHEN DATE_RETOUR_CLIENT_SIGNE IS NOT NULL THEN 'Signé par titulaire'
+                    WHEN DATE_ENVOI_CLIENT_SIGNATURE IS NOT NULL THEN 'En attente signature titulaire'
+                    WHEN DATE_AVIS_JURIDIQUE IS NOT NULL THEN 'Avis juridique reçu'
+                    WHEN DATE_LIVRAISON_JURIDIQUE IS NOT NULL THEN 'En cours avis juridique'
+                
+                   
+                    
+                    ELSE 'Nouveau / Non traité'
+                END AS etat_contrat,
+                  CASE
+                      WHEN "DATE_FIN_DU_MARCHÉ" IS NOT NULL 
+                         AND "DATE_FIN_DU_MARCHÉ" < SYSDATE
+                    THEN  '11'   
+                     WHEN CONTRATS.DATE_DE_MISE_VIGUEUR <=  SYSDATE
+                         AND (CONTRATS."DATE_FIN_DU_MARCHÉ" IS NULL 
+                              OR CONTRATS."DATE_FIN_DU_MARCHÉ" <= SYSDATE) THEN '10'
+                
+                    WHEN DATE_GARANTIE_FINALE IS NOT NULL THEN '9'
+                    WHEN DATE_RETOUR_ENREGISTRE IS NOT NULL THEN '8'
+                    WHEN DATE_ENVOI_CLIENT_ENREGISTREMENT IS NOT NULL THEN '7'
+                    WHEN DATE_RETOUR_ADMIN_SIGNE IS NOT NULL THEN '6'
+                    WHEN DATE_ENVOI_ADMIN_SIGNATURE IS NOT NULL THEN '5'
+                    WHEN DATE_RETOUR_CLIENT_SIGNE IS NOT NULL THEN '4'
+                    WHEN DATE_ENVOI_CLIENT_SIGNATURE IS NOT NULL THEN '3'
+                    WHEN DATE_AVIS_JURIDIQUE IS NOT NULL THEN '2'
+                    WHEN DATE_LIVRAISON_JURIDIQUE IS NOT NULL THEN '1'
+                
+                   
+                    
+                    ELSE '0'
+                END AS etat_cont,
+                
+                
+                
+                    CONTRATS.RESPONSABLE_DOS as RESPONSABLE_DOS 
+                 from CONTRATS CONTRATS
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+            rowCssClasses: -u-color-14-contrast
+            columnCssClasses: u-color-14-contrast
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+            cssClasses: u-color-19-contrast
+            icon: fa-volume-control-phone
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+        editAuthorization {
+            add: @droits-de-contribution
+            delete: @droits-de-contribution
+        }
+    )
+
+    pageItem P36_CADRE__PONCTUEL (
+        type: textField
+        label {
+            label: Cadre  Ponctuel
+            alignment: left
+        }
+        layout {
+            sequence: 110
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 50
+        }
+        source {
+            formRegion: @edit-contrat
+            column: CADRE__PONCTUEL
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_COL016 (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 370
+            region: @edit-contrat
+            slot: regionBody
+        }
+        source {
+            formRegion: @edit-contrat
+            column: COL016
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P36_DATE_AVIS_JURIDIQUE (
+        type: datePicker
+        label {
+            label: Date Avis Juridique
+            alignment: left
+        }
+        layout {
+            sequence: 250
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_AVIS_JURIDIQUE
+            dataType: date
+        }
+    )
+
+    pageItem P36_DATE_DE_LA_DERNIÈRE_PIÈCE_LÉGALE (
+        type: datePicker
+        label {
+            label: Date De La Dernière Pièce Légale
+            alignment: left
+        }
+        layout {
+            sequence: 190
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_DE_LA_DERNIÈRE_PIÈCE_LÉGALE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_DATE_DE_LA_PREMIÈRE_PIÈCE_LÉGALE (
+        type: datePicker
+        label {
+            label: Date De La Première Pièce Légale
+            alignment: left
+        }
+        layout {
+            sequence: 180
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_DE_LA_PREMIÈRE_PIÈCE_LÉGALE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_DATE_DE_L_ARCHIVAGE (
+        type: datePicker
+        label {
+            label: Date De L Archivage
+            alignment: left
+        }
+        layout {
+            sequence: 220
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_DE_L_ARCHIVAGE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_DATE_DE_MAIN_LEVÉE (
+        type: datePicker
+        label {
+            label: Date De Main Levée
+            alignment: left
+        }
+        layout {
+            sequence: 150
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_DE_MAIN_LEVÉE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_DATE_DE_MISE_VIGUEUR (
+        type: datePicker
+        label {
+            label: Date De Mise Vigueur
+            alignment: left
+        }
+        layout {
+            sequence: 120
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_DE_MISE_VIGUEUR
+            dataType: date
+        }
+    )
+
+    pageItem P36_DATE_ENVOI_ADMIN_SIGNATURE (
+        type: datePicker
+        label {
+            label: Date Envoi Admin Signature
+            alignment: left
+        }
+        layout {
+            sequence: 280
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_ENVOI_ADMIN_SIGNATURE
+            dataType: date
+        }
+    )
+
+    pageItem P36_DATE_ENVOI_CLIENT_ENREGISTREMENT (
+        type: datePicker
+        label {
+            label: Date Envoi Client Enregistrement
+            alignment: left
+        }
+        layout {
+            sequence: 300
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_ENVOI_CLIENT_ENREGISTREMENT
+            dataType: date
+        }
+    )
+
+    pageItem P36_DATE_ENVOI_CLIENT_SIGNATURE (
+        type: datePicker
+        label {
+            label: Date Envoi Client Signature
+            alignment: left
+        }
+        layout {
+            sequence: 260
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_ENVOI_CLIENT_SIGNATURE
+            dataType: date
+        }
+    )
+
+    pageItem P36_DATE_FIN_DU_MARCHÉ (
+        type: datePicker
+        label {
+            label: Date Fin Du Marché
+            alignment: left
+        }
+        layout {
+            sequence: 130
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_FIN_DU_MARCHÉ
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_DATE_GARANTIE_FINALE (
+        type: datePicker
+        label {
+            label: Date Garantie Finale
+            alignment: left
+        }
+        layout {
+            sequence: 320
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_GARANTIE_FINALE
+            dataType: date
+        }
+    )
+
+    pageItem P36_DATE_LIVRAISON_JURIDIQUE (
+        type: datePicker
+        label {
+            label: Date Livraison Juridique
+            alignment: left
+        }
+        layout {
+            sequence: 240
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_LIVRAISON_JURIDIQUE
+            dataType: date
+        }
+    )
+
+    pageItem P36_DATE_RETOUR_ADMIN_SIGNE (
+        type: datePicker
+        label {
+            label: Date Retour Admin Signe
+            alignment: left
+        }
+        layout {
+            sequence: 290
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_RETOUR_ADMIN_SIGNE
+            dataType: date
+        }
+    )
+
+    pageItem P36_DATE_RETOUR_CLIENT_SIGNE (
+        type: datePicker
+        label {
+            label: Date Retour Client Signe
+            alignment: left
+        }
+        layout {
+            sequence: 270
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_RETOUR_CLIENT_SIGNE
+            dataType: date
+        }
+    )
+
+    pageItem P36_DATE_RETOUR_ENREGISTRE (
+        type: datePicker
+        label {
+            label: Date Retour Enregistre
+            alignment: left
+        }
+        layout {
+            sequence: 310
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DATE_RETOUR_ENREGISTRE
+            dataType: date
+        }
+    )
+
+    pageItem P36_DEMANDEUR (
+        type: textField
+        label {
+            label: Demandeur
+            alignment: left
+        }
+        layout {
+            sequence: 160
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DEMANDEUR
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_DEVISE (
+        type: popupLov
+        label {
+            label: Devise
+            alignment: left
+        }
+        lov {
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                SELECT 
+                    CASE code
+                        WHEN 'USD' THEN '💵 Dollar (USD)'
+                        WHEN 'EUR' THEN '💶 Euro (EUR)'
+                        WHEN 'TND' THEN '🇹🇳 Dinar (TND)'
+                        ELSE '💰 Autre'
+                    END as display_value,
+                    code as return_value
+                FROM (
+                    SELECT 'USD' as code FROM dual UNION ALL
+                    SELECT 'EUR' FROM dual UNION ALL
+                    SELECT 'TND' FROM dual UNION ALL
+                    SELECT 'OTHER' FROM dual
+                )
+                ```
+        }
+        layout {
+            sequence: 100
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @edit-contrat
+            column: DEVISE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_ETAT (
+        type: displayOnly
+        label {
+            label: Etat
+            alignment: left
+        }
+        layout {
+            sequence: 60
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @edit-contrat
+            column: ETAT
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P36_ETAT_1 (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 360
+            region: @edit-contrat
+            slot: regionBody
+        }
+        source {
+            formRegion: @edit-contrat
+            column: ETAT
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P36_ETAT_CONT (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 390
+            region: @edit-contrat
+            slot: regionBody
+        }
+        source {
+            formRegion: @edit-contrat
+            column: ETAT_CONT
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P36_ETAT_CONTRAT (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 380
+            region: @edit-contrat
+            slot: regionBody
+        }
+        source {
+            formRegion: @edit-contrat
+            column: ETAT_CONTRAT
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P36_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @edit-contrat
+            slot: regionBody
+        }
+        source {
+            formRegion: @edit-contrat
+            column: ID
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P36_ID_CC (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @edit-contrat
+            slot: regionBody
+        }
+        source {
+            formRegion: @edit-contrat
+            column: ID_CC
+            dataType: number
+        }
+    )
+
+    pageItem P36_MONTANT (
+        type: textField
+        label {
+            label: Montant
+            alignment: left
+        }
+        layout {
+            sequence: 90
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @edit-contrat
+            column: MONTANT
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_MONTANT_DE_LA_CAUTION (
+        type: textField
+        label {
+            label: Montant De La Caution
+            alignment: left
+        }
+        layout {
+            sequence: 140
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @edit-contrat
+            column: MONTANT_DE_LA_CAUTION
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_N_CONTRAT_BC (
+        type: textField
+        label {
+            label: N Contrat Bc
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 50
+        }
+        source {
+            formRegion: @edit-contrat
+            column: N_CONTRAT_BC
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_N__ARCHIVAGE (
+        type: textField
+        label {
+            label: N  Archivage
+            alignment: left
+        }
+        layout {
+            sequence: 210
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @edit-contrat
+            column: N__ARCHIVAGE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_N__COMMISSION (
+        type: textField
+        label {
+            label: N  Commission
+            alignment: left
+        }
+        layout {
+            sequence: 80
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        source {
+            formRegion: @edit-contrat
+            column: N__COMMISSION
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_N__RANG_ARCHIVAGE (
+        type: textField
+        label {
+            label: N  Rang Archivage
+            alignment: left
+        }
+        layout {
+            sequence: 230
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @edit-contrat
+            column: N__RANG_ARCHIVAGE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_OBJET (
+        type: richTextEditor
+        label {
+            label: Objet
+            alignment: left
+        }
+        settings {
+            minHeight: 180
+        }
+        layout {
+            sequence: 70
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @edit-contrat
+            column: OBJET
+            dataType: varchar2
+        }
+        default {
+            type: sqlQuerySingleValue
+            sqlQuerySingleValue:
+                ```sql
+                select CC.OBJET_CCT as OBJET_CCT 
+                 from CC CC 
+                 where CC.REF_AO=:P36_REF_AO
+                ```
+        }
+    )
+
+    pageItem P36_OBSERVATION (
+        type: textarea
+        label {
+            label: Observation
+            alignment: left
+        }
+        layout {
+            sequence: 330
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+            height: 4
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @edit-contrat
+            column: OBSERVATION
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_OBSERVATION_ (
+        type: textarea
+        label {
+            label: "Observation "
+            alignment: left
+        }
+        layout {
+            sequence: 340
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+            newColumn: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+            height: 4
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @edit-contrat
+            column: OBSERVATION_
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_REF_AO (
+        type: textField
+        label {
+            label: Ref Ao
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 50
+        }
+        source {
+            formRegion: @edit-contrat
+            column: REF_AO
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_RESPONSABLE (
+        type: textField
+        label {
+            label: Responsable
+            alignment: left
+        }
+        layout {
+            sequence: 170
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 50
+        }
+        source {
+            formRegion: @edit-contrat
+            column: RESPONSABLE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_RESPONSABLE_DOS (
+        type: textField
+        label {
+            label: Responsable Dos
+            alignment: left
+        }
+        layout {
+            sequence: 350
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            column: 4
+            columnSpan: 4
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @edit-contrat
+            column: RESPONSABLE_DOS
+            dataType: varchar2
+        }
+    )
+
+    pageItem P36_TITULAIRE_DU_MARCHÉ (
+        type: textField
+        label {
+            label: Titulaire Du Marché
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            region: @edit-contrat
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @edit-contrat
+            column: TITULAIRE_DU_MARCHÉ
+            dataType: varchar2
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Créer
+        layout {
+            sequence: 40
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P36_ID
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Supprimer
+        layout {
+            sequence: 20
+            region: @boutons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P36_ID
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Appliquer les modifications
+        layout {
+            sequence: 30
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P36_ID
+        }
+    )
+
+    computation p36-etat (
+        itemName: P36_ETAT
+        execution {
+            sequence: 10
+        }
+        computation {
+            type: sqlQueryMultipleValues
+            sqlQuery:
+                ```sql
+                select 
+                    
+                   
+                   
+                    CASE
+                      WHEN DATE_FIN_DU_MARCHÉ IS NOT NULL 
+                         AND DATE_FIN_DU_MARCHÉ < SYSDATE
+                    THEN 'Clôturé'   
+                     WHEN DATE_DE_MISE_VIGUEUR <=  SYSDATE
+                         AND (DATE_FIN_DU_MARCHÉ IS NULL 
+                              OR DATE_FIN_DU_MARCHÉ <= SYSDATE)
+                               THEN 'En exécution'
+                    WHEN DATE_GARANTIE_FINALE IS NOT NULL THEN 'Cautionnement Définitif reçue'
+                    WHEN DATE_RETOUR_ENREGISTRE IS NOT NULL THEN 'Contrat enregistré'
+                    WHEN DATE_ENVOI_CLIENT_ENREGISTREMENT IS NOT NULL THEN 'Enregistrement en cours'
+                    WHEN DATE_RETOUR_ADMIN_SIGNE IS NOT NULL THEN 'Signé par administration'
+                    WHEN DATE_ENVOI_ADMIN_SIGNATURE IS NOT NULL THEN 'En attente signature administration'
+                    WHEN DATE_RETOUR_CLIENT_SIGNE IS NOT NULL THEN 'Signé par titulaire'
+                    WHEN DATE_ENVOI_CLIENT_SIGNATURE IS NOT NULL THEN 'En attente signature titulaire'
+                    WHEN DATE_AVIS_JURIDIQUE IS NOT NULL THEN 'Avis juridique reçu'
+                    WHEN DATE_LIVRAISON_JURIDIQUE IS NOT NULL THEN 'En cours avis juridique'
+                
+                   
+                    
+                    ELSE 'Nouveau / Non traité'
+                END AS etat_contrat
+                 
+                
+                
+                
+                   
+                 from CONTRATS CONTRATS 
+                ```
+        }
+    )
+
+    process fermer-la-boîte-de-dialogue (
+        name: Fermer la boîte de dialogue
+        type: closeDialog
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 31075540114582318
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+    process initialiser-le-panneau-edit-contrat (
+        name: Initialiser le panneau edit_contrat
+        type: formInitialization
+        formRegion: @edit-contrat
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 31074712008582318
+        }
+    )
+
+    process traiter-le-panneau-edit-contrat (
+        name: Traiter le panneau edit_contrat
+        type: formAutoRowProcessing
+        formRegion: @edit-contrat
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 31075134006582318
+        }
+    )
+
+)
+

@@ -1,0 +1,355 @@
+page 18 (
+    name: ETAT AFFICHAGE PUBLIC
+    alias: ETAT-AFFICHAGE-PUBLIC1
+    title: ETAT AFFICHAGE PUBLIC
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region etat-affichage-public (
+        name: ETAT AFFICHAGE PUBLIC
+        type: form
+        source {
+            location: localDatabase
+            tableName: DEMANDE_CLARIFICATION
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    pageItem P18_EFFECTUER (
+        type: checkbox
+        label {
+            label: Effectuer
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @etat-affichage-public
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @etat-affichage-public
+            column: EFFECTUER
+            dataType: varchar2
+        }
+    )
+
+    pageItem P18_EFFECTUÉ_LE (
+        type: datePicker
+        label {
+            label: Effectué Le
+            alignment: right
+        }
+        layout {
+            sequence: 40
+            region: @etat-affichage-public
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @etat-affichage-public
+            column: EFFECTUÉ_LE
+            dataType: date
+        }
+    )
+
+    pageItem P18_ENVOYER (
+        type: checkbox
+        label {
+            label: Envoyer
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            region: @etat-affichage-public
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @etat-affichage-public
+            column: ENVOYER
+            dataType: varchar2
+        }
+    )
+
+    pageItem P18_ENVOYÉ_LE (
+        type: datePicker
+        label {
+            label: Envoyé Le
+            alignment: right
+        }
+        layout {
+            sequence: 60
+            region: @etat-affichage-public
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @etat-affichage-public
+            column: ENVOYÉ_LE
+            dataType: date
+        }
+    )
+
+    pageItem P18_ID_AVIS (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @etat-affichage-public
+            slot: regionBody
+        }
+        source {
+            formRegion: @etat-affichage-public
+            column: ID_AVIS
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P18_REF_AE (
+        type: textField
+        label {
+            label: Ref Ae
+            alignment: left
+        }
+        settings {
+            disabled: true
+            sendOnPageSubmit: true
+        }
+        layout {
+            sequence: 20
+            region: @etat-affichage-public
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @etat-affichage-public
+            column: REF_AE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P18_REMARQUES (
+        type: textarea
+        label {
+            label: Remarques
+            alignment: left
+        }
+        layout {
+            sequence: 80
+            region: @etat-affichage-public
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 5
+        }
+        validation {
+            maxLength: 500
+        }
+        source {
+            formRegion: @etat-affichage-public
+            column: REMARQUES
+            dataType: varchar2
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Create
+        layout {
+            sequence: 40
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P18_ID_AVIS
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Apply Changes
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+            icon: fa-thumbs-o-up
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P18_ID_AVIS
+        }
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 44698365181470824490
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+    process initialize-form-etat-affichage-public (
+        name: Initialize form ETAT AFFICHAGE PUBLIC
+        type: formInitialization
+        formRegion: @etat-affichage-public
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 44698364347719824489
+        }
+    )
+
+    process process-form-etat-affichage-public (
+        name: Process form ETAT AFFICHAGE PUBLIC
+        type: formAutoRowProcessing
+        formRegion: @etat-affichage-public
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 44698364725972824490
+        }
+    )
+
+)
+

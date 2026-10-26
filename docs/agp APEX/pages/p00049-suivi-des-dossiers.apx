@@ -1,0 +1,1582 @@
+page 49 (
+    name: Suivi des Dossiers
+    alias: SUIVI-DES-DOSSIERS
+    title: Suivi des Dossiers
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        executeWhenPageLoads:
+            ```javascript-browser
+            // On attend un court instant que le widget IG Single Row View soit rendu
+            setTimeout(function() {
+                $(".a-RV-body .a-Collapsible.is-expanded button").each(function() {
+                    $(this).click();
+                });
+            }, 50);
+            ```
+    }
+    css {
+        inline:
+            ```css
+            /* 1) Donne une hauteur plus grande à la zone header (optionnel) */
+            .myClass .a-GV-header{
+              height: 60px;         /* Ajuste selon ton besoin */
+              line-height: 50px;     /* Optionnel: vertical align/centrage */
+              padding: 5px;
+              white-space: normal;   /* Autorise le retour à la ligne */
+              overflow-wrap: break-word;
+              word-wrap: break-word;
+            }
+            
+            /* 2) Force le texte du libellé à se wrapper */
+            .myClass .a-GV-header .a-GV-headerLabel{
+              white-space: normal;
+              overflow-wrap: break-word;
+              word-wrap: break-word;
+              height: auto;
+              line-height: 1.1;      /* Plus naturel pour du multi-ligne */
+              padding: 5px;
+            }
+            
+            
+            
+            
+            /* 2 colonnes pour la Single Row View */
+            .u-Form {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr  ;
+                gap: 10px;
+            }
+            
+            .a-RV .u-Form-inputContainer {
+                align-items: baseline;
+                background-color: #dddde6;
+            }
+            
+            /* Style général */
+            .a-IG-recordView {
+                background-color: #f0f4ff;
+            }
+            
+            .u-Form-label {
+                font-size: 13px !important;
+                font-weight: bold;
+            
+            }
+            
+            .apex-item-text,
+            .apex-item-select,
+            .apex-item-textarea {
+                font-size: 13px !important;
+                font-weight: bold;
+                border-radius: 10px !important;
+            }
+            
+            
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region nouveau (
+        name: Nouveau
+        title: Dossiers  &P49_NEW_1.
+        type: staticContent
+        layout {
+            sequence: 13
+            slot: contentBody
+            column: 5
+            columnSpan: 4
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--accent2
+                t-Region--noBorder
+                js-headingLevel-1
+                t-Region--hiddenOverflow
+                t-Form--large
+                t-Form--leftLabels
+                t-Region-orderBy--center
+            ]
+            cssClasses: [
+                zoom:
+                150%;
+            ]
+        }
+    )
+
+    region suivi-des-dossiers (
+        name: "suivi des Dossiers "
+        title: suivi des Dossiers
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select SP.ID,
+                       SP."عدد",
+                       SP."طريقة_ابرام_الصفقة",
+                       SP."نوعية_الطلب",
+                       SP."اللجنة_المختصة",
+                       SP."تاريخ_ورود_CPT_ممضاة",
+                       SP."تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم",
+                       SP."تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم",
+                       SP."تاريخ_تقديم_كراسات_الشروط_للمصادقة",
+                       SP."تاريخ_مصادقة_اللجنة_على_كراسات_الشروط",
+                       SP."تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط",
+                       SP."تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر",
+                       SP."تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2",
+                       SP."التاريخ__للإعلان_عن_المنافسة",
+                       SP."تاريخ_ارسال_التقرير_للتقييم_الفني",
+                       SP."تاريخ_امضاء_تقرير_تقييم_العروض",
+                       SP."تاريخ_تقديم_الملف_للجنة_الشراءات",
+                       SP."تاريخ__لجنة_الصفقات",
+                       SP."تاريخ_قرار__لجنة_الصفقات",
+                       SP."تاريخ_نشر_نتائج_المنافسة",
+                       SP.REF_AO,
+                       SP.OBJET_CCT,
+                       SP.BUDGET,
+                       SP."DÉTAIL_DE_RÉPONSE",
+                       SP.NATURE_DE_DEPENSE,
+                       SP."DATE_LIMITE_PROPOSÉE",
+                       SP.DATE_DE_LANC,
+                       SP.DATE_OUVERTURE_DES_PLIS,
+                       SP.STATUS,
+                       SP."DATE_CRÉATION",
+                          case when SP."اللجنة_المختصة" = 'CRA' then 40 else 4 end as P,
+                    case when SP."اللجنة_المختصة" = 'CRA' then 'P40_ID_1' else 'P4_ID_1' end as VID1,
+                    case when SP."اللجنة_المختصة" = 'CRA' then 'P40_ID_2' else 'P4_ID_2' end as VID2,
+                    case when SP."اللجنة_المختصة" = 'CRA' then 'P40_ID' else 'P4_ID' end as VID,
+                       CREER_PAR,
+                        fl.ID as FL_ID,
+                    fl.ID_CC 
+                 from FICHIER_LNCEMENT fl,
+                  CC_SP_STAT SP
+                 where STATUS = :P49_NEW AND  fl.ID_CC =SP.ID
+                ```
+        }
+        layout {
+            sequence: 23
+            slot: contentBody
+            rowCssClasses: myClass
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        accessibility {
+            landmarkType: region
+        }
+        advanced {
+            htmlDomId: mregion
+            regionDisplaySelector: true
+        }
+        edit {
+            enabled: true
+            allowedOperations: delete
+        }
+        editAuthorization {
+            delete: @droits-d-administration
+        }
+        componentAppearance {
+            selectFirstRow: false
+            fixedRowHeight: false
+        }
+        pagination {
+            type: page
+            showTotalCount: false
+        }
+        toolbar {
+            controls: [
+                searchField
+                actionsMenu
+            ]
+        }
+        download {
+            formats: [
+                csv
+                html
+                excel
+                pdf
+            ]
+        }
+        advanced {
+            savedReportMappingIdentifier: 66036329230227818
+        }
+
+        savedReport 329899 (
+            visibility: primary
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @P
+                layout {
+                    width: 44.9931
+                    sequence: 33
+                }
+            )
+
+            displayColumn (
+                column: @VID1
+                layout {
+                    width: 66.9861
+                    sequence: 34
+                }
+            )
+
+            displayColumn (
+                column: @VID2
+                layout {
+                    sequence: 35
+                }
+            )
+
+            displayColumn (
+                column: @VID
+                layout {
+                    sequence: 36
+                }
+            )
+
+            displayColumn (
+                column: @FL_ID
+                layout {
+                    sequence: 37
+                }
+            )
+
+            displayColumn (
+                column: @ID_CC
+                layout {
+                    sequence: 38
+                }
+            )
+
+            displayColumn (
+                column: @OBJET_CCT
+                layout {
+                    width: 352.927
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @BUDGET
+                layout {
+                    width: 88.9826
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @DÉTAIL_DE_RÉPONSE
+                layout {
+                    show: false
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @NATURE_DE_DEPENSE
+                layout {
+                    sequence: 7
+                }
+            )
+
+            displayColumn (
+                column: @DATE_LIMITE_PROPOSÉE
+                layout {
+                    show: false
+                    sequence: 9
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DE_LANC
+                layout {
+                    width: 76.9688
+                    sequence: 11
+                }
+            )
+
+            displayColumn (
+                column: @STATUS
+                layout {
+                    show: false
+                    sequence: 13
+                }
+            )
+
+            displayColumn (
+                column: @CREER_PAR
+                layout {
+                    show: false
+                    sequence: 14
+                }
+            )
+
+            displayColumn (
+                column: @DATE_OUVERTURE_DES_PLIS
+                layout {
+                    width: 81.979
+                    sequence: 16
+                }
+            )
+
+            displayColumn (
+                column: @DATE_CRÉATION
+                layout {
+                    show: false
+                    width: 62.1007
+                    sequence: 12
+                }
+            )
+
+            displayColumn (
+                column: @عدد
+                layout {
+                    show: false
+                    sequence: 17
+                }
+            )
+
+            displayColumn (
+                column: @طريقة_ابرام_الصفقة
+                layout {
+                    width: 60.9965
+                    sequence: 8
+                }
+            )
+
+            displayColumn (
+                column: @نوعية_الطلب
+                layout {
+                    width: 55.1007
+                    sequence: 15
+                }
+            )
+
+            displayColumn (
+                column: @اللجنة_المختصة
+                layout {
+                    sequence: 10
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ورود_CPT_ممضاة
+                layout {
+                    sequence: 18
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم
+                layout {
+                    sequence: 19
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم
+                layout {
+                    sequence: 20
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_تقديم_كراسات_الشروط_للمصادقة
+                layout {
+                    sequence: 21
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_مصادقة_اللجنة_على_كراسات_الشروط
+                layout {
+                    sequence: 22
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط
+                layout {
+                    show: false
+                    sequence: 23
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر
+                layout {
+                    show: false
+                    sequence: 24
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2
+                layout {
+                    sequence: 25
+                }
+            )
+
+            displayColumn (
+                column: @التاريخ__للإعلان_عن_المنافسة
+                layout {
+                    show: false
+                    sequence: 26
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ارسال_التقرير_للتقييم_الفني
+                layout {
+                    show: false
+                    sequence: 27
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_امضاء_تقرير_تقييم_العروض
+                layout {
+                    show: false
+                    sequence: 28
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_تقديم_الملف_للجنة_الشراءات
+                layout {
+                    show: false
+                    sequence: 29
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ__لجنة_الصفقات
+                layout {
+                    show: false
+                    sequence: 30
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_قرار__لجنة_الصفقات
+                layout {
+                    width: 83.9931
+                    sequence: 31
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_نشر_نتائج_المنافسة
+                layout {
+                    sequence: 32
+                }
+            )
+
+            displayColumn (
+                column: @ID
+                layout {
+                    width: 40.9965
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @REF_AO
+                layout {
+                    width: 88.91999999999999
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    frozen: true
+                    sequence: 1
+                }
+            )
+
+        )
+
+        savedReport 333041 (
+            visibility: alternative
+            name: initial
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+            security {
+                authorizationScheme: @droits-de-lecteur
+            }
+
+            displayColumn (
+                column: @P
+                layout {
+                    show: false
+                    sequence: 33
+                }
+            )
+
+            displayColumn (
+                column: @VID1
+                layout {
+                    show: false
+                    sequence: 34
+                }
+            )
+
+            displayColumn (
+                column: @VID2
+                layout {
+                    show: false
+                    sequence: 35
+                }
+            )
+
+            displayColumn (
+                column: @VID
+                layout {
+                    show: false
+                    sequence: 36
+                }
+            )
+
+            displayColumn (
+                column: @FL_ID
+                layout {
+                    show: false
+                    sequence: 37
+                }
+            )
+
+            displayColumn (
+                column: @ID_CC
+                layout {
+                    show: false
+                    sequence: 38
+                }
+            )
+
+            displayColumn (
+                column: @OBJET_CCT
+                layout {
+                    width: 315.972
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @BUDGET
+                layout {
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @DÉTAIL_DE_RÉPONSE
+                layout {
+                    show: false
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @NATURE_DE_DEPENSE
+                layout {
+                    sequence: 7
+                }
+            )
+
+            displayColumn (
+                column: @DATE_LIMITE_PROPOSÉE
+                layout {
+                    show: false
+                    sequence: 9
+                }
+            )
+
+            displayColumn (
+                column: @DATE_DE_LANC
+                layout {
+                    width: 79.9896
+                    sequence: 11
+                }
+            )
+
+            displayColumn (
+                column: @STATUS
+                layout {
+                    show: false
+                    sequence: 13
+                }
+            )
+
+            displayColumn (
+                column: @CREER_PAR
+                layout {
+                    show: false
+                    sequence: 14
+                }
+            )
+
+            displayColumn (
+                column: @DATE_OUVERTURE_DES_PLIS
+                layout {
+                    width: 81.979
+                    sequence: 16
+                }
+            )
+
+            displayColumn (
+                column: @DATE_CRÉATION
+                layout {
+                    width: 80.0903
+                    sequence: 12
+                }
+            )
+
+            displayColumn (
+                column: @عدد
+                layout {
+                    show: false
+                    sequence: 17
+                }
+            )
+
+            displayColumn (
+                column: @طريقة_ابرام_الصفقة
+                layout {
+                    sequence: 8
+                }
+            )
+
+            displayColumn (
+                column: @نوعية_الطلب
+                layout {
+                    sequence: 15
+                }
+            )
+
+            displayColumn (
+                column: @اللجنة_المختصة
+                layout {
+                    sequence: 10
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ورود_CPT_ممضاة
+                layout {
+                    width: 78.6493
+                    sequence: 18
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم
+                layout {
+                    sequence: 19
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم
+                layout {
+                    sequence: 20
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_تقديم_كراسات_الشروط_للمصادقة
+                layout {
+                    width: 82.6562
+                    sequence: 21
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_مصادقة_اللجنة_على_كراسات_الشروط
+                layout {
+                    width: 85.6528
+                    sequence: 22
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط
+                layout {
+                    show: false
+                    sequence: 23
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر
+                layout {
+                    show: false
+                    sequence: 24
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2
+                layout {
+                    width: 87.6528
+                    sequence: 25
+                }
+            )
+
+            displayColumn (
+                column: @التاريخ__للإعلان_عن_المنافسة
+                layout {
+                    show: false
+                    sequence: 26
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_ارسال_التقرير_للتقييم_الفني
+                layout {
+                    show: false
+                    sequence: 27
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_امضاء_تقرير_تقييم_العروض
+                layout {
+                    show: false
+                    sequence: 28
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_تقديم_الملف_للجنة_الشراءات
+                layout {
+                    show: false
+                    sequence: 29
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ__لجنة_الصفقات
+                layout {
+                    show: false
+                    sequence: 30
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_قرار__لجنة_الصفقات
+                layout {
+                    width: 82.6493
+                    sequence: 31
+                }
+            )
+
+            displayColumn (
+                column: @تاريخ_نشر_نتائج_المنافسة
+                layout {
+                    sequence: 32
+                }
+            )
+
+            displayColumn (
+                column: @ID
+                layout {
+                    width: 44.642399999999995
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @REF_AO
+                layout {
+                    width: 90.93799999999999
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    frozen: true
+                    sequence: 1
+                }
+            )
+
+        )
+
+        columnGroup archivage (
+            heading: Archivage
+        )
+
+        columnGroup données-du-dossier (
+            heading: Données Du Dossier
+        )
+
+        columnGroup etapes-de-réalisation (
+            heading: Etapes De réalisation
+        )
+
+        columnGroup service-demandeur (
+            heading: "Service Demandeur "
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 20
+            }
+        )
+
+        column BUDGET (
+            type: displayOnly
+            heading {
+                heading: Budget
+            }
+            layout {
+                sequence: 80
+                group: @données-du-dossier
+            }
+            source {
+                databaseColumn: BUDGET
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column CREER_PAR (
+            type: displayOnly
+            heading {
+                heading: Creer Par
+            }
+            layout {
+                sequence: 680
+                group: @données-du-dossier
+            }
+            source {
+                databaseColumn: CREER_PAR
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column DATE_CRÉATION (
+            type: displayOnly
+            heading {
+                heading: Date Création
+            }
+            layout {
+                sequence: 710
+                group: @données-du-dossier
+            }
+            source {
+                databaseColumn: DATE_CRÉATION
+                dataType: date
+            }
+        )
+
+        column DATE_DE_LANC (
+            type: displayOnly
+            heading {
+                heading: Date De Lanc
+            }
+            layout {
+                sequence: 120
+                group: @données-du-dossier
+            }
+            source {
+                databaseColumn: DATE_DE_LANC
+                dataType: date
+            }
+        )
+
+        column DATE_LIMITE_PROPOSÉE (
+            type: displayOnly
+            heading {
+                heading: Date Limite Proposée
+            }
+            layout {
+                sequence: 110
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: DATE_LIMITE_PROPOSÉE
+                dataType: date
+            }
+        )
+
+        column DATE_OUVERTURE_DES_PLIS (
+            type: displayOnly
+            heading {
+                heading: Date Ouverture Des Plis
+            }
+            layout {
+                sequence: 700
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: DATE_OUVERTURE_DES_PLIS
+                dataType: date
+            }
+        )
+
+        column DÉTAIL_DE_RÉPONSE (
+            type: displayOnly
+            heading {
+                heading: Détail De Réponse
+            }
+            layout {
+                sequence: 90
+                group: @données-du-dossier
+            }
+            source {
+                databaseColumn: DÉTAIL_DE_RÉPONSE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column FL_ID (
+            type: hidden
+            layout {
+                sequence: 950
+            }
+            source {
+                databaseColumn: FL_ID
+                dataType: number
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column ID (
+            type: link
+            heading {
+                alignment: center
+            }
+            layout {
+                sequence: 30
+                columnAlignment: center
+            }
+            link {
+                target: {
+                    page: &P.
+                    items: {
+                        "&VID2.": &FL_ID.
+                        "&VID1.": &ID.
+                        "&VID.": &ID.
+                    }
+                    clearCache: &P.
+                }
+                linkText: <img src="#APEX_FILES#app_ui/img/icons/apex-edit-pencil-alt.png" class="apex-edit-pencil-alt" alt="">
+            }
+            source {
+                databaseColumn: ID
+                dataType: number
+                queryOnly: true
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column ID_CC (
+            type: hidden
+            layout {
+                sequence: 960
+            }
+            source {
+                databaseColumn: ID_CC
+                dataType: number
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column NATURE_DE_DEPENSE (
+            type: displayOnly
+            heading {
+                heading: Nature De Depense
+            }
+            layout {
+                sequence: 100
+                group: @données-du-dossier
+            }
+            source {
+                databaseColumn: NATURE_DE_DEPENSE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column OBJET_CCT (
+            type: displayOnly
+            heading {
+                heading: Objet Cct
+            }
+            layout {
+                sequence: 70
+                group: @données-du-dossier
+            }
+            source {
+                databaseColumn: OBJET_CCT
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+        )
+
+        column P (
+            type: hidden
+            layout {
+                sequence: 910
+            }
+            source {
+                databaseColumn: P
+                dataType: number
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column REF_AO (
+            type: displayOnly
+            heading {
+                heading: Ref Ao
+            }
+            layout {
+                sequence: 50
+                group: @données-du-dossier
+            }
+            source {
+                databaseColumn: REF_AO
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column STATUS (
+            type: displayOnly
+            heading {
+                heading: Status
+            }
+            layout {
+                sequence: 670
+                group: @données-du-dossier
+            }
+            source {
+                databaseColumn: STATUS
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column VID (
+            type: hidden
+            layout {
+                sequence: 940
+            }
+            source {
+                databaseColumn: VID
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column VID1 (
+            type: hidden
+            layout {
+                sequence: 920
+            }
+            source {
+                databaseColumn: VID1
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column VID2 (
+            type: hidden
+            layout {
+                sequence: 930
+            }
+            source {
+                databaseColumn: VID2
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column التاريخ__للإعلان_عن_المنافسة (
+            type: displayOnly
+            heading {
+                heading: التاريخ للإعلان عن المنافسة
+            }
+            layout {
+                sequence: 840
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: التاريخ__للإعلان_عن_المنافسة
+                dataType: date
+            }
+        )
+
+        column اللجنة_المختصة (
+            type: displayOnly
+            heading {
+                heading: اللجنة المختصة
+            }
+            layout {
+                sequence: 750
+                group: @données-du-dossier
+            }
+            source {
+                databaseColumn: اللجنة_المختصة
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column تاريخ__لجنة_الصفقات (
+            type: displayOnly
+            heading {
+                heading: تاريخ لجنة الصفقات
+            }
+            layout {
+                sequence: 880
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ__لجنة_الصفقات
+                dataType: date
+            }
+        )
+
+        column تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر (
+            type: displayOnly
+            heading {
+                heading: تاريخ ارجاع كراسات الشروط حسب المحضر
+            }
+            layout {
+                sequence: 820
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ_ارجاع_كراسات_الشروط_حسب_المحضر
+                dataType: date
+            }
+        )
+
+        column تاريخ_ارسال_التقرير_للتقييم_الفني (
+            type: displayOnly
+            heading {
+                heading: تاريخ ارسال التقرير للتقييم الفني
+            }
+            layout {
+                sequence: 850
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ_ارسال_التقرير_للتقييم_الفني
+                dataType: date
+            }
+        )
+
+        column تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم (
+            type: displayOnly
+            heading {
+                heading: تاريخ ارسال مقترح تركيبة لجنة التقييم
+            }
+            layout {
+                sequence: 770
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ_ارسال_مقترح_تركيبة_لجنة_التقييم
+                dataType: date
+            }
+        )
+
+        column تاريخ_امضاء_تقرير_تقييم_العروض (
+            type: displayOnly
+            heading {
+                heading: تاريخ امضاء تقرير تقييم العروض
+            }
+            layout {
+                sequence: 860
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ_امضاء_تقرير_تقييم_العروض
+                dataType: date
+            }
+        )
+
+        column تاريخ_تقديم_الملف_للجنة_الشراءات (
+            type: displayOnly
+            heading {
+                heading: تاريخ تقديم الملف للجنة الشراءات
+            }
+            layout {
+                sequence: 870
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ_تقديم_الملف_للجنة_الشراءات
+                dataType: date
+            }
+        )
+
+        column تاريخ_تقديم_كراسات_الشروط_للمصادقة (
+            type: displayOnly
+            heading {
+                heading: تاريخ تقديم كراسات الشروط للمصادقة
+            }
+            layout {
+                sequence: 790
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ_تقديم_كراسات_الشروط_للمصادقة
+                dataType: date
+            }
+        )
+
+        column تاريخ_قرار__لجنة_الصفقات (
+            type: displayOnly
+            heading {
+                heading: تاريخ قرار لجنة الصفقات
+            }
+            layout {
+                sequence: 890
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ_قرار__لجنة_الصفقات
+                dataType: date
+            }
+        )
+
+        column تاريخ_مصادقة_اللجنة_على_كراسات_الشروط (
+            type: displayOnly
+            heading {
+                heading: تاريخ مصادقة اللجنة على كراسات الشروط
+            }
+            layout {
+                sequence: 800
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ_مصادقة_اللجنة_على_كراسات_الشروط
+                dataType: date
+            }
+        )
+
+        column تاريخ_نشر_نتائج_المنافسة (
+            type: displayOnly
+            heading {
+                heading: تاريخ نشر نتائج المنافسة
+            }
+            layout {
+                sequence: 900
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ_نشر_نتائج_المنافسة
+                dataType: date
+            }
+        )
+
+        column تاريخ_ورود_CPT_ممضاة (
+            type: displayOnly
+            heading {
+                heading: تاريخ ورود Cpt ممضاة
+            }
+            layout {
+                sequence: 760
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ_ورود_CPT_ممضاة
+                dataType: date
+            }
+        )
+
+        column تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم (
+            type: displayOnly
+            heading {
+                heading: تاريخ ورود تعيين تركيبة لجنة التقييم
+            }
+            layout {
+                sequence: 780
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ_ورود_تعيين_تركيبة_لجنة_التقييم
+                dataType: date
+            }
+        )
+
+        column تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط (
+            type: displayOnly
+            heading {
+                heading: تاريخ ورود محضر مصادقة اللجنة على كراسات الشروط
+            }
+            layout {
+                sequence: 810
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط
+                dataType: date
+            }
+        )
+
+        column تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2 (
+            type: displayOnly
+            heading {
+                heading: تاريخ ورود محضر مصادقة اللجنة على كراسات الشروط2
+            }
+            layout {
+                sequence: 830
+                group: @etapes-de-réalisation
+            }
+            source {
+                databaseColumn: تاريخ_ورود_محضر_مصادقة_اللجنة_على_كراسات_الشروط2
+                dataType: date
+            }
+        )
+
+        column طريقة_ابرام_الصفقة (
+            type: displayOnly
+            heading {
+                heading: طريقة ابرام الصفقة
+            }
+            layout {
+                sequence: 730
+                group: @données-du-dossier
+            }
+            source {
+                databaseColumn: طريقة_ابرام_الصفقة
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column عدد (
+            type: hidden
+            layout {
+                sequence: 720
+            }
+            source {
+                databaseColumn: عدد
+                dataType: varchar2
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column نوعية_الطلب (
+            type: displayOnly
+            heading {
+                heading: نوعية الطلب
+            }
+            layout {
+                sequence: 740
+                group: @données-du-dossier
+            }
+            source {
+                databaseColumn: نوعية_الطلب
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        page {
+            size: a4
+            units: millimeters
+            width: 297
+            height: 210
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: suivi des Dossiers
+        }
+    )
+
+    pageItem P49_NEW (
+        type: hidden
+        layout {
+            sequence: 33
+            slot: contentBody
+        }
+    )
+
+    pageItem P49_NEW_1 (
+        type: hidden
+        layout {
+            sequence: 43
+            slot: contentBody
+        }
+    )
+
+    dynamicAction new (
+        name: New
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosecanceldialog
+            selectionType: region
+            region: @suivi-des-dossiers
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @suivi-des-dossiers
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process contrat-en-fonction-d-etat-enregistrer-les-données-de-grille-interactive (
+        name: contrat en fonction d'etat - Enregistrer les données de grille interactive
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @suivi-des-dossiers
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 33115912709469310
+        }
+    )
+
+)
+

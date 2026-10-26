@@ -1,0 +1,271 @@
+page 5 (
+    name: Calendrier
+    alias: CALENDRIER
+    title: Calendrier
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: [
+            #DEFAULT#
+            js-pageStickyMobileHeader
+        ]
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region calendrier (
+        name: Calendrier
+        type: calendar
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select ID,
+                       ID_CC,
+                       "Titre",
+                       case WHEN FMD.ID_CC <> 0 THEN "Titre" || '  ' || CRA || CRA2 END AS TITRE2 ,
+                       PROPOSITION_COMMISSION,
+                       PC,
+                       DATE_PROPOSITION,
+                       CC_POUR_LANCEMENT,
+                       CC,
+                       DATE_CC,
+                       CRITERES_EVALUATION,
+                       CE,
+                       DATE_CRITERES,
+                       AVIS_DE_PRESSE,
+                       AP,
+                       DATE_AVIS,
+                       DESIGNATION_DE_LA_COMMISSION,
+                       DC,
+                       DATE_DESIGNATION,
+                       PROGRAM_LANC,
+                       PL,
+                       DATE_PROGRAM_LANC,
+                       MAIL_PRESTATAIRE,
+                       MP,
+                       DATE_MAIL,
+                       PROGRAMME_OUVERTURE_DE_PLIS,
+                       POP,
+                       DATE_PROGRAM_OUVERTURE,
+                       NOTE_OUVERTURE_PLIS,
+                       NOP,
+                       DATE_NOTE_OP,
+                       CAUTION_P,
+                       STATUS,
+                       ST,
+                       STAT,
+                       DATE_DE_LANC,
+                       TEX,
+                       DATE_OUVERTURE_DES_PLIS,
+                       IDS,
+                       CRA,
+                       CRA2,
+                       JOURS,
+                       PROGRESS_COLOR,
+                       BODY_HTML,
+                       "linkh",
+                       CP,
+                       "المكلف_بالملف"
+                 
+                FROM FICHIER_MANQUANT_PAR_DOSSIER FMD
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            displayColumn: TITRE2
+            startDateColumn: DATE_OUVERTURE_DES_PLIS
+            showTime: true
+            firstHour: 8
+            supplementalInfo: " &CRA. &CRA2. &\"المكلف_بالملف\"."
+            calendarViewsAndNavigation: [
+                month
+                week
+                day
+                list
+                navigation
+            ]
+            createLink: {
+                type: url
+                url: &"linkh".
+            }
+            viewEditLink: {
+                page: 4
+                items: {
+                    P4_ID: &ID_CC.
+                    P4_ID_1: &ID_CC.
+                    P4_ID_2: &ID.
+                }
+            }
+            maxEventsDay: 30
+        }
+    )
+
+    region chemin-de-navigation (
+        name: Chemin de navigation
+        type: breadcrumb
+        source {
+            breadcrumb: @chemin-de-navigation
+        }
+        layout {
+            sequence: 30
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region notification-o-p (
+        name: notification O.P
+        title: الملفات الجاهزة لفتح العروض &P5_NB.
+        type: themeTemplateComponent/comments
+        source {
+            location: localDatabase
+            tableName: NOTIFICATION_OP
+        }
+        layout {
+            sequence: 20
+            slot: beforeNavigationBar
+        }
+        appearance {
+            template: @/collapsible
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                js-useLocalStorage
+                is-collapsed
+                t-Region--noUI
+                t-Region--scrollBody
+                t-Form--slimPadding
+            ]
+        }
+        accessibility {
+            landmarkType: contentInfo
+        }
+        security {
+            authorizationScheme: @droits-de-lecteur
+        }
+        componentAppearance {
+            display: report
+        }
+        settings {
+            commentText: REF_DOSSIER
+            userName: DATE_OUVERTURE
+            attributes: تبقى لفتح العروض &JOURS_RESTANTS. يوم
+            displayAvatar: false
+        }
+        pagination {
+            showTotalCount: true
+        }
+
+        column CCID (
+            layout {
+                sequence: 20
+            }
+            source {
+                databaseColumn: CCID
+                dataType: number
+            }
+        )
+
+        column DATE_OUVERTURE (
+            layout {
+                sequence: 50
+            }
+            source {
+                databaseColumn: DATE_OUVERTURE
+                dataType: date
+            }
+        )
+
+        column JOURS_RESTANTS (
+            layout {
+                sequence: 60
+            }
+            source {
+                databaseColumn: JOURS_RESTANTS
+                dataType: number
+            }
+        )
+
+        column REF_DOSSIER (
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: REF_DOSSIER
+                dataType: varchar2
+            }
+            config {
+                buildOption: @feature-push-notifications
+            }
+        )
+
+        column SPID (
+            layout {
+                sequence: 10
+            }
+            source {
+                databaseColumn: SPID
+                dataType: number
+            }
+        )
+
+        column SUJET (
+            layout {
+                sequence: 40
+            }
+            source {
+                databaseColumn: SUJET
+                dataType: varchar2
+            }
+        )
+
+    )
+
+    pageItem P5_NB (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @notification-o-p
+            slot: regionBody
+        }
+        source {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                SELECT
+                    COUNT(*) AS NOMBRE_DE_LIGNES
+                FROM
+                    SP SP,
+                    CC CC
+                WHERE
+                    (SP.ID = CC.ID)
+                    AND (TRUNC(CC.DATE_OUVERTURE_DES_PLIS) BETWEEN TRUNC(SYSDATE) AND TRUNC(SYSDATE) + 7)
+                ```
+        }
+    )
+
+)
+

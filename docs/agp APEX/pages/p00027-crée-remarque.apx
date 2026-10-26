@@ -1,0 +1,170 @@
+page 27 (
+    name: crée remarque
+    alias: CRÉE-REMARQUE
+    title: Créer une nouvelle  remarque
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region remarque (
+        name: Remarque
+        type: form
+        source {
+            location: localDatabase
+            tableName: REMARQUE
+        }
+        layout {
+            sequence: 60
+            slot: contentBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: add
+        }
+    )
+
+    pageItem P27_ID_CC (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @remarque
+            slot: regionBody
+        }
+        source {
+            formRegion: @remarque
+            column: ID_CC
+            dataType: number
+        }
+    )
+
+    pageItem P27_ID_REM (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @remarque
+            slot: regionBody
+        }
+        source {
+            formRegion: @remarque
+            column: ID_REM
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P27_REF_DOS (
+        type: displayOnly
+        label {
+            label: Ref Dos
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @remarque
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @remarque
+            column: REF_DOS
+            dataType: varchar2
+        }
+    )
+
+    pageItem P27_REMARQUE (
+        type: textarea
+        label {
+            label: Remarque
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @remarque
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 5
+        }
+        validation {
+            maxLength: 500
+        }
+        source {
+            formRegion: @remarque
+            column: REMARQUE
+            dataType: varchar2
+        }
+    )
+
+    button new (
+        buttonName: New
+        label: "Enregistrer "
+        layout {
+            sequence: 10
+            region: @remarque
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+    )
+
+    process initialize-form-crée-remarque (
+        name: Initialize form crée remarque
+        type: formInitialization
+        formRegion: @remarque
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 17414361786797421
+        }
+    )
+
+    process process-form-new (
+        name: Process form New
+        type: formAutoRowProcessing
+        formRegion: @remarque
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 17415016930797428
+        }
+    )
+
+)
+

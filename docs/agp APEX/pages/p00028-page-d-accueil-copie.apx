@@ -1,0 +1,483 @@
+page 28 (
+    name: Page d'accueil copie
+    alias: PAGE-D-ACCUEIL-COPIE
+    title: Page d'accueil copie
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region appels-d-offfres-en-cours (
+        name: APPELS D’OFFFRES en Cours
+        type: cards
+        source {
+            location: localDatabase
+            tableName: FICHIER_MANQUANT_PAR_DOSSIER
+            whereClause:
+                ```sql
+                 (
+                    -- Condition 1 : Si l'utilisateur connecté est ADMIN, on affiche tout
+                    UPPER(v('APP_USER')) IN ('92491', '91591' ,'3259','915912', '80503') 
+                    OR
+                    -- Condition 2 : Sinon, on filtre sur le champ
+                    "المكلف_بالملف" = v('P0_USER')
+                )
+                ```
+        }
+        layout {
+            sequence: 10
+            parentRegion: @appels-d-offfres-en-cours-2
+            slot: subRegions
+        }
+        appearance {
+            template: @/cards-container
+            templateOptions: #DEFAULT#
+        }
+        componentAppearance {
+            gridColumns: 3
+        }
+        subtitle {
+            advancedFormatting: true
+            htmlExpression: &TEX. &DATE_DE_LANC.
+        }
+        body {
+            advancedFormatting: true
+            htmlExpression:
+                ```html
+                <style>
+                    /* Keyword value/name of color */
+                    .div-1 {
+                        background-color:  #777799;
+                    }
+                    
+                    /* Hexadecimal value */
+                    .div-2 {
+                       background-color:  rgb(228,249,153);	 
+                    }
+                    
+                    /* RGB value */
+                    .div-3 {
+                    	background-color: rgb(120,120,0);
+                        font-family: verdana;
+                        font-size: 150%;
+                    }
+                    .div-4 {
+                        background-color:  #FFBE53;
+                    }
+                    
+                </style>
+                <table>
+                    <tr class="div-3" style="height:40px"><td> Fichiers manquant : </td></tr>
+                    <tr class="div-2"><td> &PC. </td></tr>
+                    <tr class="div-2"><td> &CC.</td></tr>
+                    <tr class="div-2"><td> &CE.</td></tr>
+                    <tr class="div-2"><td> &AP.</td></tr>
+                    <tr class="div-2"><td> &DC. </td></tr>
+                    <tr class="div-2"><td> &PL.</td></tr>
+                    <tr class="div-2"><td> &MP. </td></tr>
+                    <tr class="div-2"><td> &POP.</td></tr>
+                    <tr class="div-2"><td> &NOP. </td></tr>
+                     <tr class="div-4"><td> &STAT. </td></tr>
+                    
+                </table>
+                
+                ```
+        }
+
+        action action (
+            label: Modifier
+            layout {
+                position: secondary
+                sequence: 10
+            }
+            behavior {
+                target: {
+                    page: 23
+                    items: {
+                        P23_ID: &ID_CC.
+                        P23_ID_1: &ID_CC.
+                        P23_ID_2: &ID.
+                    }
+                }
+            }
+            appearance {
+                displayType: icon
+                icon: fa-edit
+                hot: true
+            }
+        )
+
+    )
+
+    region appels-d-offfres-en-cours-2 (
+        name: APPELS D’OFFFRES en Cours
+        type: staticContent
+        layout {
+            sequence: 50
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+    )
+
+    region bienvenu (
+        name: Bienvenu
+        type: staticContent
+        source {
+            htmlCode:
+                ```html
+                <img
+                    src="#APP_FILES#icons/app-icon-512.png"
+                  alt="Left Aligned" align="left" />
+                  </img>
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/collapsible
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                js-useLocalStorage
+                is-collapsed
+                t-Region--scrollBody
+                t-Form--large
+            ]
+            renderComponents: belowContent
+        }
+        accessibility {
+            useLandmark: false
+        }
+    )
+
+    region navigation-de-page (
+        name: Navigation de page
+        type: list
+        source {
+            list: @navigation-de-page
+        }
+        layout {
+            sequence: 30
+            slot: body
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        componentAppearance {
+            listTemplate: @/cards
+            templateOptions: [
+                #DEFAULT#
+                u-colors
+                t-Cards--featured t-Cards--block force-fa-lg
+                t-Cards--displayIcons
+                t-Cards--4cols
+                t-Cards--hideBody
+                t-Cards--animColorFill
+            ]
+        }
+    )
+
+    region new (
+        name: New
+        title: الملفات الجاهزة لفتح العروض &P1_NB.
+        type: themeTemplateComponent/comments
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                SELECT 
+                    SP.ID as SPID,
+                    CC.ID as CCID, 
+                    "عدد" as REF_DOSSIER,
+                    CC.OBJET_CCT as SUJET,
+                    CC.DATE_OUVERTURE_DES_PLIS as DATE_OUVERTURE,
+                    TRUNC(DATE_OUVERTURE_DES_PLIS) - TRUNC(SYSDATE) as JOURS_RESTANTS
+                FROM SP SP,
+                CC CC
+                WHERE (SP.ID=CC.ID) AND 
+                    -- On cherche les dates comprises entre aujourd'hui et dans 3 jours
+                   (TRUNC(DATE_OUVERTURE_DES_PLIS) BETWEEN TRUNC(SYSDATE) AND TRUNC(SYSDATE) + 7)
+                
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: beforeNavigationBar
+        }
+        appearance {
+            template: @/collapsible
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                js-useLocalStorage
+                is-collapsed
+                t-Region--scrollBody
+            ]
+        }
+        security {
+            authorizationScheme: @droits-de-contribution
+        }
+        componentAppearance {
+            display: report
+        }
+        settings {
+            commentText: REF_DOSSIER
+            userName: DATE_OUVERTURE
+            attributes: تبقى لفتح العروض &JOURS_RESTANTS. يوم
+            style: chatSpeechBubbles
+        }
+        plugin-avatar {
+            icon: fa-sm fa-calendar-clock
+        }
+        messages {
+            whenNoDataFound: لا توجد ملفات الجاهزة لفتح العروض
+        }
+
+        column CCID (
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: CCID
+                dataType: number
+            }
+        )
+
+        column DATE_OUVERTURE (
+            layout {
+                sequence: 60
+            }
+            source {
+                databaseColumn: DATE_OUVERTURE
+                dataType: date
+            }
+        )
+
+        column JOURS_RESTANTS (
+            layout {
+                sequence: 70
+            }
+            source {
+                databaseColumn: JOURS_RESTANTS
+                dataType: number
+            }
+        )
+
+        column REF_DOSSIER (
+            layout {
+                sequence: 40
+            }
+            source {
+                databaseColumn: REF_DOSSIER
+                dataType: varchar2
+            }
+        )
+
+        column SPID (
+            layout {
+                sequence: 20
+            }
+            source {
+                databaseColumn: SPID
+                dataType: number
+            }
+        )
+
+        column SUJET (
+            layout {
+                sequence: 50
+            }
+            source {
+                databaseColumn: SUJET
+                dataType: varchar2
+            }
+        )
+
+        action détails (
+            position: actions
+            label: Détails
+            layout {
+                sequence: 10
+            }
+            behavior {
+                target: {
+                    page: 10
+                    items: {
+                        P10_ID: &CCID.
+                        P10_REF: &REF_DOSSIER.
+                    }
+                }
+            }
+        )
+
+    )
+
+    pageItem P28_NB (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @new
+            slot: regionBody
+        }
+        source {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                SELECT
+                    COUNT(*) AS NOMBRE_DE_LIGNES
+                FROM
+                    SP SP,
+                    CC CC
+                WHERE
+                    (SP.ID = CC.ID)
+                    AND (TRUNC(CC.DATE_OUVERTURE_DES_PLIS) BETWEEN TRUNC(SYSDATE) AND TRUNC(SYSDATE) + 7)
+                ```
+        }
+    )
+
+    dynamicAction alert-ouverture (
+        name: Alert_ouverture
+        execution {
+            sequence: 40
+            eventScope: once
+        }
+        when {
+            event: ready
+        }
+        clientSideCondition {
+            type: item!=value
+            item: P28_NB
+            value: 0
+        }
+        security {
+            authorizationScheme: @droits-de-contribution
+        }
+
+        action native-alert (
+            action: alert
+            settings {
+                title: الملفات الجاهزة لفتح العروض &P28_NB.
+                message: الملفات الجاهزة لفتح العروض &P28_NB.
+                style: danger
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction new (
+        name: New
+        execution {
+            sequence: 30
+        }
+        when {
+            event: ready
+        }
+        clientSideCondition {
+            type: item=value
+            item: P28_NB
+            value: 0
+        }
+
+        action native-hide (
+            action: hide
+            affectedElements {
+                selectionType: region
+                region: @new
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction refresh (
+        name: refresh2
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @appels-d-offfres-en-cours
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @appels-d-offfres-en-cours
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction refresh-2 (
+        name: refresh_1
+        execution {
+            sequence: 20
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @navigation-de-page
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @appels-d-offfres-en-cours
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    branch (
+        name: Aller à la page 4
+        execution {
+            sequence: 10
+        }
+        behavior {
+            target: {
+                page: 4
+                items: {
+                    ID: &P4_ID.
+                }
+            }
+        }
+    )
+
+)
+

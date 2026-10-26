@@ -1,0 +1,879 @@
+installScript INSTALLER2 (
+    execution {
+        sequence: 20
+    }
+    script {
+        contentFile: installer2.sql
+    }
+)
+
+installScript fonction (
+    execution {
+        sequence: 50
+    }
+    script {
+        contentFile: fonction.sql
+    }
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: function
+        name: F_AUTHENTICATE_USER
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: function
+        name: F_LOGIN_REDIRECT
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: function
+        name: K
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: function
+        name: LIBRARY_F
+    )
+
+)
+
+installScript "full data" (
+    execution {
+        sequence: 30
+    }
+    script {
+        contentFile: full-data.sql
+    }
+)
+
+installScript index (
+    execution {
+        sequence: 60
+    }
+    script {
+        contentFile: index.sql
+    }
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: CC_IDX1
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: CC_PK
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: CONTRATS_CON_REF
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: ETAT_AVIS_PK
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: ETAT_AVIS_UK1
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: FACTURES_IDX_CONTRAT
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: FACTURES_IDX_DATE
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: FACTURES_IDX_STATUT
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: FACTURES_N_UNIQUE
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: FACTURES_PK
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: FICHIER_LNCEMENT_PK
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: HEUR_SPP_PK
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: IDX_CONGE_DATE
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: IDX_CONGE_MAT
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: IDX_CONGE_STATUT
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: IDX_CUSTOM_NOTIF_REF
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: IDX_CUSTOM_NOTIF_USER
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: IDX_SUIVI_CONTRATS_DATES
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: MEMBRE_CON
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: NOTE_COMMISSION_CON
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: PK_CONGE
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: REMARQUE_PK
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: SOLDE_CONGE_PK
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: index
+        name: SUIVI_MODIF_CON
+    )
+
+)
+
+installScript installer (
+    execution {
+        sequence: 10
+    }
+    script {
+        contentFile: installer.sql
+    }
+)
+
+installScript procedure (
+    execution {
+        sequence: 70
+    }
+    script {
+        contentFile: procedure.sql
+    }
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: procedure
+        name: CLEANUP_EXPIRED_REMINDERS
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: procedure
+        name: CTRL_CC_RAPPELS_CUSTOM
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: procedure
+        name: LINK_IMPORT
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: procedure
+        name: P_POST_AUTH
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: procedure
+        name: PROCESS_REMINDERS_TO_SEND
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: procedure
+        name: SP_ALERTES_FACTURES
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: procedure
+        name: UPDATE_CC_STATUS_BATCH
+    )
+
+)
+
+installScript sequence (
+    execution {
+        sequence: 80
+    }
+    script {
+        contentFile: sequence.sql
+    }
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: DATE_DE_LANCEMENT_PROPOSÉE_SEQ
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ETAT_AFFICHAGE_PUBLIC_SEQ
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ETAT_AFFICHAGE_SEQ
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ETAT_AVIS_SEQ
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ID_inc
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_101031
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_80972
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_80982
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_80985
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_80988
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_80991
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_80994
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_81006
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_81009
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_81012
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_85227
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_85554
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_85631
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_85638
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_87235
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_87326
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_87411
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_88445
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_88992
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_88997
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_89491
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_89494
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_89497
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_89500
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_89503
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_89506
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_89512
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_89515
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_91514
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_91529
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_92109
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_92499
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_92575
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_92996
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_92999
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93002
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93005
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93008
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93011
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93014
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93017
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93020
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93023
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93026
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93029
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93032
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93035
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93038
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93041
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93044
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93047
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93050
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93053
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93056
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93059
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93062
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93065
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93173
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93176
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93178
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: ISEQ$$_93509
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: REF_AO_LOOKUP_SEQ
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: SEQ_CONGE
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: sequence
+        name: SUIVI_CONTRATS_SEQ
+    )
+
+)
+
+installScript triger (
+    execution {
+        sequence: 90
+    }
+    script {
+        contentFile: triger.sql
+    }
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: trigger
+        name: BI_ETAT_AVIS
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: trigger
+        name: BIU_HEUR_SPP
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: trigger
+        name: CC_BU_STATUS
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: trigger
+        name: CONTRATS_T
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: trigger
+        name: ETAT_AVIS_T
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: trigger
+        name: FACTURES_T
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: trigger
+        name: TRG_AUDIT_CC
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: trigger
+        name: TRG_AUDIT_SP
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: trigger
+        name: TRG_SUIVI_CONTRATS_BI
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: trigger
+        name: TRG_SUIVI_CONTRATS_BU
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: trigger
+        name: USER_NOTES_BU
+    )
+
+)
+
+installScript view (
+    execution {
+        sequence: 100
+    }
+    script {
+        contentFile: view.sql
+    }
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: AJOUT_CONTRAT
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: AJOUT_NOTE
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: CC_SP_COMPLET
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: CC_SP_FL
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: CC_SP_STAT
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: ETAT_CC_COPLETE
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: FICHIER_MANQUANT_PAR_DOSSIER
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: INFORMATION_COMPLETE_CC
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: M
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: MOD
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: MODIF
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: MODIFICATION
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: NOTE_OUVERTUE_PLIS
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: NOTIFICATION_OP
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: TABLE_TOTAL
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: V_FACTURES
+    )
+
+    databaseObject (
+        owner: WKSP_GCT
+        type: view
+        name: V_SUIVI_CONTRATS
+    )
+
+)
+

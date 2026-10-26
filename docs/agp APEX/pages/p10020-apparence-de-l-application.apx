@@ -1,0 +1,293 @@
+page 10020 (
+    name: Apparence de l'application
+    alias: APPARENCE-DE-L-APPLICATION
+    title: Apparence de l'application
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        authorizationScheme: @droits-d-administration
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>Sélectionnez le schéma de couleur par défaut utilisé pour afficher l'application.</p>
+            <p>Si l'option <strong>Autoriser les utilisateurs finals à choisir un style de thème</strong> est sélectionnée, chaque utilisateur final peut choisir parmi les styles de thème disponibles en cliquant sur le lien <em>Personnaliser</em> dans l'angle inférieur gauche de la page d'accueil.</p>
+            ```
+    }
+    config {
+        buildOption: @fonctionnalité-sélection-du-style-de-thème
+    }
+
+    region boutons (
+        name: Boutons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region configurer-l-apparence (
+        name: Configurer l'apparence
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+            renderComponents: belowContent
+        }
+    )
+
+    pageItem P10020_DESKTOP_THEME_STYLE_ID (
+        type: selectList
+        label {
+            label: Style de thème du bureau
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @desktop-theme-styles
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 10
+            region: @configurer-l-apparence
+            slot: regionBody
+            alignment: left
+            labelColumnSpan: 3
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                select s.theme_style_id
+                from apex_application_theme_styles s,
+                    apex_application_themes t
+                where s.application_id = t.application_id
+                    and s.theme_number = t.theme_number
+                    and s.application_id = :app_id
+                    and t.ui_type_name   = 'DESKTOP'
+                    and s.is_current = 'Yes'
+                ```
+            used: always
+        }
+        serverSideCondition {
+            type: rowsReturned
+            sqlQuery:
+                ```sql
+                select null
+                  from apex_application_theme_styles s,
+                       apex_application_themes t
+                 where s.application_id = t.application_id
+                   and s.theme_number   = t.theme_number
+                   and s.application_id = :app_id
+                   and t.ui_type_name   = 'DESKTOP'
+                ```
+        }
+        security {
+            restrictedChars: webSafe
+        }
+        help {
+            inlineHelpText: Le style de thème par défaut s'applique à tous les utilisateurs.
+        }
+    )
+
+    pageItem P10020_END_USER_STYLE (
+        type: checkboxGroup
+        label {
+            label: Préférence de thème de l'utilisateur final
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @user-theme-preference
+            displayExtraValues: false
+        }
+        layout {
+            sequence: 30
+            region: @configurer-l-apparence
+            slot: regionBody
+            alignment: left
+            labelColumnSpan: 0
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: #DEFAULT#
+        }
+        source {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                select a.theme_style_by_user_pref
+                  from apex_applications a
+                 where a.application_id  = :app_id
+                ```
+            used: always
+        }
+        help {
+            inlineHelpText: Si cette option est sélectionnée, les utilisateurs finals peuvent choisir leur propre style de thème à l'aide du lien Personnaliser.
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Annuler
+        layout {
+            sequence: 10
+            region: @boutons
+            slot: previous
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+            executeValidations: false
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Appliquer les modifications
+        layout {
+            sequence: 20
+            region: @boutons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    process enregistrer-la-préférence-de-style-de-l-utilisateur-final (
+        name: Enregistrer la préférence de style de l'utilisateur final
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                declare
+                    l_enabled boolean := case when :P10020_END_USER_STYLE = 'Yes' then true else false end;
+                begin
+                    for l_theme in ( select ui.theme_number
+                                       from apex_application_themes t,
+                                            apex_appl_user_interfaces ui
+                                      where ui.application_id = t.application_id
+                                        and ui.theme_number   = t.theme_number
+                                        and t.application_id  = :APP_ID
+                                        and t.ui_type_name    = 'DESKTOP'
+                                        and t.is_current      = 'Yes' )
+                    loop
+                        if l_enabled then
+                            apex_theme.enable_user_style (
+                                p_application_id => :APP_ID,
+                                p_theme_number   => l_theme.theme_number );
+                        else
+                            apex_theme.disable_user_style (
+                                p_application_id => :APP_ID,
+                                p_theme_number   => l_theme.theme_number );
+                            apex_theme.clear_all_users_style(:APP_ID);
+                        end if;
+                    end loop;
+                end;
+                ```
+        }
+        execution {
+            sequence: 20
+        }
+        successMessage {
+            successMessage: Paramètres d'apparence de l'application enregistrés.
+        }
+        advanced {
+            executionMappingIdentifier: 61391566636904275299
+        }
+    )
+
+    process enregistrer-le-style-de-thème (
+        name: Enregistrer le style de thème
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                if :P10020_DESKTOP_THEME_STYLE_ID is not null then
+                    for l_theme in (select theme_number
+                                      from apex_application_themes
+                                     where application_id = :app_id
+                                       and ui_type_name   = 'DESKTOP'
+                                       and is_current     = 'Yes')
+                    loop
+                        apex_util.set_current_theme_style (
+                            p_theme_number   => l_theme.theme_number,
+                            p_theme_style_id => :P10020_DESKTOP_THEME_STYLE_ID
+                            );
+                    end loop;
+                end if;
+                ```
+        }
+        execution {
+            sequence: 10
+        }
+        successMessage {
+            successMessage: Paramètres d'apparence de l'application enregistrés.
+        }
+        advanced {
+            executionMappingIdentifier: 61391566285762275299
+        }
+    )
+
+    branch (
+        name: Branchement sur la page d'administration
+        execution {
+            sequence: 10
+        }
+        behavior {
+            target: {
+                page: 10000
+                action: resetPagination
+            }
+        }
+    )
+
+)
+
