@@ -70,3 +70,14 @@
 @media(max-width:520px){.surveillance-rule-row{grid-template-columns:1fr}.surveillance-rule-name,.surveillance-rule-row>label{grid-column:1}.surveillance-save-row{align-items:stretch;flex-direction:column}.surveillance-save-row button{align-self:flex-start}}
 @media(max-width:800px){.surveillance-event-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.surveillance-event-list article{grid-template-columns:1fr 1fr}.surveillance-event-status{justify-self:start}}
 @media(max-width:520px){.surveillance-event-grid,.surveillance-event-list article{grid-template-columns:1fr}.surveillance-event-note{grid-column:1}.surveillance-event-grid .primary-button{justify-self:stretch}}
+.surveillance-event-form{padding:clamp(18px,2.5vw,28px);border-radius:14px;box-shadow:0 8px 26px #183e380d}
+.surveillance-event-form>h2{margin-bottom:16px;color:#193e37;font-size:20px}
+.surveillance-form-explanation{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:10px;margin:0 0 20px;padding:13px 15px;border:1px solid #e7d3a6;border-radius:10px;background:#fffaf0;color:#65542d}
+.surveillance-form-explanation strong{display:grid;place-items:center;width:21px;height:21px;border-radius:50%;background:#f1dfb4;color:#705721;font-size:12px}
+.surveillance-form-explanation p{margin:0;font-size:12px;line-height:1.65}
+.surveillance-event-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.surveillance-event-grid>label{display:grid;align-content:start;gap:7px;color:#485b51;font-size:12px;font-weight:650}
+.surveillance-event-grid input:not([type=checkbox]),.surveillance-event-grid select{width:100%;min-height:42px;border:1px solid #d9e3dc;border-radius:8px;background:#fff;color:#31443b;padding:9px 11px;font:inherit}
+.surveillance-event-note{grid-column:1/-1!important}
+.surveillance-event-grid .primary-button{min-height:42px;justify-self:start;padding-inline:20px;border-radius:8px}
+@media(max-width:620px){.surveillance-event-grid{grid-template-columns:1fr}.surveillance-event-note{grid-column:1!important}.surveillance-event-grid .primary-button{justify-self:stretch}}

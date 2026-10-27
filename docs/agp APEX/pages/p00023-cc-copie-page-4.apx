@@ -290,6 +290,11 @@ page 23 (
             label: Cc Pour Lancement
             alignment: left
         }
+        lov {
+            type: staticValues
+            staticValues: STATIC:Effectu?;Y,En cours de pr?paration;N
+            displayNullValue: false
+        }
         layout {
             sequence: 50
             region: @fichiers-de-lancement

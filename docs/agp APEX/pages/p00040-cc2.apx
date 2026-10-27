@@ -330,6 +330,11 @@ page 40 (
             label: CC Pour Lancement
             alignment: left
         }
+        lov {
+            type: staticValues
+            staticValues: STATIC:Effectu?;Y,En cours de pr?paration;N
+            displayNullValue: false
+        }
         layout {
             sequence: 120
             region: @fichiers-de-lancement
