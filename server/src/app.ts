@@ -1558,8 +1558,7 @@ export function createApp(db: Queryable = pool) {
 
   app.get('/api/overtime', authenticate, async (request: AuthRequest, response, next) => {
     try {
-      const isManager = ['admin', 'manager'].includes(request.user!.role);
-      const result = await db.query(`SELECT id, employee_label, work_date, start_time, end_time, hours, comment, period FROM overtime_entries ${isManager ? '' : 'WHERE user_id = $1'} ORDER BY work_date DESC LIMIT 100`, isManager ? [] : [Number(request.user!.sub)]);
+      const result = await db.query('SELECT id, employee_label, work_date, start_time, end_time, hours, comment, period FROM overtime_entries WHERE user_id = $1 ORDER BY work_date DESC LIMIT 100', [Number(request.user!.sub)]);
       return response.json({ data: result.rows });
     } catch (error) { next(error); }
   });
@@ -1589,14 +1588,13 @@ export function createApp(db: Queryable = pool) {
 
   app.get('/api/leaves', authenticate, async (request: AuthRequest, response, next) => {
     try {
-      const isManager = ['admin', 'manager'].includes(request.user!.role);
       if (request.query.export === 'csv') {
-        const result = await db.query(`SELECT employee_label, matricule, service_label, fonction, leave_type, requested_days, holidays, start_date, end_date, balance_before, balance_after, address_during_leave, telephone, status, requested_at FROM leave_requests ${isManager ? '' : 'WHERE user_id = $1'} ORDER BY start_date DESC LIMIT 1000`, isManager ? [] : [Number(request.user!.sub)]);
+        const result = await db.query('SELECT employee_label, matricule, service_label, fonction, leave_type, requested_days, holidays, start_date, end_date, balance_before, balance_after, address_during_leave, telephone, status, requested_at FROM leave_requests WHERE user_id = $1 ORDER BY start_date DESC LIMIT 1000', [Number(request.user!.sub)]);
         const csv = [Object.keys(result.rows[0] ?? {}).join(';'), ...result.rows.map((row) => Object.values(row).map((value) => `"${String(value ?? '').replaceAll('"', '""')}"`).join(';'))].join('\r\n');
         response.setHeader('Content-Type', 'text/csv; charset=utf-8'); response.setHeader('Content-Disposition', 'attachment; filename="conges.csv"');
         return response.send(`\uFEFF${csv}`);
       }
-      const result = await db.query(`SELECT id, employee_label, matricule, service_label, fonction, leave_type, start_date, end_date, requested_days, holidays, balance_before, balance_after, address_during_leave, telephone, status, requested_at FROM leave_requests ${isManager ? '' : 'WHERE user_id = $1'} ORDER BY start_date DESC LIMIT 100`, isManager ? [] : [Number(request.user!.sub)]);
+      const result = await db.query('SELECT id, employee_label, matricule, service_label, fonction, leave_type, start_date, end_date, requested_days, holidays, balance_before, balance_after, address_during_leave, telephone, status, requested_at FROM leave_requests WHERE user_id = $1 ORDER BY start_date DESC LIMIT 100', [Number(request.user!.sub)]);
       return response.json({ data: result.rows });
     } catch (error) { next(error); }
   });
@@ -1648,7 +1646,7 @@ export function createApp(db: Queryable = pool) {
         const result = await tx.query('SELECT id, user_id, leave_type, requested_days, holidays, balance_after FROM leave_requests WHERE id = $1 FOR UPDATE', [id.data]);
         const leave = result.rows[0];
         if (!leave) return false;
-        if (Number(leave.user_id) !== Number(request.user!.sub) && !['admin', 'manager'].includes(request.user!.role)) throw new Error('Vous ne pouvez supprimer que vos propres demandes.');
+        if (Number(leave.user_id) !== Number(request.user!.sub)) throw new Error('Vous ne pouvez supprimer que vos propres demandes.');
         if (leave.user_id != null && leave.leave_type === 'paid' && leave.balance_after != null) {
           const current = await tx.query('SELECT balance FROM leave_balances WHERE user_id = $1 FOR UPDATE', [leave.user_id]);
           if (current.rows[0] && Number(current.rows[0].balance) === Number(leave.balance_after)) {

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { BookOpen, CheckCircle2, ChevronDown, CircleAlert, FileCheck2, Search } from 'lucide-react';
+import { ArrowRight, BookOpen, CheckCircle2, ChevronDown, CircleAlert, FileCheck2, Search } from 'lucide-react';
 import type { Language } from './i18n';
 import './purchasing-guide.css';
 
@@ -7,6 +7,8 @@ type Copy = {
   title: string; subtitle: string; search: string; introTitle: string; intro: string;
   contents: string; lifecycleTitle: string; stages: { title: string; text: string; checks: string[] }[];
   proceduresTitle: string; procedures: { title: string; when: string; summary: string; tag: string }[];
+  commissionsTitle: string; commissionsIntro: string; commissionHeaders: string[]; commissionRows: { nature: string; dar: string; cra: string; cae: string; cme: string }[];
+  commissionRolesTitle: string; commissionRoles: string[];
   actorsTitle: string; actors: { title: string; text: string }[];
   practicalTitle: string; practical: string[]; updateTitle: string; update: string;
   sourcesTitle: string; sources: string[]; baseline: string; pvTag: string; empty: string;
@@ -38,6 +40,22 @@ const copy: Record<Language, Copy> = {
       { title: 'Contrats-cadres et achats récurrents', when: 'Besoin récurrent ou commandes pouvant être planifiées sur une période.', summary: 'Évaluer le regroupement et l’usage d’un contrat-cadre. À chaque commande, vérifier le contrat applicable, sa validité, les quantités restantes et les conditions de commande.', tag: 'Vérifier validité et reliquat' },
       { title: 'Biens d’occasion usagés', when: 'Équipement ou pièce d’occasion répondant aux cas particuliers prévus par le manuel.', summary: 'Le dossier précise les exigences minimales, l’âge, l’état et les garanties attendues. Le manuel demande une note explicative validée et signée par la Direction générale; les modes de passation suivent la valeur et les règles applicables.', tag: 'Règles particulières' },
     ],
+    commissionsTitle: 'Procédure et commission selon le montant',
+    commissionsIntro: 'Déterminez la catégorie d’achat et son montant estimatif. Les seuils ci-dessous sont ceux de l’annexe 11 du manuel (en mDT) ; appliquez les règles et mises à jour officielles en vigueur au moment du lancement.',
+    commissionHeaders: ['Nature de l’achat', 'DAR', 'CRA', 'CAE', 'CME'],
+    commissionRows: [
+      { nature: 'Travaux', dar: '< 20', cra: '≥ 20 et < 200', cae: '≥ 200 et < 2 000', cme: '≥ 2 000' },
+      { nature: 'Fournitures, équipements et services', dar: '< 20', cra: '≥ 20 et < 200', cae: '≥ 200 et < 2 000', cme: '≥ 2 000' },
+      { nature: 'Études', dar: 'Non précisé dans le tableau', cra: '< 15', cae: '≥ 15 et < 200', cme: '≥ 200' },
+    ],
+    commissionRolesTitle: 'Étapes à suivre selon la commission compétente',
+    commissionRoles: [
+      'DAR : la structure d’achat ouvre les offres, la structure demandeuse les évalue et la Direction des achats de la région attribue l’achat.',
+      'CRA : la CROOA ouvre les offres, la structure demandeuse les évalue et la Commission régionale des achats examine le dossier et attribue l’achat.',
+      'CAE : la CROOA ouvre les offres, une commission d’évaluation ad hoc évalue les offres, puis la CAE exerce le contrôle préalable et attribue l’achat.',
+      'CME : la CROOM ouvre les offres, une commission d’évaluation ad hoc évalue les offres, puis la CME exerce le contrôle préalable; l’approbation finale suit les règles applicables aux marchés.',
+      'Pour les achats relevant de la DAR ou de la CRA, l’évaluation est réalisée par la structure demandeuse selon l’annexe 13. Vérifiez également les règles propres à la procédure, les avenants et les achats de prestations intellectuelles.',
+    ],
     actorsTitle: 'Qui intervient ?', actors: [
       { title: 'Structure demandeuse', text: 'Exprime et justifie le besoin, prépare les spécifications, les critères et l’estimation, puis suit l’exécution selon les responsabilités attribuées.' },
       { title: 'Structure d’achat / DCAHMP', text: 'Vérifie le dossier, étudie le regroupement, détermine et met en œuvre la procédure, prépare les pièces de consultation et assure la traçabilité de l’achat.' },
@@ -53,7 +71,7 @@ const copy: Record<Language, Copy> = {
     ],
     updateTitle: 'Évolutions évoquées au PV du 29 avril 2026',
     update: 'Le procès-verbal consigne des orientations pour la révision du manuel : méthode d’attribution par lot puis, à défaut, par article; clarification des commissions et méthodes d’évaluation; suppression des offres « substantiellement conformes »; urgence justifiée pour la régie; consultation élargie via TUNEPS en parallèle dans certains cas; règles sur les achats régularisés; évolution de la justification de négociation directe; et adaptations des spécifications/commissions. Ces points sont séparés du référentiel 2022 : leur rédaction finale, les listes concernées et leur date d’entrée en vigueur doivent être confirmées dans le manuel révisé ou une instruction officielle avant application.',
-    sourcesTitle: 'Références documentaires', sources: ['Manuel Achats GCT du 29 décembre 2022 — chapitre 2 : Procédures des achats hors matières premières.', 'Procès-verbal de réunion du 29 avril 2026 — orientations de mise à jour du manuel.'],
+    sourcesTitle: 'Références documentaires', sources: ['Manuel Achats GCT du 29 décembre 2022 — chapitre 2, annexes 11 (seuils) et 13 (entités d’ouverture, d’évaluation et de contrôle) : achats hors matières premières.', 'Procès-verbal de réunion du 29 avril 2026 — orientations de mise à jour du manuel.'],
     baseline: 'Référentiel principal : Manuel Achats GCT, version du 29/12/2022. Vérifier les annexes, notes et mises à jour officielles applicables au dossier.', pvTag: 'PV 2026 · mise en œuvre à confirmer', empty: 'Aucune rubrique ne correspond à cette recherche.',
   },
   ar: {
@@ -80,6 +98,22 @@ const copy: Record<Language, Copy> = {
       { title: 'العقود الإطارية والمشتريات المتكررة', when: 'حاجة متكررة أو طلبيات يمكن برمجتها على فترة.', summary: 'دراسة التجميع وإمكانية استعمال عقد إطاري. عند كل طلبية، يجب التحقق من العقد المعني وصلاحيته والكميات المتبقية وشروط الطلب.', tag: 'التحقق من الصلاحية والرصيد' },
       { title: 'المعدات المستعملة', when: 'معدات أو قطع مستعملة ينطبق عليها ما يحدده الدليل من حالات خاصة.', summary: 'يحدد الملف المتطلبات الدنيا والعمر والحالة والضمانات المطلوبة. يطلب الدليل مذكرة تفسيرية مصادقاً عليها وممضاة من الإدارة العامة؛ وتتبع طرق الشراء قيمة الحاجة والقواعد المعمول بها.', tag: 'أحكام خاصة' },
     ],
+    commissionsTitle: 'الإجراء واللجنة حسب المبلغ',
+    commissionsIntro: 'حدد أولاً فئة الشراء ومبلغه التقديري. العتبات أدناه مأخوذة من الملحق 11 للدليل (بوحدة الألف دينار)؛ ويجب تطبيق القواعد والتحديثات الرسمية السارية عند إطلاق الإجراء.',
+    commissionHeaders: ['طبيعة الشراء', 'DAR', 'CRA', 'CAE', 'CME'],
+    commissionRows: [
+      { nature: 'الأشغال', dar: '< 20', cra: '≥ 20 وأقل من 200', cae: '≥ 200 وأقل من 2 000', cme: '≥ 2 000' },
+      { nature: 'التجهيزات والسلع والخدمات', dar: '< 20', cra: '≥ 20 وأقل من 200', cae: '≥ 200 وأقل من 2 000', cme: '≥ 2 000' },
+      { nature: 'الدراسات', dar: 'غير محدد في الجدول', cra: '< 15', cae: '≥ 15 وأقل من 200', cme: '≥ 200' },
+    ],
+    commissionRolesTitle: 'المراحل حسب اللجنة المختصة',
+    commissionRoles: [
+      'DAR: يفتح هيكل الشراء العروض، وتقيمها الجهة الطالبة، وتسند مديرية الشراء الجهوية العملية.',
+      'CRA: تفتح CROOA العروض، وتقيمها الجهة الطالبة، وتراقب CRA الملف وتسند الشراء.',
+      'CAE: تفتح CROOA العروض، وتقيمها لجنة تقييم خاصة، ثم تمارس CAE الرقابة المسبقة وتسند الشراء.',
+      'CME: تفتح CROOM العروض، وتقيمها لجنة تقييم خاصة، ثم تمارس CME الرقابة المسبقة؛ وتتم المصادقة النهائية وفق القواعد المعمول بها للصفقات.',
+      'بالنسبة للمشتريات التابعة لـ DAR أو CRA، تتولى الجهة الطالبة التقييم وفق الملحق 13. يجب أيضاً التحقق من الأحكام الخاصة بنوع الإجراء والملاحق ومشتريات الدراسات.',
+    ],
     actorsTitle: 'الأطراف المتدخلة', actors: [
       { title: 'الجهة الطالبة', text: 'تحدد الحاجة وتبررها، وتعد المواصفات والمعايير والتقدير، ثم تتابع التنفيذ حسب المسؤوليات المسندة.' },
       { title: 'هيكل الشراء / الإدارة المركزية', text: 'يتحقق من الملف ويدرس التجميع ويحدد الإجراء وينفذه ويعد وثائق الاستشارة ويضمن توثيق عملية الشراء.' },
@@ -91,12 +125,12 @@ const copy: Record<Language, Copy> = {
     ],
     updateTitle: 'توجهات محضر 29 أفريل 2026',
     update: 'يتضمن محضر الاجتماع توجهات لمراجعة الدليل: الإسناد لكامل الحصة ثم، عند التعذر، حسب البنود؛ توضيح اللجان وطرق التقييم؛ عدم قبول العروض «المطابقة جوهرياً»؛ تبرير الاستعجال في الشراء المباشر؛ توسيع الاستشارة عبر TUNEPS بالتوازي في بعض الحالات؛ تنظيم المشتريات المسواة؛ تطوير تبرير التفاوض المباشر؛ وتعديلات تخص المواصفات واللجان. تعرض هذه النقاط منفصلة عن مرجع 2022. يجب تأكيد الصياغة النهائية والقوائم المعنية وتاريخ بدء النفاذ في الدليل المحين أو بتعليمة رسمية قبل تطبيقها.',
-    sourcesTitle: 'المراجع', sources: ['دليل مشتريات GCT المؤرخ 29 ديسمبر 2022 — الفصل الثاني: إجراءات شراء المواد غير الأولية.', 'محضر اجتماع 29 أفريل 2026 — توجهات تحيين دليل المشتريات.'],
+    sourcesTitle: 'المراجع', sources: ['دليل مشتريات GCT المؤرخ 29 ديسمبر 2022 — الفصل الثاني، الملحقان 11 (العتبات) و13 (جهات الفتح والتقييم والرقابة): المشتريات غير الأولية.', 'محضر اجتماع 29 أفريل 2026 — توجهات تحيين دليل المشتريات.'],
     baseline: 'المرجع الأساسي: دليل مشتريات GCT بتاريخ 29/12/2022. يجب التحقق من الملاحق والمذكرات والتحيينات الرسمية المنطبقة على الملف.', pvTag: 'محضر 2026 · التطبيق يحتاج إلى تأكيد', empty: 'لا توجد نتائج مطابقة لهذا البحث.',
   },
 };
 
-export function PurchasingGuidePage({ language }: { language: Language }) {
+export function PurchasingGuidePage({ language, onOpenManual }: { language: Language; onOpenManual: () => void }) {
   const [query, setQuery] = useState('');
   const [openStage, setOpenStage] = useState<number | null>(0);
   const c = copy[language];
@@ -105,15 +139,17 @@ export function PurchasingGuidePage({ language }: { language: Language }) {
   const procedures = useMemo(() => c.procedures.filter((item) => !normalized || `${item.title} ${item.when} ${item.summary} ${item.tag}`.toLocaleLowerCase(language).includes(normalized)), [c, language, normalized]);
   return <main className="pguide" lang={language} dir={rtl ? 'rtl' : 'ltr'}>
     <header className="pguide-hero"><div className="pguide-hero-icon"><BookOpen size={24} /></div><div><span className="pguide-kicker">GCT · {rtl ? 'دليل المستخدم' : 'RÉFÉRENCE UTILISATEUR'}</span><h1>{c.title}</h1><p>{c.subtitle}</p></div></header>
+    <button className="pguide-consult-button" type="button" onClick={onOpenManual}><BookOpen size={19} /><span>{rtl ? 'اطّلع على الدليل' : 'Consulter le guide'}</span><ArrowRight size={18} /></button>
     <div className="pguide-baseline"><FileCheck2 size={18} /><span>{c.baseline}</span></div>
     <section className="pguide-intro"><h2>{c.introTitle}</h2><p>{c.intro}</p></section>
     <div className="pguide-layout">
-      <aside className="pguide-index"><h2>{c.contents}</h2><a href="#pguide-process">{c.lifecycleTitle}</a><a href="#pguide-procedures">{c.proceduresTitle}</a><a href="#pguide-actors">{c.actorsTitle}</a><a href="#pguide-checklist">{c.practicalTitle}</a><a href="#pguide-update">{c.updateTitle}</a><a href="#pguide-sources">{c.sourcesTitle}</a></aside>
+      <aside className="pguide-index"><h2>{c.contents}</h2><a href="#pguide-process">{c.lifecycleTitle}</a><a href="#pguide-procedures">{c.proceduresTitle}</a><a href="#pguide-commissions">{c.commissionsTitle}</a><a href="#pguide-actors">{c.actorsTitle}</a><a href="#pguide-checklist">{c.practicalTitle}</a><a href="#pguide-update">{c.updateTitle}</a><a href="#pguide-sources">{c.sourcesTitle}</a></aside>
       <div className="pguide-main">
         <section id="pguide-process" className="pguide-section"><div className="pguide-section-heading"><span>01</span><h2>{c.lifecycleTitle}</h2></div><div className="pguide-stages">{c.stages.map((stage, index) => <article className={`pguide-stage ${openStage === index ? 'is-open' : ''}`} key={stage.title}><button className="pguide-stage-toggle" onClick={() => setOpenStage(openStage === index ? null : index)} aria-expanded={openStage === index}><span className="pguide-stage-number">{String(index + 1).padStart(2, '0')}</span><span className="pguide-stage-title">{stage.title}</span><ChevronDown size={18} /></button>{openStage === index && <div className="pguide-stage-body"><p>{stage.text}</p><ul>{stage.checks.map((check) => <li key={check}><CheckCircle2 size={16} />{check}</li>)}</ul></div>}</article>)}</div></section>
         <section id="pguide-procedures" className="pguide-section"><div className="pguide-section-heading"><span>02</span><h2>{c.proceduresTitle}</h2></div><label className="pguide-search"><Search size={18} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={c.search} /><span>{procedures.length}</span></label>{procedures.length ? <div className="pguide-procedure-grid">{procedures.map((procedure) => <article className="pguide-procedure" key={procedure.title}><span className="pguide-tag">{procedure.tag}</span><h3>{procedure.title}</h3><b>{procedure.when}</b><p>{procedure.summary}</p></article>)}</div> : <p className="pguide-empty">{c.empty}</p>}</section>
-        <section id="pguide-actors" className="pguide-section"><div className="pguide-section-heading"><span>03</span><h2>{c.actorsTitle}</h2></div><div className="pguide-actors">{c.actors.map((actor) => <article key={actor.title}><h3>{actor.title}</h3><p>{actor.text}</p></article>)}</div></section>
-        <section id="pguide-checklist" className="pguide-section"><div className="pguide-section-heading"><span>04</span><h2>{c.practicalTitle}</h2></div><ul className="pguide-checklist">{c.practical.map((item) => <li key={item}><CheckCircle2 size={17} />{item}</li>)}</ul></section>
+        <section id="pguide-commissions" className="pguide-section"><div className="pguide-section-heading"><span>03</span><h2>{c.commissionsTitle}</h2></div><p className="pguide-commission-intro">{c.commissionsIntro}</p><div className="pguide-table-wrap"><table className="pguide-commission-table"><thead><tr>{c.commissionHeaders.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{c.commissionRows.map((row) => <tr key={row.nature}><th scope="row">{row.nature}</th><td>{row.dar}</td><td>{row.cra}</td><td>{row.cae}</td><td>{row.cme}</td></tr>)}</tbody></table></div><h3 className="pguide-commission-subtitle">{c.commissionRolesTitle}</h3><ul className="pguide-commission-roles">{c.commissionRoles.map((role) => <li key={role}>{role}</li>)}</ul></section>
+        <section id="pguide-actors" className="pguide-section"><div className="pguide-section-heading"><span>04</span><h2>{c.actorsTitle}</h2></div><div className="pguide-actors">{c.actors.map((actor) => <article key={actor.title}><h3>{actor.title}</h3><p>{actor.text}</p></article>)}</div></section>
+        <section id="pguide-checklist" className="pguide-section"><div className="pguide-section-heading"><span>05</span><h2>{c.practicalTitle}</h2></div><ul className="pguide-checklist">{c.practical.map((item) => <li key={item}><CheckCircle2 size={17} />{item}</li>)}</ul></section>
         <section id="pguide-update" className="pguide-update"><span className="pguide-tag"><CircleAlert size={14} />{c.pvTag}</span><h2>{c.updateTitle}</h2><p>{c.update}</p></section>
         <section id="pguide-sources" className="pguide-sources"><h2>{c.sourcesTitle}</h2><ul>{c.sources.map((source) => <li key={source}>{source}</li>)}</ul></section>
       </div>
